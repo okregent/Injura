@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/Users/okreg/projects/injura && python3 -c \"\nfrom docx import Document\ndoc = Document\\('Injura_project_proposal.docx'\\)\nfor para in doc.paragraphs:\n    print\\(para.text\\)\n\" 2>&1)",
+      "Bash(which python3:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}
