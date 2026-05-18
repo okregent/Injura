@@ -7,7 +7,7 @@ from .types import Landmark, PoseSequence
 class MediaPipePoseEstimator(BasePoseEstimator):
     def __init__(self):
         self.mp_pose = mp.solutions.pose
-
+        self.mp_drawing = mp.solutions.drawing_utils
         self.pose = self.mp_pose.Pose(
             #video tracking mode
             static_image_mode=False,
@@ -38,7 +38,7 @@ class MediaPipePoseEstimator(BasePoseEstimator):
             results = self.pose.process(rgb_frame)  
             
             if results.pose_landmarks is None:
-                continue
+                continue          
 
             frame_landmarks = []
 
@@ -52,6 +52,21 @@ class MediaPipePoseEstimator(BasePoseEstimator):
                     )
                 )
             pose_sequence.append(frame_landmarks)
+
         cap.release()
+        cv2.destroyAllWindows()
 
         return pose_sequence
+    
+    def close(self):
+        self.pose.close()
+    
+    def visualize(self, frame, pose_landmarks):
+        self.mp_drawing.draw_landmarks(
+            frame,
+            pose_landmarks,
+            self.mp_pose.POSE_CONNECTIONS,      
+        )
+
+        cv2.imshow('Pose Estimation', frame)
+        cv2.waitKey(30)
