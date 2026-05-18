@@ -14,7 +14,7 @@ class MediaPipePoseEstimator(BasePoseEstimator):
             #accuracy vs speed tradeoff
             model_complexity=1,
             #smoothing landmarks across frames to reduce jitter
-            smmooth_landmarks=True,
+            smooth_landmarks=True,
             #minimum confidence for detecting landmarks in a frame
             min_detection_confidence=0.5,
             #minimum confidence for tracking landmarks across frames
@@ -25,6 +25,7 @@ class MediaPipePoseEstimator(BasePoseEstimator):
         pose_sequence : PoseSequence = []
 
         cap = cv2.VideoCapture(video_path)
+        print("Video opened:", cap.isOpened())
 
         while cap.isOpened():
             success, frame = cap.read()
@@ -41,16 +42,16 @@ class MediaPipePoseEstimator(BasePoseEstimator):
 
             frame_landmarks = []
 
-            for Landmark in results.pose_landmarks.landmark:
+            for lndmark in results.pose_landmarks.landmark:
                 frame_landmarks.append(
                     Landmark(
-                        x=Landmark.x,
-                        y=Landmark.y,
-                        z=Landmark.z,
-                        visibility=Landmark.visibility
+                        x=lndmark.x,
+                        y=lndmark.y,
+                        z=lndmark.z,
+                        visibility=lndmark.visibility
                     )
                 )
             pose_sequence.append(frame_landmarks)
-            cap.release()
+        cap.release()
 
         return pose_sequence
