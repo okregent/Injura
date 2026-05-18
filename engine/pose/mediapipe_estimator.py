@@ -25,7 +25,7 @@ class MediaPipePoseEstimator(BasePoseEstimator):
         pose_sequence : PoseSequence = []
 
         cap = cv2.VideoCapture(video_path)
-        print("Video opened:", cap.isOpened())
+        
 
         while cap.isOpened():
             success, frame = cap.read()
@@ -65,8 +65,18 @@ class MediaPipePoseEstimator(BasePoseEstimator):
         self.mp_drawing.draw_landmarks(
             frame,
             pose_landmarks,
-            self.mp_pose.POSE_CONNECTIONS,      
+            self.mp_pose.POSE_CONNECTIONS,
         )
 
-        cv2.imshow('Pose Estimation', frame)
-        cv2.waitKey(30)
+        scale = 0.5
+
+        resized_frame = cv2.resize(
+            frame,
+            None,
+            fx=scale,
+            fy=scale
+        )
+
+        cv2.imshow("Pose Estimation", resized_frame)
+
+        return cv2.waitKey(30)

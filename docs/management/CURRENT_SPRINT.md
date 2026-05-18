@@ -6,17 +6,21 @@ Project scaffolding — establish the base code structure for development to beg
 ## Tasks
 
 ### Setup
-- [ ] Set up `.claude/commands/` for session workflows
+- [x] Scaffold `engine/` (pose module complete)
 - [ ] Scaffold `apps/api` (FastAPI)
 - [ ] Scaffold `apps/mobile` (React Native + Expo)
-- [ ] Scaffold `engine/` (pose, analyzers, feedback, rules)
 
 ### Engine
-- [~] Define `PoseEstimator` interface — file created (`engine/pose/base_estimator.py`), implementation pending
-- [~] Implement `MediaPipePose` adapter — file created (`engine/pose/mediapipe_estimator.py`), implementation pending
+- [x] Define `PoseEstimator` interface (`engine/pose/base_estimator.py`)
+- [x] Implement `MediaPipePoseEstimator` adapter (`engine/pose/mediapipe_estimator.py`)
+- [x] Define pose types (`engine/pose/types.py`)
 - [ ] Define `ExerciseAnalyzer` base class
 - [ ] Implement `SquatAnalyzer`
 - [ ] Create `squat_rules.yaml`
+
+### Tests
+- [x] `test_extract_pose_sequence`
+- [x] `test_visualize_pose_estimation`
 
 ### API
 - [ ] Basic FastAPI project setup

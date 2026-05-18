@@ -14,16 +14,18 @@
 - `.gitignore` configured
 - `README.md` created
 - `engine/pose/types.py` implemented (`Landmark`, `PoseFrame`, `PoseSequence`)
-- `engine/pose/base_estimator.py` implemented (`BasePoseEstimator` abstract class)
+- `engine/pose/base_estimator.py` implemented (`BasePoseEstimator` abstract class with `extract()` and `close()`)
+- `engine/pose/mediapipe_estimator.py` implemented (`MediaPipePoseEstimator` with `extract()`, `visualize()`, `close()`)
+- `tests/test_pose_estimator.py` created (`test_extract_pose_sequence`, `test_visualize_pose_estimation`)
 
 ## In Progress
-- `engine/pose/mediapipe_estimator.py` — `MediaPipePoseEstimator` implementation pending
+- None
 
 ## Blocked
 - None
 
 ## Next Steps
-- Implement `MediaPipePoseEstimator` (`engine/pose/mediapipe_estimator.py`)
 - Define `ExerciseAnalyzer` base class
 - Implement `SquatAnalyzer`
+- Create `squat_rules.yaml`
 - Scaffold `apps/api` (FastAPI) and `apps/mobile` (React Native + Expo)
