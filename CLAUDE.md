@@ -34,24 +34,24 @@ docs/
 │   ├── DECISIONS.md         ← ADR log
 │   └── DAILY_LOG.md         ← daily activity log
 └── sessions/
-    └── 2026-05-15.md        ← latest session log
+    └── 2026-05-19.md        ← latest session log
 ```
 
 ## Session Context
-Last session: 2026-05-14
-See docs/sessions/2026-05-14.md for full context.
+Last session: 2026-05-19
+See docs/sessions/2026-05-19.md for full context.
 
 ### Current Status
-- Project setup and documentation structure established
-- Proposal document split into docs/
-- `engine/pose/` skeleton created (files empty, implementation not started)
-- `requirements.txt` created: mediapipe, opencv, numpy, matplotlib, scipy, jax, sounddevice
+- Pose extraction pipeline complete (`MediaPipePoseEstimator`)
+- Semantic pose layer complete (`PoseLandmark`, `accessors`, `chains`)
+- Biomechanics foundation in progress (`vector`, `angles`, `visibility` done)
 
 ### In Progress
-- Engine scaffolding (`engine/pose/` — files exist, implementation pending)
+- `feature/pose-foundation` — semantic pose layer (pushed, pending PR merge)
+- `feature/biomechanics` — biomechanics foundation (pushed, pending PR merge)
 
 ### Next Steps
-- Set up `.claude/commands/` for common workflows
-- Implement `PoseEstimator` interface (`engine/pose/base_estimator.py`)
-- Implement `MediaPipePoseEstimator` adapter (`engine/pose/mediapipe_estimator.py`)
-- Define pose types (`engine/pose/types.py`)
+- Temporal smoothing layer (`engine/biomechanics/smoothing.py`)
+- Squat phase detection
+- Define `ExerciseAnalyzer` base class
+- Implement `SquatAnalyzer`
