@@ -1,33 +1,35 @@
 # Current Sprint
 
 ## Sprint Goal
-Project scaffolding — establish the base code structure for development to begin.
+Engine foundation — build the semantic and biomechanical layers required for squat analysis.
 
-## Tasks
+## Phase 1 — Landmark Semantic Layer
 
-### Setup
-- [x] Scaffold `engine/` (pose module complete)
-- [ ] Scaffold `apps/api` (FastAPI)
-- [ ] Scaffold `apps/mobile` (React Native + Expo)
+- [ ] Task 1: `PoseLandmark` enum (`engine/pose/landmarks.py`) — named joint access (e.g. `PoseLandmark.LEFT_HIP`)
+- [ ] Task 2: MediaPipe index mapping encapsulation — `get_landmark(frame, PoseLandmark.LEFT_HIP)` helper, removes raw index usage
+- [ ] Task 3: `PoseFrame` accessor — approach TBD (current `PoseFrame` is a type alias, not a class)
 
-### Engine
-- [x] Define `PoseEstimator` interface (`engine/pose/base_estimator.py`)
-- [x] Implement `MediaPipePoseEstimator` adapter (`engine/pose/mediapipe_estimator.py`)
-- [x] Define pose types (`engine/pose/types.py`)
-- [ ] Define `ExerciseAnalyzer` base class
-- [ ] Implement `SquatAnalyzer`
-- [ ] Create `squat_rules.yaml`
+## Phase 2 — Kinematics Foundation
 
-### Tests
-- [x] `test_extract_pose_sequence`
-- [x] `test_visualize_pose_estimation`
+- [ ] Task 4: Vector utility module (`engine/biomechanics/vector.py`) — `distance`, `normalize`, `dot`, `angle`
+- [ ] Task 5: Joint angle calculation — `calculate_joint_angle(a, b, c)` for hip, knee, ankle angles
+- [ ] Task 6: Temporal smoothing layer — moving average (MVP), smooth raw landmarks before analysis
 
-### API
-- [ ] Basic FastAPI project setup
-- [ ] Video upload endpoint
-- [ ] Analysis endpoint
+## Phase 3 — Squat Semantics
+
+- [ ] Task 7: Squat phase detection — `standing`, `descending`, `bottom`, `ascending`, `lockout`
+- [ ] Task 8: Core squat metrics
+  - **High priority:** squat depth, torso lean, heel lift, knee travel
+  - **Later:** hip shift, asymmetry, tempo consistency, stability
+
+## Completed
+- [x] `engine/pose/types.py` — `Landmark`, `PoseFrame`, `PoseSequence`
+- [x] `engine/pose/base_estimator.py` — `BasePoseEstimator` abstract class
+- [x] `engine/pose/mediapipe_estimator.py` — `MediaPipePoseEstimator`
+- [x] `tests/test_pose_estimator.py` — smoke tests
 
 ## Not In This Sprint
-- Mobile UI implementation
+- FastAPI scaffolding
+- Mobile UI
 - Database integration
 - Authentication
