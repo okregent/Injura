@@ -62,3 +62,23 @@ docs/
 ### ADR-009: Configurable Rule System
 **Decision:** Feedback rules stored in YAML files, not hardcoded
 **Reason:** Enables configurable, explainable, and adaptive thresholds per user profile
+
+---
+
+## 2026-05-19
+
+### ADR-010: PoseFrame Retained as Type Alias
+**Decision:** `PoseFrame` remains a `List[Landmark]` type alias; do not convert to a class
+**Reason:** Simpler architecture, lower complexity, avoids premature abstraction at this stage
+
+---
+
+### ADR-011: Accessor Strategy — Helper Functions over Methods
+**Decision:** Landmark access via standalone helper functions (`get_landmark()`, `get_landmarks()`) rather than methods on `PoseLandmark`
+**Reason:** Separation of responsibilities — semantic definitions (`landmarks.py`) are decoupled from data access logic (`accessors.py`); easier to refactor if `PoseFrame` structure changes
+
+---
+
+### ADR-012: Semantic Separation Principle
+**Decision:** Split pose layer into three distinct modules: `landmarks.py` (semantic definitions), `accessors.py` (access logic), `chains.py` (body groupings)
+**Reason:** Each module has a single responsibility; semantic definition is not the same as data access logic; improves maintainability and testability

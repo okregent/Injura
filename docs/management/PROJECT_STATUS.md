@@ -2,8 +2,8 @@
 
 ## Overview
 **Project:** Injura — Adaptive AI Squat Analyzer
-**Stage:** Pre-development (setup complete)
-**Last Updated:** 2026-05-15
+**Stage:** In Development
+**Last Updated:** 2026-05-21
 
 ## Completed
 - Product name finalised: Injura
@@ -13,14 +13,28 @@
 - Base project structure created (`apps/`, `engine/`)
 - `.gitignore` configured
 - `README.md` created
+- `engine/pose/types.py` implemented (`Landmark`, `PoseFrame`, `PoseSequence`)
+- `engine/pose/base_estimator.py` implemented (`BasePoseEstimator` abstract class with `extract()` and `close()`)
+- `engine/pose/mediapipe_estimator.py` implemented (`MediaPipePoseEstimator` with `extract()`, `visualize()`, `close()`)
+- `tests/test_pose_estimator.py` created (`test_extract_pose_sequence`, `test_visualize_pose_estimation`)
+- `engine/pose/landmarks.py` implemented: `PoseLandmark` IntEnum with named joint access
+- `engine/pose/accessors.py` implemented: `get_landmark()`, `get_landmarks()` helpers
+- `engine/pose/chains.py` implemented: `LEFT_LEG_CHAIN`, `RIGHT_LEG_CHAIN`, `LEFT_ARM_CHAIN`, `RIGHT_ARM_CHAIN`, `TORSO_CHAIN`
+- `engine/biomechanics/vector.py` implemented: `Vector2D`, `to_vector`, `vector_length`, `dot_product`
+- `engine/biomechanics/angles.py` implemented: `calculate_angle(a, b, c)` returning degrees
+- `engine/biomechanics/visibility.py` implemented: `is_visible()`, `all_visible()`
+- `engine/biomechanics/smoothing.py` implemented: `OneEuroFilter`, `LandmarkOneEuroFilter`
+- Tests added for all pose and biomechanics modules
 
 ## In Progress
-- Engine pose module scaffolding (`engine/pose/` — files created, implementation pending)
+- `feature/pose-foundation` — landmark semantic layer (open PR)
+- `feature/biomechanics` — kinematics foundation + smoothing (open PR)
 
 ## Blocked
 - None
 
 ## Next Steps
-- Set up `.claude/commands/` for session workflows
-- Implement `PoseEstimator` interface and `MediaPipePoseEstimator`
-- Scaffold `apps/api` (FastAPI) and `apps/mobile` (React Native + Expo)
+- Squat phase detection
+- Define `ExerciseAnalyzer` base class
+- Implement `SquatAnalyzer`
+- Create `squat_rules.yaml`
