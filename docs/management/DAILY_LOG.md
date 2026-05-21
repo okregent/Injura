@@ -35,4 +35,8 @@
 ## 2026-05-21
 - `engine/biomechanics/smoothing.py`: `OneEuroFilter` (float-level), `LandmarkOneEuroFilter` (Landmark-level)
 - Inline comments added explaining algorithm variables and design rationale
-- Docs moved to `main` branch — docs changes will now be committed directly to `main`
+- `engine/biomechanics/smoothing.py`: `float | None` → `Optional[float]` — Python 3.9 호환성 수정
+- `tests/test_biomechanics_smoothing.py`: 포괄적 테스트 작성 및 통과 (15개 테스트)
+- `docs/management/ENGINE_PROGRESS.md` 신규 생성 — E1–E5 엔진 진행 트래커
+- `docs/management/ROADMAP.md` 업데이트 — 제품 로드맵에 E1–E5 엔진 개발 플랜 통합
+- docs를 `main`에서 관리하는 방식으로 전환

@@ -20,7 +20,7 @@ Update this file whenever a task is started, completed, or a phase status change
 ## Current Focus
 
 **Phase: E2 — Biomechanics Foundation**
-**Current task:** Designing `PoseFrameSmoother` structure
+**Current task:** `PoseFrameSmoother` — frame-level smoothing across selected landmarks
 
 ---
 
@@ -46,7 +46,7 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 - [x] Temporal smoothing — `OneEuroFilter`, `LandmarkOneEuroFilter` (`engine/biomechanics/smoothing.py`)
 - [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks
 - [x] Tests — `test_biomechanics_vector.py`, `test_biomechanics_angles.py`, `test_biomechanics_visibility.py`
-- [ ] Tests — `test_biomechanics_smoothing.py`
+- [x] Tests — `test_biomechanics_smoothing.py`
 
 ---
 

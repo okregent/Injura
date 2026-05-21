@@ -22,7 +22,7 @@ Complete E2 (Biomechanics Foundation) and begin E3 (Squat Movement Analysis).
 - [x] Temporal smoothing — `OneEuroFilter`, `LandmarkOneEuroFilter` (`engine/biomechanics/smoothing.py`)
 - [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks
 - [x] Tests — `test_biomechanics_vector.py`, `test_biomechanics_angles.py`, `test_biomechanics_visibility.py`
-- [ ] Tests — `test_biomechanics_smoothing.py`
+- [x] Tests — `test_biomechanics_smoothing.py`
 
 ---
 
