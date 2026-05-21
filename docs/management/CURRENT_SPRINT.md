@@ -13,8 +13,8 @@ Engine foundation — build the semantic and biomechanical layers required for s
 
 - [x] Task 4: Vector utility module (`engine/biomechanics/vector.py`) — `Vector2D`, `to_vector`, `vector_length`, `dot_product`
 - [x] Task 5: Joint angle calculation (`engine/biomechanics/angles.py`) — `calculate_angle(a, b, c)` returns degrees
-- [x] Task 6 (partial): Visibility helpers (`engine/biomechanics/visibility.py`) — `is_visible()`, `all_visible()`
-- [ ] Task 7: Temporal smoothing layer — moving average (MVP), smooth raw landmarks before analysis
+- [x] Task 6: Visibility helpers (`engine/biomechanics/visibility.py`) — `is_visible()`, `all_visible()`
+- [x] Task 7: Temporal smoothing layer (`engine/biomechanics/smoothing.py`) — `OneEuroFilter`, `LandmarkOneEuroFilter`
 
 ## Phase 3 — Squat Semantics
 
@@ -34,6 +34,7 @@ Engine foundation — build the semantic and biomechanical layers required for s
 - [x] `engine/biomechanics/vector.py` — `Vector2D`, `to_vector`, `vector_length`, `dot_product`
 - [x] `engine/biomechanics/angles.py` — `calculate_angle(a, b, c)`
 - [x] `engine/biomechanics/visibility.py` — `is_visible()`, `all_visible()`
+- [x] `engine/biomechanics/smoothing.py` — `OneEuroFilter`, `LandmarkOneEuroFilter`
 - [x] `tests/test_landmark_accessor.py`, `test_pose_package_exports.py`
 - [x] `tests/test_biomechanics_angles.py`, `test_biomechanics_vector.py`, `test_biomechanics_visibility.py`
 

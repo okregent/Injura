@@ -3,7 +3,7 @@
 ## Overview
 **Project:** Injura — Adaptive AI Squat Analyzer
 **Stage:** In Development
-**Last Updated:** 2026-05-19
+**Last Updated:** 2026-05-21
 
 ## Completed
 - Product name finalised: Injura
@@ -23,17 +23,17 @@
 - `engine/biomechanics/vector.py` implemented: `Vector2D`, `to_vector`, `vector_length`, `dot_product`
 - `engine/biomechanics/angles.py` implemented: `calculate_angle(a, b, c)` returning degrees
 - `engine/biomechanics/visibility.py` implemented: `is_visible()`, `all_visible()`
+- `engine/biomechanics/smoothing.py` implemented: `OneEuroFilter`, `LandmarkOneEuroFilter`
 - Tests added for all pose and biomechanics modules
 
 ## In Progress
 - `feature/pose-foundation` — landmark semantic layer (open PR)
-- `feature/biomechanics` — kinematics foundation (open PR)
+- `feature/biomechanics` — kinematics foundation + smoothing (open PR)
 
 ## Blocked
 - None
 
 ## Next Steps
-- Temporal smoothing layer (`engine/biomechanics/smoothing.py`)
 - Squat phase detection
 - Define `ExerciseAnalyzer` base class
 - Implement `SquatAnalyzer`
