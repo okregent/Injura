@@ -30,6 +30,7 @@ docs/
 ├── management/
 │   ├── PROJECT_STATUS.md    ← current project status
 │   ├── CURRENT_SPRINT.md    ← active sprint tasks
+│   ├── ENGINE_PROGRESS.md   ← E1–E5 engine phase tracker (current task, completed/pending per phase)
 │   ├── ROADMAP.md           ← phase-by-phase roadmap
 │   ├── DECISIONS.md         ← ADR log
 │   └── DAILY_LOG.md         ← daily activity log
