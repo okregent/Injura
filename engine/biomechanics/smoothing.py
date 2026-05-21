@@ -1,5 +1,6 @@
 import math
 from dataclasses import dataclass
+from typing import Optional
 from engine.pose.types import Landmark
 
 # One Euro Filter — a low-latency noise filter for noisy real-time signals.
@@ -34,7 +35,7 @@ class OneEuroFilter:
     derivative_cutoff: float = 1.0
 
     # Last smoothed output value — None on the first frame
-    previous_value: float | None = None
+    previous_value: Optional[float] = None
     # Last smoothed derivative (velocity estimate)
     previous_derivative: float = 0.0
 
