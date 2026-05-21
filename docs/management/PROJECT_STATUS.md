@@ -24,7 +24,7 @@
 - `engine/biomechanics/angles.py` implemented: `calculate_angle(a, b, c)` returning degrees
 - `engine/biomechanics/visibility.py` implemented: `is_visible()`, `all_visible()`
 - `engine/biomechanics/smoothing.py` implemented: `OneEuroFilter`, `LandmarkOneEuroFilter`
-- Tests added for all pose and biomechanics modules
+- Tests added for all pose and biomechanics modules including `test_biomechanics_smoothing.py`
 
 ## In Progress
 - `feature/pose-foundation` — landmark semantic layer (open PR)
