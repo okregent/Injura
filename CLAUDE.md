@@ -35,24 +35,22 @@ docs/
 │   ├── DECISIONS.md         ← ADR log
 │   └── DAILY_LOG.md         ← daily activity log
 └── sessions/
-    └── 2026-05-19.md        ← latest session log
+    └── 2026-05-21.md        ← latest session log
 ```
 
 ## Session Context
-Last session: 2026-05-19
-See docs/sessions/2026-05-19.md for full context.
+Last session: 2026-05-21
+See docs/sessions/2026-05-21.md for full context.
 
 ### Current Status
-- Pose extraction pipeline complete (`MediaPipePoseEstimator`)
-- Semantic pose layer complete (`PoseLandmark`, `accessors`, `chains`)
-- Biomechanics foundation in progress (`vector`, `angles`, `visibility` done)
+- E1 (Semantic Pose Foundation) complete
+- E2 (Biomechanics Foundation) in progress — smoothing done, temporal utilities next
+- `feature/biomechanics` active branch
 
 ### In Progress
-- `feature/pose-foundation` — semantic pose layer (pushed, pending PR merge)
-- `feature/biomechanics` — biomechanics foundation (pushed, pending PR merge)
+- `feature/biomechanics` — E2 biomechanics foundation (open PR)
 
 ### Next Steps
-- Temporal smoothing layer (`engine/biomechanics/smoothing.py`)
-- Squat phase detection
-- Define `ExerciseAnalyzer` base class
-- Implement `SquatAnalyzer`
+- Temporal utilities (`engine/biomechanics/temporal.py`) — delta, velocity, direction
+- `PoseFrameSmoother` — deferred, implement when needed organically
+- Squat phase detection (E3)
