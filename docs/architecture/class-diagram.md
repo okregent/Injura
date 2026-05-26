@@ -1,9 +1,11 @@
-# Class Diagram — Engine (Current State)
+# Class Diagram — Engine
 
 > Last updated: 2026-05-26
-> Covers: `engine/pose/` and `engine/biomechanics/`
+> ✅ Implemented | ⏳ Planned (not yet implemented)
 
 ---
+
+## Implemented (E1 + E2)
 
 ```mermaid
 classDiagram
@@ -120,6 +122,17 @@ classDiagram
         all_visible(landmarks, threshold) bool
     }
 
+    class DistanceUtils {
+        <<functions>>
+        euclidean_distance_2d(a, b) float
+    }
+
+    class TemporalUtils {
+        <<functions>>
+        displacement_2d(previous, current) float
+        velocity_2d(previous, current, dt) float
+    }
+
     class OneEuroFilter {
         <<dataclass>>
         +float min_cutoff
@@ -144,9 +157,70 @@ classDiagram
     AngleUtils ..> Landmark : takes 3 landmarks
     VectorUtils ..> Landmark : takes as input
     VisibilityUtils ..> Landmark : takes as input
+    DistanceUtils ..> Landmark : takes as input
+    TemporalUtils ..> DistanceUtils : delegates to
+    TemporalUtils ..> Landmark : takes as input
 
     LandmarkOneEuroFilter *-- OneEuroFilter : x / y / z / visibility
     LandmarkOneEuroFilter ..> Landmark : takes / returns
+```
+
+---
+
+## Planned — E3: Squat Movement Analysis ⏳
+
+```mermaid
+classDiagram
+
+    %% ══════════════════════════════════════════
+    %% LAYER 5 — Squat Analysis
+    %% ══════════════════════════════════════════
+
+    class SquatPhase {
+        <<Enum>>
+        STANDING
+        DESCENDING
+        BOTTOM
+        ASCENDING
+        LOCKOUT
+        UNKNOWN
+    }
+
+    class SquatMetrics {
+        <<dataclass>>
+        +float squat_depth
+        +float torso_lean
+        +float knee_travel
+        +bool heel_lift
+        +float hip_shift
+        +bool neutral_spine_failure
+    }
+
+    class NeutralSpineProxy {
+        <<functions>>
+        shoulder_hip_angle(frame) float
+        torso_angle_change(prev_frame, curr_frame) float
+        hip_angle_collapse(frame) float
+        detect_trunk_collapse(frame) bool
+        track_spine_posture(sequence, phase) List~float~
+    }
+
+    class ExerciseAnalyzer {
+        <<abstract>>
+        +analyze(sequence PoseSequence)*
+    }
+
+    class SquatAnalyzer {
+        +analyze(sequence PoseSequence) SquatMetrics
+        -detect_phase(frame) SquatPhase
+        -compute_metrics(sequence) SquatMetrics
+        -check_neutral_spine(sequence) bool
+    }
+
+    SquatAnalyzer --|> ExerciseAnalyzer
+    SquatAnalyzer ..> SquatPhase : detects
+    SquatAnalyzer ..> SquatMetrics : returns
+    SquatAnalyzer ..> NeutralSpineProxy : uses
 ```
 
 ---
@@ -170,24 +244,43 @@ VIDEO
   │  Landmark (by name)
   ▼
 ┌─────────────────────────────┐
-│  LAYER 4 — Biomechanics     │  vectors, angles, visibility, smoothing
-│  landmark → measurement      │  (computes meaningful values)
+│  LAYER 4 — Biomechanics     │  vectors, angles, visibility,
+│  landmark → measurement      │  smoothing, distance, temporal
 └─────────────────────────────┘
-  │  angles, velocity, direction  (temporal utilities — upcoming)
+  │  angles, velocity, displacement
   ▼
-┌─────────────────────────────┐
-│  E3 — Squat Analysis        │  (not yet implemented)
+┌─────────────────────────────┐  ⏳ planned
+│  LAYER 5 — Squat Analysis   │  SquatAnalyzer, SquatPhase,
+│  measurement → insight       │  SquatMetrics, NeutralSpineProxy
 └─────────────────────────────┘
 ```
 
 ---
 
-## Data Flow Example: "What is the knee angle?"
+## Data Flow Examples
 
+**"What is the knee angle?"**
 ```
 PoseSequence[frame_n]
     → get_landmark(frame, PoseLandmark.LEFT_HIP)      → Landmark
     → get_landmark(frame, PoseLandmark.LEFT_KNEE)     → Landmark
     → get_landmark(frame, PoseLandmark.LEFT_ANKLE)    → Landmark
     → calculate_angle(hip, knee, ankle)               → float (degrees)
+```
+
+**"How fast is the hip moving?"**
+```
+PoseSequence[frame_n-1], PoseSequence[frame_n]
+    → get_landmark(prev_frame, PoseLandmark.LEFT_HIP) → Landmark
+    → get_landmark(curr_frame, PoseLandmark.LEFT_HIP) → Landmark
+    → velocity_2d(prev_hip, curr_hip, dt)             → float (units/sec)
+```
+
+**"Is the spine neutral at the bottom?" (planned)**
+```
+PoseSequence (descending → bottom phase)
+    → NeutralSpineProxy.shoulder_hip_angle(frame)     → float
+    → NeutralSpineProxy.torso_angle_change(...)       → float
+    → NeutralSpineProxy.detect_trunk_collapse(frame)  → bool
+    → SquatMetrics.neutral_spine_failure              → bool
 ```
