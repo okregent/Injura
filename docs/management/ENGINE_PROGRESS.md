@@ -55,12 +55,30 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 
 Interpret biomechanics data as meaningful squat movement.
 
-- [ ] Squat phase detection — `standing`, `descending`, `bottom`, `ascending`, `lockout`
-- [ ] Squat depth analysis
-- [ ] Torso lean analysis
-- [ ] Knee travel analysis
-- [ ] Heel lift detection
-- [ ] Stability analysis
+### Squat Phase Detection
+- [ ] `STANDING`
+- [ ] `DESCENDING`
+- [ ] `BOTTOM`
+- [ ] `ASCENDING`
+- [ ] `LOCKOUT`
+- [ ] `UNKNOWN`
+
+### Core Squat Metrics
+- [ ] Squat depth
+- [ ] Torso lean
+- [ ] Knee travel
+- [ ] Heel lift
+- [ ] Hip stability / hip shift
+- [ ] Neutral spine failure proxy
+
+### Neutral Spine / Lumbar Rounding Proxy
+- [ ] Shoulder–hip line angle
+- [ ] Torso angle change across frames
+- [ ] Hip angle collapse detection
+- [ ] Trunk collapse detection at bottom position
+- [ ] Spine posture change tracking across descending → bottom phase
+
+### Infrastructure
 - [ ] `ExerciseAnalyzer` base class
 - [ ] `SquatAnalyzer` implementation
 - [ ] Tests
