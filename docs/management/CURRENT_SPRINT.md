@@ -28,12 +28,27 @@ Complete E2 (Biomechanics Foundation) and begin E3 (Squat Movement Analysis).
 
 ## E3 — Squat Movement Analysis ⏳ NEXT
 
-- [ ] Squat phase detection — `standing`, `descending`, `bottom`, `ascending`, `lockout`
+**Squat Phase Detection**
+- [ ] `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN`
+
+**Core Squat Metrics**
+- [ ] Squat depth
+- [ ] Torso lean
+- [ ] Knee travel
+- [ ] Heel lift
+- [ ] Hip stability / hip shift
+- [ ] Neutral spine failure proxy
+
+**Neutral Spine / Lumbar Rounding Proxy**
+- [ ] Shoulder–hip line angle
+- [ ] Torso angle change across frames
+- [ ] Hip angle collapse detection
+- [ ] Trunk collapse detection at bottom position
+- [ ] Spine posture change tracking (descending → bottom)
+
+**Infrastructure**
 - [ ] `ExerciseAnalyzer` base class
 - [ ] `SquatAnalyzer` implementation
-- [ ] Core squat metrics
-  - **High priority:** squat depth, torso lean, heel lift, knee travel
-  - **Later:** hip shift, asymmetry, tempo consistency, stability
 - [ ] Tests
 
 ---

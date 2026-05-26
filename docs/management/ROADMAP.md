@@ -34,12 +34,19 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 
 #### E3 — Squat Movement Analysis
 Interpret biomechanics data as meaningful squat movement.
-- Squat phase detection — `standing`, `descending`, `bottom`, `ascending`, `lockout`
+- Squat phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN`
 - Squat depth analysis
 - Torso lean analysis
 - Knee travel analysis
 - Heel lift detection
-- Stability analysis
+- Hip stability / hip shift
+- Neutral spine failure proxy
+- Neutral spine / lumbar rounding proxy:
+  - Shoulder–hip line angle
+  - Torso angle change across frames
+  - Hip angle collapse detection
+  - Trunk collapse at bottom position
+  - Spine posture change tracking (descending → bottom)
 
 #### E4 — Feedback Engine
 Translate movement analysis into adaptive, explainable feedback.
