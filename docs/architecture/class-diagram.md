@@ -192,8 +192,12 @@ classDiagram
         +float torso_lean
         +float knee_travel
         +bool heel_lift
-        +float hip_shift
         +bool neutral_spine_failure
+        +float tempo
+        +bool bottom_bounce
+        +float movement_smoothness
+        +float hip_shift
+        +bool ankle_mobility_limited
     }
 
     class NeutralSpineProxy {
@@ -213,8 +217,11 @@ classDiagram
     class SquatAnalyzer {
         +analyze(sequence PoseSequence) SquatMetrics
         -detect_phase(frame) SquatPhase
+        -count_reps(sequence) int
         -compute_metrics(sequence) SquatMetrics
         -check_neutral_spine(sequence) bool
+        -detect_bottom_bounce(sequence) bool
+        -estimate_tempo(sequence) float
     }
 
     SquatAnalyzer --|> ExerciseAnalyzer
