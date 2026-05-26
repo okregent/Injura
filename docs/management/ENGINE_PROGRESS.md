@@ -20,7 +20,7 @@ Update this file whenever a task is started, completed, or a phase status change
 ## Current Focus
 
 **Phase: E2 — Biomechanics Foundation**
-**Current task:** `PoseFrameSmoother` — frame-level smoothing across selected landmarks
+**Current task:** Temporal utilities — frame-to-frame delta, velocity, movement direction
 
 ---
 
@@ -44,7 +44,8 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 - [x] Joint angle calculation — `calculate_angle(a, b, c)` (`engine/biomechanics/angles.py`)
 - [x] Visibility helpers — `is_visible()`, `all_visible()` (`engine/biomechanics/visibility.py`)
 - [x] Temporal smoothing — `OneEuroFilter`, `LandmarkOneEuroFilter` (`engine/biomechanics/smoothing.py`)
-- [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks
+- [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks (deferred)
+- [ ] Temporal utilities — frame-to-frame delta, velocity, movement direction (`engine/biomechanics/temporal.py`)
 - [x] Tests — `test_biomechanics_vector.py`, `test_biomechanics_angles.py`, `test_biomechanics_visibility.py`
 - [x] Tests — `test_biomechanics_smoothing.py`
 
