@@ -26,7 +26,8 @@ docs/
 │   ├── system-overview.md   ← tech stack, architecture flow
 │   ├── cv-pipeline.md       ← pose estimation abstraction, AI/rule layer separation
 │   ├── exercise-modules.md  ← modular analyzer structure
-│   └── feedback-system.md   ← YAML-based configurable rule system
+│   ├── feedback-system.md   ← YAML-based configurable rule system
+│   └── class-diagram.md     ← Mermaid class diagram of current engine implementation
 ├── management/
 │   ├── PROJECT_STATUS.md    ← current project status
 │   ├── CURRENT_SPRINT.md    ← active sprint tasks
