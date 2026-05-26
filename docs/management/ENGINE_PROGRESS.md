@@ -45,9 +45,11 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 - [x] Visibility helpers — `is_visible()`, `all_visible()` (`engine/biomechanics/visibility.py`)
 - [x] Temporal smoothing — `OneEuroFilter`, `LandmarkOneEuroFilter` (`engine/biomechanics/smoothing.py`)
 - [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks (deferred)
-- [ ] Temporal utilities — frame-to-frame delta, velocity, movement direction (`engine/biomechanics/temporal.py`)
+- [x] Distance utilities — `euclidean_distance_2d` (`engine/biomechanics/distance.py`)
+- [x] Temporal utilities — `displacement_2d`, `velocity_2d` (`engine/biomechanics/temporal.py`)
 - [x] Tests — `test_biomechanics_vector.py`, `test_biomechanics_angles.py`, `test_biomechanics_visibility.py`
 - [x] Tests — `test_biomechanics_smoothing.py`
+- [x] Tests — `test_biomechanics_temporal.py`
 
 ---
 
@@ -55,28 +57,34 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 
 Interpret biomechanics data as meaningful squat movement.
 
-### Squat Phase Detection
-- [ ] `STANDING`
-- [ ] `DESCENDING`
-- [ ] `BOTTOM`
-- [ ] `ASCENDING`
-- [ ] `LOCKOUT`
-- [ ] `UNKNOWN`
+### A. Phase & Rep
+- [ ] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN`
+- [ ] Rep counting
 
-### Core Squat Metrics
+### B. Core Metrics
 - [ ] Squat depth
 - [ ] Torso lean
 - [ ] Knee travel
 - [ ] Heel lift
-- [ ] Hip stability / hip shift
-- [ ] Neutral spine failure proxy
+- [ ] Neutral spine / lumbar rounding proxy
+  - [ ] Shoulder–hip line angle
+  - [ ] Torso angle change across frames
+  - [ ] Hip angle collapse detection
+  - [ ] Trunk collapse detection at bottom position
+  - [ ] Spine posture change tracking (descending → bottom)
 
-### Neutral Spine / Lumbar Rounding Proxy
-- [ ] Shoulder–hip line angle
-- [ ] Torso angle change across frames
-- [ ] Hip angle collapse detection
-- [ ] Trunk collapse detection at bottom position
-- [ ] Spine posture change tracking across descending → bottom phase
+### C. Control & Stability
+- [ ] Tempo
+- [ ] Bottom bounce detection
+- [ ] Movement smoothness
+- [ ] Hip stability / hip shift
+
+### D. Mobility / Compensation
+- [ ] Ankle mobility limitation proxy
+
+### E. Future / Multi-view Expansion
+- [ ] Knee valgus (requires front view)
+- [ ] Left–right asymmetry (requires front view)
 
 ### Infrastructure
 - [ ] `ExerciseAnalyzer` base class

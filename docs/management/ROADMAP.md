@@ -31,22 +31,16 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 - Joint angle calculation — `calculate_angle(a, b, c)`
 - Visibility validation — `is_visible()`, `all_visible()`
 - Temporal smoothing — `OneEuroFilter`, `LandmarkOneEuroFilter`
+- Distance utilities — `euclidean_distance_2d`
+- Temporal utilities — `displacement_2d`, `velocity_2d`
 
 #### E3 — Squat Movement Analysis
 Interpret biomechanics data as meaningful squat movement.
-- Squat phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN`
-- Squat depth analysis
-- Torso lean analysis
-- Knee travel analysis
-- Heel lift detection
-- Hip stability / hip shift
-- Neutral spine failure proxy
-- Neutral spine / lumbar rounding proxy:
-  - Shoulder–hip line angle
-  - Torso angle change across frames
-  - Hip angle collapse detection
-  - Trunk collapse at bottom position
-  - Spine posture change tracking (descending → bottom)
+- **A. Phase & Rep:** phase detection (STANDING / DESCENDING / BOTTOM / ASCENDING / LOCKOUT / UNKNOWN), rep counting
+- **B. Core Metrics:** squat depth, torso lean, knee travel, heel lift, neutral spine / lumbar rounding proxy
+- **C. Control & Stability:** tempo, bottom bounce, movement smoothness, hip stability / hip shift
+- **D. Mobility / Compensation:** ankle mobility limitation proxy
+- **E. Future / Multi-view:** knee valgus, left–right asymmetry (front view required)
 
 #### E4 — Feedback Engine
 Translate movement analysis into adaptive, explainable feedback.
