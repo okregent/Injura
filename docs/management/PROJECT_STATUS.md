@@ -3,7 +3,7 @@
 ## Overview
 **Project:** Injura — Adaptive AI Squat Analyzer
 **Stage:** In Development
-**Last Updated:** 2026-05-21
+**Last Updated:** 2026-05-26
 
 ## Completed
 - Product name finalised: Injura
@@ -25,16 +25,20 @@
 - `engine/biomechanics/visibility.py` implemented: `is_visible()`, `all_visible()`
 - `engine/biomechanics/smoothing.py` implemented: `OneEuroFilter`, `LandmarkOneEuroFilter`
 - Tests added for all pose and biomechanics modules including `test_biomechanics_smoothing.py`
+- `engine/biomechanics/distance.py` implemented: `euclidean_distance_2d`
+- `engine/biomechanics/temporal.py` implemented: `displacement_2d`, `velocity_2d`
+- `engine/squat/phases.py` implemented: `SquatPhase`, `SquatPhaseThresholds`, `detect_squat_phase`, `detect_squat_phases`, `SquatRep`, `detect_squat_reps`
+- `tests/test_squat_detect_multiple_reps.py` created and passing
 
 ## In Progress
-- `feature/pose-foundation` — landmark semantic layer (open PR)
-- `feature/biomechanics` — kinematics foundation + smoothing (open PR)
+- E3 — Squat Movement Analysis (`engine/squat/`)
+  - A. Phase & Rep ✅
+  - B. Core Metrics (next)
 
 ## Blocked
 - None
 
 ## Next Steps
-- Squat phase detection
-- Define `ExerciseAnalyzer` base class
-- Implement `SquatAnalyzer`
-- Create `squat_rules.yaml`
+- E3-B Core Metrics: squat depth, torso lean, knee travel, heel lift, neutral spine proxy
+- `ExerciseAnalyzer` base class
+- `SquatAnalyzer` implementation

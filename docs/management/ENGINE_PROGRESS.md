@@ -20,7 +20,7 @@ Update this file whenever a task is started, completed, or a phase status change
 ## Current Focus
 
 **Phase: E2 — Biomechanics Foundation**
-**Current task:** Temporal utilities — frame-to-frame delta, velocity, movement direction
+**Current task:** E3-B Core Metrics — squat depth, torso lean, knee travel, heel lift, neutral spine proxy
 
 ---
 
@@ -53,13 +53,14 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 
 ---
 
-## E3 — Squat Movement Analysis ⏳
+## E3 — Squat Movement Analysis 🚧
 
 Interpret biomechanics data as meaningful squat movement.
 
 ### A. Phase & Rep
-- [ ] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN`
-- [ ] Rep counting
+- [x] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN` (`engine/squat/phases.py`)
+- [x] Rep counting — `SquatRep`, `detect_squat_reps()` (`engine/squat/phases.py`)
+- [x] Tests — `test_squat_detect_multiple_reps.py`
 
 ### B. Core Metrics
 - [ ] Squat depth

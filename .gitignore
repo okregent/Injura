@@ -29,5 +29,5 @@ Thumbs.db
 # Claude Code local settings
 .claude/settings.local.json
 
-#ChatGPT conversation logs
-docs/ChatGPT
+#ChatGPT session contexts
+● docs/ChatGPT/
