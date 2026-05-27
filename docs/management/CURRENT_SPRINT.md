@@ -29,11 +29,12 @@ Complete E2 (Biomechanics Foundation) and begin E3 (Squat Movement Analysis).
 
 ---
 
-## E3 — Squat Movement Analysis ⏳ NEXT
+## E3 — Squat Movement Analysis 🚧 IN PROGRESS
 
 **A. Phase & Rep**
-- [ ] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN`
-- [ ] Rep counting
+- [x] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN`
+- [x] Rep counting
+- [x] Tests — `test_squat_detect_multiple_reps.py`
 
 **B. Core Metrics**
 - [ ] Squat depth
