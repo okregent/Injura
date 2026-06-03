@@ -1,6 +1,9 @@
 from enum import Enum, auto
 from dataclasses import dataclass
 from typing import List, Optional
+from engine.pose.types import PoseSequence
+from engine.pose.landmarks import PoseLandmark
+from engine.pose.accessors import get_landmark
 
 @dataclass
 class SquatPhaseThresholds:
@@ -132,5 +135,17 @@ def detect_squat_reps(phases: list[SquatPhase]) -> list[SquatRep]:
                 bottom_index = None
 
     return reps
+
+def extract_hip_y_values(pose_sequence: PoseSequence) -> list[float]:
+    hip_y_values = []
+
+    for frame in pose_sequence:
+        left_hip = get_landmark(frame, PoseLandmark.LEFT_HIP)
+        right_hip = get_landmark(frame, PoseLandmark.RIGHT_HIP)
+
+        hip_y = (left_hip.y + right_hip.y) / 2
+        hip_y_values.append(hip_y)
+    
+    return hip_y_values
 
             
