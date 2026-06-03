@@ -30,4 +30,10 @@ Thumbs.db
 .claude/settings.local.json
 
 #ChatGPT session contexts
-● docs/ChatGPT/
+docs/ChatGPT/
+
+# Video files
+*.mp4
+*.mov
+*.avi
+*.mkv

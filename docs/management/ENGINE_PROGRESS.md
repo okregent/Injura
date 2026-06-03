@@ -60,7 +60,9 @@ Interpret biomechanics data as meaningful squat movement.
 ### A. Phase & Rep
 - [x] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN` (`engine/squat/phases.py`)
 - [x] Rep counting — `SquatRep`, `detect_squat_reps()` (`engine/squat/phases.py`)
+- [x] Hip y extraction — `extract_hip_y_values()` (`engine/squat/phases.py`)
 - [x] Tests — `test_squat_detect_multiple_reps.py`
+- [x] Integration test — `test_squat_pipeline.py` (video → pose → phases → reps)
 
 ### B. Core Metrics
 - [ ] Squat depth
