@@ -29,6 +29,8 @@
 - `engine/biomechanics/temporal.py` implemented: `displacement_2d`, `velocity_2d`
 - `engine/squat/phases.py` implemented: `SquatPhase`, `SquatPhaseThresholds`, `detect_squat_phase`, `detect_squat_phases`, `SquatRep`, `detect_squat_reps`
 - `tests/test_squat_detect_multiple_reps.py` created and passing
+- `extract_hip_y_values()` added to `engine/squat/phases.py`
+- `tests/test_squat_pipeline.py` integration test passing (video → pose → phases → reps)
 
 ## In Progress
 - E3 — Squat Movement Analysis (`engine/squat/`)
