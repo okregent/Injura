@@ -1,10 +1,11 @@
 from engine.pose.mediapipe_estimator import MediaPipePoseEstimator
 from engine.squat.phases import (
+    calculate_squat_phase_thresholds,
     extract_hip_y_values,
     detect_squat_phases,
-    detect_squat_reps
-
 )
+from engine.squat.reps import detect_squat_reps
+from engine.squat.smoothing import smooth_squat_phases
 
 def test_real_video_squat_pipeline():
     video_path = "sample_video2.mp4"
@@ -22,3 +23,4 @@ def test_real_video_squat_pipeline():
     assert isinstance(reps, list)
 
     estimator.close()
+

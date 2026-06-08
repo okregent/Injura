@@ -1,4 +1,5 @@
-from engine.squat.phases import SquatPhase, detect_squat_reps
+from engine.squat.phases import SquatPhase
+from engine.squat.reps import detect_squat_reps
 
 
 def test_detect_multiple_squat_reps():
