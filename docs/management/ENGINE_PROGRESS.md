@@ -10,8 +10,8 @@ Update this file whenever a task is started, completed, or a phase status change
 | Phase | Name                      | Status         |
 |-------|---------------------------|----------------|
 | E1    | Semantic Pose Foundation  | ✅ Completed    |
-| E2    | Biomechanics Foundation   | 🚧 In Progress  |
-| E3    | Squat Movement Analysis   | ⏳ Not Started  |
+| E2    | Biomechanics Foundation   | ✅ Completed    |
+| E3    | Squat Movement Analysis   | 🚧 In Progress  |
 | E4    | Feedback Engine           | ⏳ Not Started  |
 | E5    | Visualization & UX        | ⏳ Not Started  |
 
@@ -19,7 +19,7 @@ Update this file whenever a task is started, completed, or a phase status change
 
 ## Current Focus
 
-**Phase: E2 — Biomechanics Foundation**
+**Phase: E3 — Squat Movement Analysis**
 **Current task:** E3-B Core Metrics — squat depth, torso lean, knee travel, heel lift, neutral spine proxy
 
 ---
@@ -36,7 +36,7 @@ Convert raw MediaPipe indices into semantic abstractions.
 
 ---
 
-## E2 — Biomechanics Foundation 🚧
+## E2 — Biomechanics Foundation ✅
 
 Convert semantic landmarks into biomechanics-aware mathematical representations.
 
@@ -44,12 +44,12 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 - [x] Joint angle calculation — `calculate_angle(a, b, c)` (`engine/biomechanics/angles.py`)
 - [x] Visibility helpers — `is_visible()`, `all_visible()` (`engine/biomechanics/visibility.py`)
 - [x] Temporal smoothing — `OneEuroFilter`, `LandmarkOneEuroFilter` (`engine/biomechanics/smoothing.py`)
-- [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks (deferred)
 - [x] Distance utilities — `euclidean_distance_2d` (`engine/biomechanics/distance.py`)
 - [x] Temporal utilities — `displacement_2d`, `velocity_2d` (`engine/biomechanics/temporal.py`)
 - [x] Tests — `test_biomechanics_vector.py`, `test_biomechanics_angles.py`, `test_biomechanics_visibility.py`
 - [x] Tests — `test_biomechanics_smoothing.py`
 - [x] Tests — `test_biomechanics_temporal.py`
+- [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks _(deferred — implement when organically needed)_
 
 ---
 
@@ -57,11 +57,15 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 
 Interpret biomechanics data as meaningful squat movement.
 
-### A. Phase & Rep
+### A. Phase & Rep ✅
 - [x] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN` (`engine/squat/phases.py`)
 - [x] Rep counting — `SquatRep`, `detect_squat_reps()` (`engine/squat/phases.py`)
 - [x] Hip y extraction — `extract_hip_y_values()` (`engine/squat/phases.py`)
+- [x] Phase detection logic refactored — position-zone priority over velocity threshold
+- [x] Phase smoothing (hysteresis) — `smooth_squat_phases()` (`engine/squat/phases.py`)
+- [x] Movement windowing — `detect_rough_movement_window()`, `detect_squat_analysis_window()`, `detect_refined_analysis_window()` (`engine/squat/phases.py`)
 - [x] Tests — `test_squat_detect_multiple_reps.py`
+- [x] Tests — `test_squat_smooth_phases.py`, `test_squat_phase_smoothing_integration.py`
 - [x] Integration test — `test_squat_pipeline.py` (video → pose → phases → reps)
 
 ### B. Core Metrics

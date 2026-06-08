@@ -3,7 +3,7 @@
 ## Overview
 **Project:** Injura — Adaptive AI Squat Analyzer
 **Stage:** In Development
-**Last Updated:** 2026-05-26
+**Last Updated:** 2026-06-06
 
 ## Completed
 - Product name finalised: Injura
@@ -31,6 +31,13 @@
 - `tests/test_squat_detect_multiple_reps.py` created and passing
 - `extract_hip_y_values()` added to `engine/squat/phases.py`
 - `tests/test_squat_pipeline.py` integration test passing (video → pose → phases → reps)
+- `detect_squat_phase()` logic refactored: position-zone priority over velocity threshold
+- `smooth_squat_phases()` implemented: phase hysteresis to remove short noise segments
+- `detect_rough_movement_window()` implemented: first DESCENDING to last ASCENDING
+- `detect_squat_analysis_window()` implemented: rep-based analysis window
+- `detect_refined_analysis_window()` implemented: two-pass windowing for precise rep crop
+- `tests/test_squat_smooth_phases.py` created and passing
+- `tests/test_squat_phase_smoothing_integration.py` created and passing
 
 ## In Progress
 - E3 — Squat Movement Analysis (`engine/squat/`)

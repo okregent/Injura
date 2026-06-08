@@ -1,7 +1,7 @@
 # Current Sprint
 
 ## Sprint Goal
-Complete E2 (Biomechanics Foundation) and begin E3 (Squat Movement Analysis).
+Complete E3 (Squat Movement Analysis).
 
 ---
 
@@ -14,7 +14,7 @@ Complete E2 (Biomechanics Foundation) and begin E3 (Squat Movement Analysis).
 
 ---
 
-## E2 — Biomechanics Foundation 🚧 IN PROGRESS
+## E2 — Biomechanics Foundation ✅ COMPLETED
 
 - [x] Vector utilities (`engine/biomechanics/vector.py`)
 - [x] Joint angle calculation (`engine/biomechanics/angles.py`)
@@ -22,20 +22,24 @@ Complete E2 (Biomechanics Foundation) and begin E3 (Squat Movement Analysis).
 - [x] Temporal smoothing — `OneEuroFilter`, `LandmarkOneEuroFilter` (`engine/biomechanics/smoothing.py`)
 - [x] Distance utilities (`engine/biomechanics/distance.py`)
 - [x] Temporal utilities — `displacement_2d`, `velocity_2d` (`engine/biomechanics/temporal.py`)
-- [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks (deferred)
 - [x] Tests — `test_biomechanics_vector.py`, `test_biomechanics_angles.py`, `test_biomechanics_visibility.py`
 - [x] Tests — `test_biomechanics_smoothing.py`
 - [x] Tests — `test_biomechanics_temporal.py`
+- [ ] `PoseFrameSmoother` — frame-level smoothing across selected landmarks _(deferred)_
 
 ---
 
 ## E3 — Squat Movement Analysis 🚧 IN PROGRESS
 
-**A. Phase & Rep**
+**A. Phase & Rep ✅**
 - [x] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN`
 - [x] Rep counting
 - [x] Hip y extraction — `extract_hip_y_values()`
+- [x] Phase detection logic refactored — position-zone priority
+- [x] Phase smoothing (hysteresis) — `smooth_squat_phases()`
+- [x] Movement windowing — `detect_rough_movement_window()`, `detect_squat_analysis_window()`, `detect_refined_analysis_window()`
 - [x] Tests — `test_squat_detect_multiple_reps.py`
+- [x] Tests — `test_squat_smooth_phases.py`, `test_squat_phase_smoothing_integration.py`
 - [x] Integration test — `test_squat_pipeline.py`
 
 **B. Core Metrics**
