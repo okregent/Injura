@@ -40,3 +40,6 @@
 - `docs/management/ENGINE_PROGRESS.md` 신규 생성 — E1–E5 엔진 진행 트래커
 - `docs/management/ROADMAP.md` 업데이트 — 제품 로드맵에 E1–E5 엔진 개발 플랜 통합
 - docs를 `main`에서 관리하는 방식으로 전환
+
+## 2026-07-21
+- engine/squat/metrics.py 리뷰 필요
