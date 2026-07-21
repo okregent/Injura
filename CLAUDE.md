@@ -36,22 +36,22 @@ docs/
 │   ├── DECISIONS.md         ← ADR log
 │   └── DAILY_LOG.md         ← daily activity log
 └── sessions/
-    └── 2026-05-21.md        ← latest session log
+    └── 2026-06-19.md        ← latest session log
 ```
 
 ## Session Context
-Last session: 2026-05-21
-See docs/sessions/2026-05-21.md for full context.
+Last session: 2026-07-21
+See docs/sessions/2026-07-21.md for full context.
 
 ### Current Status
 - E1 (Semantic Pose Foundation) complete
-- E2 (Biomechanics Foundation) in progress — smoothing done, temporal utilities next
+- E2 (Biomechanics Foundation) complete
+- E3-A (Phase & Rep) complete — phase detection, rep counting, smoothing, windowing
 - `feature/biomechanics` active branch
 
 ### In Progress
-- `feature/biomechanics` — E2 biomechanics foundation (open PR)
+- E3-B (Core Metrics) — biomechanical metrics layer
 
 ### Next Steps
-- Temporal utilities (`engine/biomechanics/temporal.py`) — delta, velocity, direction
-- `PoseFrameSmoother` — deferred, implement when needed organically
-- Squat phase detection (E3)
+- Squat Depth metric (first Core Metric)
+- Torso lean, knee travel, heel lift, neutral spine proxy
