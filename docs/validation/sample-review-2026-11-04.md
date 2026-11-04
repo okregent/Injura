@@ -230,3 +230,43 @@ never overwritten. UI logic smoke checks covered empty initial labels, frame
 clamping, reviewer requirements, invalid ordering, partial-boundary notes, and
 CSV export. Python compile and Git whitespace checks passed. No engine behavior
 or model defaults changed; this step prepares human reference collection.
+
+## Offline Robust Fallback Experiment (No User Annotation Required)
+
+Manual collection is deferred; it is not a prerequisite for this exploratory
+investigation. Evaluated a fixed P5 standing / P95 bottom fallback only where
+near-extended-knee posture calibration is unavailable. The production analyzer
+continues to use its existing extrema fallback. No model defaults or confidence,
+association, gap, or cycle-state rules changed. Count references are not inputs.
+
+`python -m tools.evaluate_calibration_fallback` replays strict uninterrupted
+spans for all 32 video/model/recovery/side combinations. Before experimenting,
+every baseline repetition boundary must exactly equal the analyzer output.
+All 32 parity checks passed on the local caches. The experiment then changes
+only the fallback calibration; it does not calculate new metric outcomes.
+
+Heavy video 4 left improves from 11 to 14 repetitions, both with and without
+recovery. All other 30 combinations retain their previous counts, although
+unchanged counts do not establish unchanged boundaries or metric accuracy.
+The proposed standing/bottom-entry cutoffs become 0.495879/0.604481, compared
+with 0.489409/0.613386. This admits initial standing and the two previously
+missed bottom crossings. The new cycles have predicted source boundaries:
+
+| Rep | Start | Deepest observed | End |
+|---|---|---|---|
+| 1 | 5 | 15 | 26 |
+| 2 | 42 | 54 | 62 |
+| 7 | 250 | 260 | 270 |
+
+Inspected original-frame contact sheets at these nine predicted boundaries;
+they show the expected high/low/high posture sequence. This is an assistant
+visual check, not independently annotated reference boundaries or joint angles.
+Video 3/5 Heavy gaps remain unresolved and are not interpolated or counted as
+complete. Results are exploratory on recordings used to discover the problem,
+so this evidence does not justify enabling the fallback in production.
+
+The local report is `model-comparison/calibration-experiment/index.html`, with
+comparison CSV, explicitly unverified predicted-boundary CSV, and original-frame
+contact sheet. Compilation and whitespace checks passed. Existing manual CSV
+and browser drafts are untouched. Next test the fixed hypothesis on independent
+recordings before choosing an opt-in production implementation.
