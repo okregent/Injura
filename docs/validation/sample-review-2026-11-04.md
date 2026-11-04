@@ -437,3 +437,24 @@ Whitespace checks passed. See `docs/architecture/measurement-rules.md`.
 E4 has availability explanations and configured comparison infrastructure;
 adaptive profiles and validated coaching rules remain pending. No model
 default or measurement algorithm changed.
+
+## Consolidated Review Dashboard
+
+Updated `tools.build_review_index` to make `artifacts/sample-review/index.html`
+the entry point for existing reports. Four Korean video cards summarize user
+count references (including video 3's 6-7 range), separate side detections and
+candidates, metric availability counts, current model, recovery and calibration.
+Metric availability totals count repetition/metric outcomes, not repetitions;
+they are not confidence or accuracy estimates. Opposite sides are not summed.
+
+Saved Heavy/robust alternatives are explicit expandable links, never an
+automatic selection. Developer history and annotation tools are collapsed;
+existing model, source-continuity, calibration and additional-validation reports
+remain accessible. Optional links appear only when corresponding outputs exist.
+No analysis, model defaults, annotations or rule configuration changed.
+
+Regenerated dashboard; checked four cards, preserved 6-7 reference, zero complete
+versus three candidates on video 6, and video 5's two complete detections.
+All generated local links resolve. Python compilation and whitespace checks
+passed. The prior engine regression result remains 277 passed; no engine code
+was changed in this presentation-only step.

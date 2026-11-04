@@ -112,3 +112,6 @@
 - Added explicit JSON measurement-rule engine with empty defaults, numeric
   evidence and quality/calibration withholding. Optional CLI/report integration;
   full suite 277 passed. No built-in coaching thresholds or default-model change.
+- Consolidated existing reports into a Korean local summary dashboard; preserved
+  side/candidate separation, metric availability and user count ranges. Checked
+  cards/data/local links; analysis and default configuration unchanged.

@@ -82,3 +82,8 @@ this option does not bridge missing frames or establish measurement accuracy.
 `--rules PATH` explicitly loads configured JSON measurement conditions. Default
 rules are empty; partial/unavailable measurements and experimental calibration
 withhold evaluation. See [rule configuration](docs/architecture/measurement-rules.md).
+
+`python -m tools.build_review_index` consolidates saved results in the Korean
+local dashboard at `artifacts/sample-review/index.html`: per-video/side detected
+cycles, separate candidates, metric availability counts, calibration/recovery,
+and explicit model alternatives. It never sums sides or chooses a model.
