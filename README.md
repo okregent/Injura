@@ -67,7 +67,7 @@ from measured repetitions and have no phase timing or metric values. See the
 [initial sample investigation](docs/validation/sample-review-2026-11-04.md) for
 the four-video results and limitations.
 
-Experimental `--recover-gaps` and `--posture-calibration` options are opt-in.
+Experimental `--recover-missing-poses` and `--posture-calibration` options are opt-in.
 `--model-complexity 2` selects Heavy; Full (`1`) remains the default. Recovery
 uses the selected model and marks recovered-frame measurements as partial.
 The investigation document includes reproduction commands, user count
