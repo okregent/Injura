@@ -82,3 +82,6 @@
   static pose proposals, not association rejections. Video 4's left calibration
   fallback lacks initial standing and two bottom crossings. Added local evidence
   tooling, phase CSV and plots; production thresholds/behavior stay unchanged.
+- Prepared exact source-frame annotation workspace for 2,059 local frames;
+  added boundary marking, review notes, browser draft storage and CSV export.
+  UI logic smoke checks passed. Human boundary annotation remains pending.

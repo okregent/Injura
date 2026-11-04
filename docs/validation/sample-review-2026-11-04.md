@@ -205,3 +205,28 @@ images were visually inspected. No interpolation, threshold relaxation, automati
 side/model choice, or engine behavior change was introduced. Next work should
 annotate boundaries and visible joints, then evaluate calibration changes on
 independent recordings; do not tune to these known counts.
+
+## Exact Source-Frame Boundary Review
+
+Run `python -m tools.prepare_boundary_review` on the implementation branch.
+It decodes all 2,059 source frames from videos 3-6 to local JPEG inspection
+images and creates `artifacts/sample-review/boundary-review/index.html`.
+The tool validates decoded frame counts against the current analysis. Source
+size/mtime identify image folders and browser annotation storage; image changes
+at unchanged file metadata are outside this cache contract.
+
+Select a recording, step one frame at a time, and mark departure from standing,
+deepest physical posture, and return to standing. Record reviewer/uncertainty
+notes, add rows, then export `boundary-annotations-reviewed.csv`. For plateaus,
+record the chosen convention in notes. Partial initial/final motions and setup
+are not complete repetitions. Leave uncertain boundaries blank with an explanation.
+Seconds are informational and assume constant FPS; source indices come directly
+from sequential decoding rather than player-time rounding.
+
+No model boundaries are prefilled, and no actual annotations have yet been
+confirmed by this tool. Browser rows are convenience drafts; export a portable
+copy and reconcile with the existing annotation CSV. Existing annotations are
+never overwritten. UI logic smoke checks covered empty initial labels, frame
+clamping, reviewer requirements, invalid ordering, partial-boundary notes, and
+CSV export. Python compile and Git whitespace checks passed. No engine behavior
+or model defaults changed; this step prepares human reference collection.
