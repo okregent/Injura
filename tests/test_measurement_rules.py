@@ -4,7 +4,12 @@ from dataclasses import replace
 import pytest
 
 from engine.squat.rules import MeasurementRule, evaluate_rules, load_rules
+from engine.squat.recording import RecordingReview
 from tests.test_squat_remaining_metrics import analyze, sample_extraction
+
+APPROVED = RecordingReview('left', reviewer='test', side_view=True, camera_fixed=True,
+                           subject_clear=True, hips_visible=True, knees_visible=True,
+                           ankles_visible=True, continuous_original_speed=True, constant_frame_rate=True)
 
 
 def rule(**kwargs):
@@ -19,7 +24,7 @@ def rule(**kwargs):
 def test_comparison_boundary_semantics_and_evidence(comparator, expected):
     result = analyze()
     result.repetitions[0].metrics['knee_flexion'].value = 20.0
-    item, = evaluate_rules(result, [rule(comparator=comparator)])
+    item, = evaluate_rules(result, [rule(comparator=comparator)], recording_review=APPROVED)
     assert item.status == ('matched' if expected else 'not_matched')
     assert item.value == 20.0
     assert item.unit == 'degrees'
@@ -55,7 +60,7 @@ def test_unsupported_measurements_are_withheld(mode):
     if mode == 'nonfinite':
         outcome = result.repetitions[0].metrics['timing']
         outcome.value = replace(outcome.value, total_seconds=float('inf'))
-    item, = evaluate_rules(result, [selected])
+    item, = evaluate_rules(result, [selected], recording_review=APPROVED)
     assert item.status == 'withheld'
     assert item.reason
     assert item.message is None

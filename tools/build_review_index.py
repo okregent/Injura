@@ -43,6 +43,14 @@ def summary_cards(root):
                          f'보정: {html.escape(details.get("calibration_method", "확인 불가"))}</p>')
             if not details["repetitions"]:
                 parts.append('<p class="note">완전한 반복 구간을 검출하지 못했습니다. 검토 후보를 반복 횟수에 합산하지 않습니다.</p>')
+            gates = details.get("recording_gates", {})
+            if gates:
+                counts = {status: sum(gate["status"] == status for gate in gates.values())
+                          for status in ("approved", "unknown", "rejected")}
+                parts.append('<p>Recording review (items): ' + html.escape(str(counts))
+                             + '. Approval does not validate accuracy.</p>')
+            else:
+                parts.append('<p>Recording review: unknown (no saved item gates).</p>')
         options = data.get("experimental_options", {})
         if any(options.values()):
             parts.append('<p>실험 옵션 사용: ' + html.escape(', '.join(k for k, enabled in options.items() if enabled)) + '</p>')

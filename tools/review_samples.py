@@ -21,6 +21,8 @@ from engine.pose.recovery import recover_pose_gaps
 from engine.squat.analyzer import SquatAnalyzer
 from engine.squat.feedback import build_measurement_feedback
 from engine.squat.rules import load_rules, evaluate_rules
+from engine.squat.recording import load_recording_reviews, recording_gate, REQUIREMENTS
+from engine.squat.metrics.normalized_knee_travel import KneeTravelRecordingConditions
 
 
 def load_extraction(video: Path, output: Path, reuse: bool = False, model_complexity: int = 1):
@@ -47,10 +49,13 @@ def load_extraction(video: Path, output: Path, reuse: bool = False, model_comple
 def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extraction: bool = False,
                  recover_missing_poses: bool = False,
                  posture_calibration: bool = False, model_complexity: int = 1,
-                 robust_fallback: bool = False, rules=()):
+                 robust_fallback: bool = False, rules=(), recording_reviews=()):
     if robust_fallback and not posture_calibration:
         raise ValueError("robust fallback requires posture calibration")
     rules = tuple(rules)
+    recording_reviews = tuple(recording_reviews)
+    if len({review.side for review in recording_reviews}) != len(recording_reviews):
+        raise ValueError("duplicate recording review side")
     if not video.is_file():
         raise FileNotFoundError(video)
     output.mkdir(parents=True, exist_ok=True)
@@ -73,8 +78,9 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
         "experimental_options": {"recover_missing_poses": recover_missing_poses,
                                  "posture_calibration": posture_calibration,
                                  "robust_fallback": robust_fallback},
-        "recording_conditions": "Unverified; normalized knee travel withheld",
+        "recording_conditions": "See per-side human recording review gates; these do not validate measurement accuracy",
         "configured_rules": [asdict(rule) for rule in rules],
+        "recording_reviews": [asdict(review) for review in recording_reviews],
         "sides": {},
     }
     rows = []
@@ -84,12 +90,19 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
     cap = cv2.VideoCapture(str(video))
     try:
         for side in BodySide:
+            recording_review = next((review for review in recording_reviews if review.side == side.value), None)
             analysis = SquatAnalyzer().analyze(extraction, side=side, facing_direction=facing,
                                               use_posture_calibration=posture_calibration,
-                                              use_robust_fallback=robust_fallback)
+                                              use_robust_fallback=robust_fallback,
+                                              recording_conditions=KneeTravelRecordingConditions(
+                                                  side_view=recording_review.side_view,
+                                                  foot_side_on=recording_review.foot_side_on,
+                                              ) if recording_review and recording_review.reviewer else None)
             side_data = {
                 "measurement_feedback": [asdict(item) for item in build_measurement_feedback(analysis)],
-                "rule_evaluations": [asdict(item) for item in evaluate_rules(analysis, rules)],
+                "rule_evaluations": [asdict(item) for item in evaluate_rules(analysis, rules, recording_review=recording_review)],
+                "recording_gates": {name: dict(zip(("status", "reason"), recording_gate(name, recording_review, side)))
+                                    for name in REQUIREMENTS},
                 "issues": analysis.issues,
                 "consistency": {name: asdict(value) for name, value in analysis.consistency.items()},
                 "repetitions": [],
@@ -208,7 +221,7 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
         'These remain marked for review even when source-frame coverage is complete. No coordinate interpolation was used.</p>',
         f'<p>Experimental options: {html.escape(str(metadata["experimental_options"]))}.</p>',
         '<p>Compare both sides manually. Rep counts are detector outputs, not verified ground truth. '
-        'Gaps may split or exclude reps. Angles are 2D proxies. Foot normalization is withheld pending recording review.</p>',
+        'Gaps may split or exclude reps. Angles are 2D proxies. Foot normalization requires signed side/foot review.</p>',
         '<p>Units: angles in degrees; hip/knee gap and heel rise in image-height units; '
         'knee travel in image-width units. Missing values are shown as unavailable.</p>',
         '<p><a href="repetitions.csv">Measured reps CSV</a> | <a href="candidates.csv">Unverified candidates CSV</a> | '
@@ -231,6 +244,11 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                 parts.append('</ul></details>')
             parts.append('</li>')
         parts.append('</ul>')
+        parts.append('<details><summary>Recording review: interpretation eligibility</summary><p>Raw measurements remain available for inspection; approval is not accuracy validation.</p><ul>')
+        for metric, gate in data["recording_gates"].items():
+            text = f"{metric}: {gate['status']} · {gate['reason'] or 'required recording conditions reviewed'}"
+            parts.append('<li>' + html.escape(text) + '</li>')
+        parts.append('</ul></details>')
         if data["rule_evaluations"]:
             parts.append('<h3>설정 규칙 평가</h3><p>설정한 수치 조건의 비교 결과입니다. 자세 점수나 검증된 코칭 기준을 의미하지 않습니다.</p><ul>')
             for evaluation in data["rule_evaluations"]:
@@ -273,6 +291,7 @@ def main():
     parser.add_argument("--facing", required=True, choices=[direction.value for direction in FacingDirection])
     parser.add_argument("--output", type=Path)
     parser.add_argument("--rules", type=Path, help="Explicit JSON measurement rules; no built-in technique thresholds")
+    parser.add_argument("--recording-review", type=Path, help="Source-bound human review JSON; unknown conditions withhold rule interpretation")
     parser.add_argument("--reuse-extraction", action="store_true", help="Reuse a local pose cache if source size and mtime match")
     parser.add_argument("--recover-missing-poses", action="store_true", help="Opt in to source-image re-detection of bounded missing frames")
     parser.add_argument("--posture-calibration", action="store_true", help="Opt in to experimental standing-posture median and bottom P95 calibration")
@@ -284,12 +303,13 @@ def main():
         parser.error("--robust-fallback requires --posture-calibration")
     try:
         rules = load_rules(args.rules) if args.rules else []
+        recording_reviews = load_recording_reviews(args.recording_review, args.video) if args.recording_review else []
     except (ValueError, OSError) as error:
         parser.error(str(error))
     review_video(args.video, FacingDirection(args.facing), args.output or Path("artifacts/sample-review") / args.video.stem,
                  reuse_extraction=args.reuse_extraction, recover_missing_poses=args.recover_missing_poses,
                  posture_calibration=args.posture_calibration, model_complexity=args.model_complexity,
-                 robust_fallback=args.robust_fallback, rules=rules)
+                 robust_fallback=args.robust_fallback, rules=rules, recording_reviews=recording_reviews)
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Optional
 
 from engine.squat.analyzer import SquatAnalysisResult
+from engine.squat.recording import recording_gate
 
 
 TARGETS = {
@@ -86,7 +87,7 @@ def _unique_rules(rules):
         raise ValueError("duplicate rule ids")
 
 
-def evaluate_rules(analysis: SquatAnalysisResult, rules):
+def evaluate_rules(analysis: SquatAnalysisResult, rules, *, recording_review=None):
     """Evaluate measured cycles only; withhold unsupported quality/calibration.
 
     A match means only that a caller's numeric condition holds. This is not
@@ -100,8 +101,11 @@ def evaluate_rules(analysis: SquatAnalysisResult, rules):
         for rule in rules:
             status, value, message, reason = "withheld", None, None, None
             outcome = repetition.metrics.get(rule.metric)
+            review_status, review_reason = recording_gate(rule.metric, recording_review, analysis.features.side)
             if not rule.enabled:
                 status, reason = "disabled", "rule disabled"
+            elif review_status != "approved":
+                reason = review_reason
             elif analysis.calibration_method.endswith("_experimental"):
                 reason = "experimental calibration requires review"
             elif outcome is None or outcome.value is None:
