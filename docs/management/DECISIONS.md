@@ -146,3 +146,31 @@ from a single side-view recording.
   validity, and limitations in the metric catalog.
 - Original video frame mapping and video timing metadata are required for
   overlays and tempo measurements.
+
+## 2026-11-04
+
+### ADR-015: Preserve Measurement Availability and Original Time
+
+**Decision:** Integrate E3 metrics through `SquatAnalyzer` with independent
+outcomes, exclusion reasons, and observed-data coverage. Split repetition
+detection at missing hip observations or nonconsecutive source frames. Do not
+interpolate. Phase timing requires contiguous source observations and ordered
+descent/bottom/ascent runs; measure half-open intervals ending at the return to
+standing. FPS-based timing assumes constant frame rate.
+
+**Reason:** Missing observations must not compress time, create repetitions, or
+silently change metric baselines. One unavailable metric must not erase other
+usable measurements. Coverage is data support, not calibrated confidence.
+
+### ADR-016: Keep Projected Foot and Heel Measurements Explicit
+
+**Decision:** Normalize knee travel by the within-rep median usable projected
+foot length only after explicit external confirmation of side view and side-on
+foot orientation. Unknown conditions withhold normalization. Use toe-relative
+heel height change from a valid rep-start baseline as a separately documented
+heel-rise proxy, with configurable image-coordinate tolerance and observed
+duration coverage.
+
+**Reason:** Visibility cannot establish camera or foot orientation. A projected
+heel change cannot prove loss of ground contact. Automatic recording validation
+and empirically calibrated measurement confidence remain pending.

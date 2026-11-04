@@ -13,8 +13,8 @@
 | Phase | Name | Status |
 |-------|------|--------|
 | E1 | Semantic Pose Foundation | ✅ Completed |
-| E2 | Biomechanics Foundation | 🚧 In Progress |
-| E3 | Squat Movement Analysis | ⏳ Not Started |
+| E2 | Biomechanics Foundation | ✅ Completed |
+| E3 | Squat Movement Analysis | 🚧 Implemented; empirical validation pending |
 | E4 | Feedback Engine | ⏳ Not Started |
 | E5 | Visualization & UX | ⏳ Not Started |
 

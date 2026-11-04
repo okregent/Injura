@@ -36,12 +36,12 @@ docs/
 │   ├── DECISIONS.md         ← ADR log
 │   └── DAILY_LOG.md         ← daily activity log
 └── sessions/
-    └── 2026-06-19.md        ← latest session log
+    └── 2026-11-04.md        ← latest session log
 ```
 
 ## Session Context
-Last session: 2026-07-21
-See docs/sessions/2026-07-21.md for full context.
+Last session: 2026-11-04
+See docs/sessions/2026-11-04.md for full context.
 
 ### Current Status
 - E1 (Semantic Pose Foundation) complete
@@ -50,11 +50,11 @@ See docs/sessions/2026-07-21.md for full context.
 - `feature/biomechanics` active branch
 
 ### In Progress
-- E3 infrastructure — connect metrics to validated derived features
-- E3-B (Core Metrics) — remaining side-view MVP measurements
+- E3 empirical validation; core metrics, timing, consistency, and analyzer implemented
+- Per-metric availability and observed coverage implemented; calibrated confidence pending
 
 ### Next Steps
-- Connect existing metrics to `SquatFeatures`
-- Add video FPS metadata for timing metrics
-- Hip-to-knee depth, joint angles, normalized knee travel, heel lift
-- Timing, rep consistency, and metric confidence
+- Validate measurement proxies against annotated side-view recordings
+- Validate automatic camera/foot-orientation detection (currently explicit external review)
+- Calibrate confidence before exposing accuracy claims
+- E4 feedback engine after measurement validation

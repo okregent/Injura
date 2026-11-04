@@ -43,3 +43,17 @@
 
 ## 2026-07-21
 - engine/squat/metrics.py 리뷰 필요
+
+
+## 2026-11-04
+- Reviewed the project working tree and verified its existing tests.
+- Corrected image aspect-ratio handling and defined knee/hip flexion consistently.
+- Integrated validated features with depth, torso lean, and knee travel.
+- Added reviewed-condition foot normalization, bottom joint angles, hip-to-knee
+  separation, heel-rise proxy, FPS timing, and repetition consistency.
+- Added ExerciseAnalyzer and SquatAnalyzer with independent metric outcomes,
+  exclusion reasons, source-frame gap handling, and observed-data coverage.
+- Updated metric contracts, architecture usage, decisions, progress, roadmap,
+  project status, README, and the session handoff.
+- Full suite passed: 203 tests, including real-video integrated analysis.
+- User authorized commit and push on feature/biomechanics; main merge is deferred.

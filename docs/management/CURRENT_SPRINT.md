@@ -44,18 +44,21 @@ Complete E3 (Squat Movement Analysis).
 
 **B. Core Metrics**
 - [x] Relative hip descent (MVP squat-depth proxy)
-- [ ] Hip-to-knee depth
-- [ ] Knee flexion angle at bottom
-- [ ] Hip flexion angle at bottom
+- [x] Hip-to-knee depth — signed joint-center gap
+- [x] Knee flexion angle at bottom — deepest observed hip frame
+- [x] Hip flexion angle at bottom — same-frame measurement
 - [x] Torso lean
 - [x] Knee travel (image-normalized MVP proxy)
-- [ ] Body-segment-normalized knee travel
-- [ ] Heel lift
-- [ ] Metric validity and confidence
+- [x] Body-segment-normalized knee travel — rep-median foot-length reference
+- [x] Require explicit recording review before foot-length normalization
+- [ ] Validated automatic side-view and foot-orientation detector
+- [x] Heel lift — toe-relative rise proxy and observed duration
+- [x] Metric availability and observed-data coverage
+- [ ] Empirically calibrated measurement confidence
 
 **C. Control & Stability**
-- [ ] Descent, bottom, ascent, and total rep duration
-- [ ] Depth, tempo, torso-angle, and knee-travel consistency
+- [x] Descent, bottom, ascent, and total rep duration
+- [x] Depth, tempo, torso-angle, and knee-travel consistency
 
 **D. Future / Multi-view** _(not in this sprint)_
 - [ ] Hip shift
@@ -66,12 +69,13 @@ Complete E3 (Squat Movement Analysis).
 - [x] Visibility policy and valid-frame masks
 - [x] Explicit side-selection policy
 - [x] Derived squat feature extraction
+- [x] Connect depth, torso lean, and knee travel to validated derived features
 - [ ] Automatic side selection
 - [ ] Missing-feature interpolation policy
-- [ ] Video FPS metadata
-- [ ] `ExerciseAnalyzer` base class
-- [ ] `SquatAnalyzer` implementation
-- [ ] Tests
+- [x] Video FPS metadata
+- [x] `ExerciseAnalyzer` base class
+- [x] `SquatAnalyzer` implementation
+- [x] Metric and analyzer regression tests
 
 ---
 
