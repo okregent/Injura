@@ -1,9 +1,12 @@
 """Explain measurement availability without judging technique or injury risk."""
 
+import math
 from dataclasses import dataclass, field
 from typing import List, Optional
 
 from engine.squat.analyzer import SquatAnalysisResult
+from engine.squat.recording import recording_gate
+from engine.squat.rules import TARGETS
 
 
 @dataclass(frozen=True)
@@ -19,6 +22,52 @@ class MeasurementFeedback:
     level: str
     message: str
     references: List[MetricReference] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class FeedbackCard:
+    repetition: int
+    metric: str
+    field: Optional[str]
+    status: str
+    observation: Optional[float]
+    unit: str
+    reason: str
+    action: str
+    coaching_status: str = "pending_validation"
+
+
+def build_feedback_cards(analysis: SquatAnalysisResult, *, recording_review=None):
+    """Present measured observations and next actions without technique judgments.
+
+    Unknown capture conditions request review rather than assuming bad footage.
+    All correction advice remains pending independent measurement/rule validation.
+    """
+    cards = []
+    for number, repetition in enumerate(analysis.repetitions, 1):
+        for (metric, attribute), unit in TARGETS.items():
+            outcome = repetition.metrics.get(metric)
+            gate, reason = recording_gate(metric, recording_review, analysis.features.side)
+            value = None
+            if gate == "rejected":
+                status, action = "retake", "Record again with the required side view, visible joints and continuous original-speed footage."
+            elif gate != "approved":
+                status, action = "capture_review", "Check the recording conditions before interpreting this measurement."
+            elif analysis.calibration_method.endswith("_experimental"):
+                status, reason, action = "measurement_review", "experimental calibration", "Review the detected cycle and joint overlay."
+            elif outcome is None or outcome.value is None or outcome.quality.status != "available" or outcome.quality.recovered_frames:
+                status = "measurement_review"
+                reason = outcome.quality.reason if outcome and outcome.quality.reason else "measurement observations require review"
+                action = "Inspect visibility and detected joints; record again if the required joints are obscured."
+            else:
+                observed = getattr(outcome.value, attribute, None) if attribute else outcome.value
+                if isinstance(observed, bool) or not isinstance(observed, (int, float)) or not math.isfinite(observed):
+                    status, reason, action = "measurement_review", "finite measurement unavailable", "Inspect the measurement evidence."
+                else:
+                    value = float(observed)
+                    status, reason, action = "observation", "required recording conditions reviewed; accuracy validation pending", "Compare with the video; correction guidance awaits validated criteria."
+            cards.append(FeedbackCard(number, metric, attribute, status, value, unit, reason or "recording conditions require review", action))
+    return cards
 
 
 def build_measurement_feedback(analysis: SquatAnalysisResult) -> List[MeasurementFeedback]:

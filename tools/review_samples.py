@@ -19,7 +19,7 @@ from engine.pose.side import BodySide, side_landmarks
 from engine.pose.types import Landmark, PoseExtractionResult
 from engine.pose.recovery import recover_pose_gaps
 from engine.squat.analyzer import SquatAnalyzer
-from engine.squat.feedback import build_measurement_feedback
+from engine.squat.feedback import build_measurement_feedback, build_feedback_cards
 from engine.squat.rules import load_rules, evaluate_rules
 from engine.squat.recording import load_recording_reviews, recording_gate, REQUIREMENTS
 from engine.squat.metrics.normalized_knee_travel import KneeTravelRecordingConditions
@@ -99,6 +99,7 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                                                   foot_side_on=recording_review.foot_side_on,
                                               ) if recording_review and recording_review.reviewer else None)
             side_data = {
+                "feedback_cards": [asdict(item) for item in build_feedback_cards(analysis, recording_review=recording_review)],
                 "measurement_feedback": [asdict(item) for item in build_measurement_feedback(analysis)],
                 "rule_evaluations": [asdict(item) for item in evaluate_rules(analysis, rules, recording_review=recording_review)],
                 "recording_gates": {name: dict(zip(("status", "reason"), recording_gate(name, recording_review, side)))
@@ -243,6 +244,12 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                     parts.append('<li>' + html.escape(text) + '</li>')
                 parts.append('</ul></details>')
             parts.append('</li>')
+        parts.append('</ul>')
+        parts.append('<h3>Measurement observations and next actions</h3><p>Correction guidance remains pending validation.</p><ul>')
+        for card in data.get("feedback_cards", []):
+            text = (f"Rep {card['repetition']} · {card['metric']}.{card['field'] or 'value'} · {card['status']}: "
+                    f"{card['observation']} {card['unit']} · {card['reason']} · {card['action']}")
+            parts.append('<li>' + html.escape(text) + '</li>')
         parts.append('</ul>')
         parts.append('<details><summary>Recording review: interpretation eligibility</summary><p>Raw measurements remain available for inspection; approval is not accuracy validation.</p><ul>')
         for metric, gate in data["recording_gates"].items():
