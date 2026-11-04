@@ -79,6 +79,9 @@ Complete E3 (Squat Movement Analysis).
 - [x] Initial review of sample videos 3-6 and stable cycle-state transitions
 - [x] Separate gap-crossing review candidates from measured repetitions
 - [ ] Annotated repetition boundaries and independent measurement validation
+- [x] Opt-in source-image re-detection with explicit recovery provenance
+- [x] Experimental posture calibration and model-separated Full/Heavy comparison
+- [ ] Independent validation of Heavy/recovery before any default model change
 
 ---
 

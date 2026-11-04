@@ -67,3 +67,10 @@
   remain unannotated. Full suite: 217 passed.
 - Recorded the investigation in docs/validation/sample-review-2026-11-04.md;
   implementation stays on feature/biomechanics and documentation stays on main.
+- Follow-up: recorded user count references (3: 6-7, 4: 14, 5: 2, 6: 3),
+  added opt-in source-image recovery with provenance and posture calibration,
+  and compared Full and Heavy using separate caches and matching recovery models.
+- Video 5 reaches 2 complete detections per side with Full recovery; video 6
+  reaches 3 with Heavy recovery. Video 6 bottom joint angles remain unavailable.
+  Full stays the default; independent accuracy validation remains pending.
+- Full suite: 245 passed. Local comparison artifacts are excluded from Git.

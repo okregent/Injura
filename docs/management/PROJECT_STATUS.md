@@ -64,7 +64,7 @@ into `main`.
 - Implement E4 feedback rules after measurement validation
 
 ## Latest Validation
-- Full local suite: 217 passed, including real-video extraction, phase/rep detection,
+- Full local suite: 245 passed, including real-video extraction, phase/rep detection,
   and integrated `SquatAnalyzer` analysis (2026-11-04).
 - External-library deprecation warnings remain; no test failures.
 - Initial sample review completed for videos 3-6. Videos 3 and 4 retain 6 and 14
@@ -72,3 +72,8 @@ into `main`.
   uninterrupted complete detections (2 left / 1 right review candidates); video
   6 has 3 candidates per side and no measured repetitions. Counts are not
   annotated ground truth. See `docs/validation/sample-review-2026-11-04.md`.
+- The initial results above describe the conservative baseline. Subsequent
+  opt-in source-image recovery and posture calibration detect video 5's two
+  user-reported reps with timing. For video 6, Heavy plus same-model recovery
+  detects all three user-reported reps with timing; bottom knee/hip angles remain
+  unavailable. Full stays the default. See the follow-up validation document.

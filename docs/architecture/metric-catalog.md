@@ -267,6 +267,33 @@ Current derived features:
   automatic camera/foot validation, automatic side selection, adaptive feedback,
   and video upload/mobile UI remain future work.
 
+## Experimental Pose Recovery and Calibration
+
+- All functionality in this section is opt-in on `feature/biomechanics`.
+- `MediaPipePoseEstimator(model_complexity=1)` preserves the default Full model;
+  integer values 0/1/2 select Lite/Full/Heavy. Additional weights may download from
+  the MediaPipe package's official Google-hosted model endpoint on first use.
+  Videos are processed locally. Model-specific report caches remain separate.
+- `recover_pose_gaps(video_path, extraction, model_complexity=...)` retries actual
+  source images only for short bounded gaps (default at most 0.2 seconds).
+  Full-image and neighboring-person crop predictions use detection confidence
+  0.5; both observed hip anchors constrain acceptance (default maximum distance
+  0.08 in image-width units). These engineering limits are not calibrated identity
+  or accuracy guarantees. Leading/trailing gaps are not reconstructed.
+- Recovery preserves existing detections, maps crop coordinates back to the
+  source image, and records `recovered_frame_indices`. No missing coordinate is
+  interpolated. Metrics spanning re-detections are marked partial/review-required
+  even with complete source coverage. Primary and recovery models match in the
+  review CLI; the model choice is recorded in report metadata.
+- `use_posture_calibration=True` uses the median hip position of at least five
+  valid near-extended-knee frames (flexion at most 25 degrees) and bottom P95.
+  Insufficient evidence retains sequence-extrema calibration. This is an
+  experimental posture proxy, not a validated stance classifier. Defaults remain
+  unchanged, and user-reported counts are never detector inputs.
+- Count agreement and smoother landmark tracks do not establish anatomical
+  accuracy. User counts for videos 3-6 are references; exact frame boundaries
+  and independent accuracy labels remain pending.
+
 ## Feedback Inferences
 
 The following are not standalone metrics. They will be produced by the feedback
