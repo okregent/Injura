@@ -123,3 +123,42 @@ its source remains development data, and no actual accuracy pass was claimed.
 The raw viewer contains all 588 frames and leaves annotation drafts unchanged.
 All videos, individual reviews/references, frames, run evidence and generated
 HTML remain under ignored `artifacts/`; only implementation/tests/docs are committed.
+
+## Prepare Later Review Stages
+
+Implemented on `feature/biomechanics`; documentation on main does not mean code
+has been merged. After manually marking at least three complete cycles with
+`start_source`, `deepest_interval` and `end_source`, expand the reference draft:
+
+```bash
+python -m tools.evaluate_e3 reference-scaffold artifacts/e3-evaluation/new-set/references/clip-001.json --output artifacts/e3-evaluation/new-set/references/clip-001-expanded.json
+```
+
+This creates a new file, preserves existing numeric entries, adds missing metric
+slots and the prescribed ten frames for each of three angle measures. New
+values and uncertainties stay null. Confirmation, reviewer and origin are reset;
+the output requires independent review and must be selected in the manifest
+before freeze. Existing files are never overwritten. This reduces transcription
+work but does not calculate ground truth or remove uncertainty review.
+
+After a run, prepare a separate review packet:
+
+```bash
+python -m tools.evaluate_e3 handoff artifacts/e3-evaluation/new-set/runs/RUN/results.json
+```
+
+Each invocation creates a fresh `handoff-TIMESTAMP/` HTML/JSON snapshot beside the
+result, binding the source result by SHA-256. It groups per-item evidence,
+preserves signed errors/coverage and exclusions, lists failed or pending items,
+and checks that all required capture cases are represented. A complete primary
+pass only makes the packet eligible for human measurement review. Smoke runs,
+missing metrics/cases, insufficient clips and incomplete eligibility cannot advance.
+
+The packet is not runtime authorization: measurement approval and coaching
+approval remain pending, reviewer is empty and enabled rules remain empty.
+Reviewers must separately verify frozen evidence, scope, proposed threshold
+rationales/populations and feedback behavior. A checksum of a result is not proof
+that its contents are valid; verify the original frozen bundle and runtime hashes.
+The current numeric rule API remains an explicitly configured comparison tool;
+this packet does not alter or enable it. Physical phase/heel-duration semantics
+and clinical efficacy remain outside the accepted measurement scope.
