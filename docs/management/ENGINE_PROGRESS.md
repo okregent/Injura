@@ -121,6 +121,8 @@ Interpret biomechanics data as meaningful squat movement.
 
 Translate movement analysis into adaptive, explainable feedback.
 
+- [x] Measurement availability notices with per-repetition evidence (foundation only)
+
 - [ ] `squat_rules.yaml` — configurable rule definitions
 - [ ] Rule engine implementation
 - [ ] Adaptive thresholds based on user profile

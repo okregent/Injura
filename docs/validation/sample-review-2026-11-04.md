@@ -396,3 +396,23 @@ Use Full for the current video 3/5 workflow; treat their remaining Heavy gaps
 as known experimental limitations rather than relaxing acceptance or promoting
 candidates to measured repetitions. Video 6 remains the case where Heavy helps.
 Automatic model selection and cross-model recovery remain outside the contract.
+
+## Measurement Availability Feedback Foundation
+
+Added `build_measurement_feedback` with deterministic Korean notices and stable
+codes/levels. Evidence links to one-based measured repetitions, metric names and
+their quality reasons. It distinguishes detected cycles, gap candidates,
+unavailable/partial measurements, recovered observations and experimental
+calibration. Coverage remains data support, not anatomical accuracy.
+
+Regenerated videos 3-6 with the previous Full/posture/recovery settings: counts
+remain 6/6, 14/14, 2/2, 0/0 and video 6 retains three candidates per side.
+Video 5 exposes recovery-related review references; video 6 has no invented
+candidate metrics. The report's JSON includes `measurement_feedback`; its HTML
+shows side-specific notices with expandable metric evidence. No technique
+threshold, posture grade, diagnosis or actual-count claim is introduced.
+
+Full suite: **257 passed**, including gap-candidate separation, unavailable FPS
+reason propagation, recovery review, explicit experimental calibration,
+deterministic output and analysis immutability. This is a first E4 data-quality
+explanation layer. Configurable/adaptive technique rules remain unimplemented.
