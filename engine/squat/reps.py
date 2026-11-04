@@ -33,14 +33,17 @@ def detect_squat_reps(phases: list[SquatPhase]) -> list[SquatRep]:
             bottom_index = i
 
         elif in_rep and phase in (SquatPhase.ASCENDING, SquatPhase.LOCKOUT, SquatPhase.STANDING):
-            if bottom_index is not None and phase in (SquatPhase.LOCKOUT, SquatPhase.STANDING):
-                reps.append(
-                    SquatRep(
-                        start_index=start_index,
-                        bottom_index=bottom_index,
-                        end_index=i,
+            if phase in (SquatPhase.LOCKOUT, SquatPhase.STANDING):
+                if bottom_index is not None:
+                    reps.append(
+                        SquatRep(
+                            start_index=start_index,
+                            bottom_index=bottom_index,
+                            end_index=i,
+                        )
                     )
-                )
+                # Returning to standing also cancels an aborted descent. Keeping
+                # it open would attach idle standing time to the next real rep.
                 in_rep = False
                 start_index = None
                 bottom_index = None

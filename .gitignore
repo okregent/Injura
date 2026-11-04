@@ -39,3 +39,6 @@ docs/ChatGPT/
 *.mkv
 
 tests/.claude/
+
+# Local analysis reports and extracted video frames
+artifacts/

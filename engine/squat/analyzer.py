@@ -1,6 +1,7 @@
 """Side-specific squat measurement orchestration, without feedback rules."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import math
 from typing import Dict, List, Optional
 
 from engine.analyzer import ExerciseAnalyzer
@@ -10,10 +11,11 @@ from engine.pose.types import PoseExtractionResult
 from engine.squat.assessment import MetricOutcome, assess_metric
 from engine.squat.features import SquatFeatures, extract_squat_features
 from engine.squat.phases import (
-    SquatPhase, calculate_squat_phase_thresholds, detect_squat_phases,
+    SquatPhase, calculate_squat_phase_thresholds,
 )
 from engine.squat.reps import SquatRep, detect_squat_reps
 from engine.squat.smoothing import smooth_squat_phases
+from engine.squat.cycles import detect_cycle_phases
 from engine.squat.metrics.bottom_angles import calculate_bottom_joint_angles
 from engine.squat.metrics.consistency import ConsistencyResult, calculate_consistency
 from engine.squat.metrics.depth import calculate_squat_depth_from_features
@@ -34,12 +36,21 @@ class SquatRepAnalysis:
 
 
 @dataclass
+class SquatRepCandidate:
+    rep: SquatRep
+    deepest_observed_index: int
+    missing_source_frames: int
+    reason: str = "Tracking hypothesis across short gaps; requires manual review, not a confirmed repetition."
+
+
+@dataclass
 class SquatAnalysisResult:
     features: SquatFeatures
     phases: List[SquatPhase]
     repetitions: List[SquatRepAnalysis]
     consistency: Dict[str, ConsistencyResult]
     issues: List[str]
+    candidates: List[SquatRepCandidate] = field(default_factory=list)
 
 
 class SquatAnalyzer(ExerciseAnalyzer):
@@ -49,6 +60,7 @@ class SquatAnalyzer(ExerciseAnalyzer):
         recording_conditions: Optional[KneeTravelRecordingConditions] = None,
         visibility_threshold: float = 0.5, phase_min_duration: int = 3,
         heel_lift_threshold: float = 0.005,
+        candidate_max_gap_seconds: float = 0.2,
     ) -> SquatAnalysisResult:
         """Analyze complete reps within uninterrupted, usable hip observations.
 
@@ -62,6 +74,8 @@ class SquatAnalyzer(ExerciseAnalyzer):
             raise ValueError("unsupported facing_direction")
         if not isinstance(phase_min_duration, int) or phase_min_duration < 1:
             raise ValueError("phase_min_duration must be a positive integer")
+        if not math.isfinite(candidate_max_gap_seconds) or candidate_max_gap_seconds < 0:
+            raise ValueError("candidate_max_gap_seconds must be finite and nonnegative")
         features = extract_squat_features(
             extraction.pose_sequence, side, visibility_threshold,
             image_size=extraction.image_size,
@@ -92,7 +106,7 @@ class SquatAnalyzer(ExerciseAnalyzer):
             if stop - start < 2:
                 continue
             local = smooth_squat_phases(
-                detect_squat_phases(features.hip_y_values[start:stop], thresholds),
+                detect_cycle_phases(features.hip_y_values[start:stop], thresholds),
                 min_duration=phase_min_duration,
             )
             phases[start:stop] = local
@@ -106,6 +120,38 @@ class SquatAnalyzer(ExerciseAnalyzer):
             issues.append("Missing observations split rep detection; incomplete reps are excluded.")
         if not reps:
             issues.append("No complete repetitions detected.")
+
+        # Candidate tracking may cross bounded gaps, but never produces measured
+        # phases, metric values, or timings for those gaps. Complete reps above
+        # still require uninterrupted valid observations.
+        candidates = []
+        if extraction.fps is not None and candidate_max_gap_seconds > 0:
+            max_missing = int(extraction.fps * candidate_max_gap_seconds)
+            groups = []
+            group = []
+            for index, value in enumerate(features.hip_y_values):
+                if value is None:
+                    continue
+                if group and source[index] - source[group[-1]] - 1 > max_missing:
+                    groups.append(group)
+                    group = []
+                group.append(index)
+            if group:
+                groups.append(group)
+            for group in groups:
+                local = detect_cycle_phases([features.hip_y_values[index] for index in group], thresholds)
+                for candidate in detect_squat_reps(local):
+                    indices = group[candidate.start_index:candidate.end_index + 1]
+                    missing = source[indices[-1]] - source[indices[0]] + 1 - len(indices)
+                    if not missing or any(
+                        indices[0] <= rep.end_index and indices[-1] >= rep.start_index for rep in reps
+                    ):
+                        continue
+                    mapped = SquatRep(indices[0], group[candidate.bottom_index], indices[-1])
+                    deepest = max(indices, key=lambda index: features.hip_y_values[index])
+                    candidates.append(SquatRepCandidate(mapped, deepest, missing))
+            if candidates:
+                issues.append(f"{len(candidates)} gap-crossing candidates require manual review; excluded from measurements and consistency.")
 
         analyses = []
         for rep in reps:
@@ -152,4 +198,4 @@ class SquatAnalyzer(ExerciseAnalyzer):
                 getattr(item.metrics[name].value, attribute) if item.metrics[name].value is not None else None
                 for item in analyses
             ])
-        return SquatAnalysisResult(features, phases, analyses, consistency, issues)
+        return SquatAnalysisResult(features, phases, analyses, consistency, issues, candidates)
