@@ -76,6 +76,9 @@ Complete E3 (Squat Movement Analysis).
 - [x] `ExerciseAnalyzer` base class
 - [x] `SquatAnalyzer` implementation
 - [x] Metric and analyzer regression tests
+- [x] Initial review of sample videos 3-6 and stable cycle-state transitions
+- [x] Separate gap-crossing review candidates from measured repetitions
+- [ ] Annotated repetition boundaries and independent measurement validation
 
 ---
 

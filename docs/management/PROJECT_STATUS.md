@@ -64,6 +64,11 @@ into `main`.
 - Implement E4 feedback rules after measurement validation
 
 ## Latest Validation
-- Full local suite: 203 passed, including real-video extraction, phase/rep detection,
+- Full local suite: 217 passed, including real-video extraction, phase/rep detection,
   and integrated `SquatAnalyzer` analysis (2026-11-04).
 - External-library deprecation warnings remain; no test failures.
+- Initial sample review completed for videos 3-6. Videos 3 and 4 retain 6 and 14
+  detections with all phase timings available on both sides. Video 5 has no
+  uninterrupted complete detections (2 left / 1 right review candidates); video
+  6 has 3 candidates per side and no measured repetitions. Counts are not
+  annotated ground truth. See `docs/validation/sample-review-2026-11-04.md`.

@@ -1,0 +1,76 @@
+# Initial Sample Review: 2026-11-04
+
+Implementation and commands refer to `feature/biomechanics`. Project documents
+are maintained on `main`; this review does not imply an engine merge.
+
+## Findings and Repairs
+
+1. Frame-to-frame hip-coordinate jitter repeatedly reversed descent/ascent
+   labels, so strict ordered phase timing was withheld. The analyzer now uses
+   position-based cycle states and bottom-entry/exit hysteresis.
+2. Returning to standing before reaching bottom left a pending descent open.
+   The following rep inherited idle standing frames. Standing now cancels the
+   incomplete descent and the next departure gets its own start index.
+3. A span beginning mid-motion could previously count as a complete rep. The
+   revised cycle state requires observed standing before descent.
+4. Video 6 loses pose observations around squat bottoms. Missing observations
+   still split measured detection. A separate bounded-gap tracker exposes review
+   candidates without manufacturing measurements or filling missing frames.
+
+## Results
+
+All counts are detector outputs, not independently annotated ground truth.
+Timing availability means all three phase durations were returned for an
+uninterrupted detected rep; it does not establish boundary accuracy.
+
+| Video | Side | Previous detections | Measured detections now | Review candidates | Previous / current timed reps |
+|---|---|---:|---:|---:|---:|
+| 3 | Left | 6 | 6 | 0 | 1 / 6 |
+| 3 | Right | 6 | 6 | 0 | 1 / 6 |
+| 4 | Left | 14 | 14 | 0 | 11 / 14 |
+| 4 | Right | 14 | 14 | 0 | 13 / 14 |
+| 5 | Left | 2 | 0 | 2 | 0 / 0 |
+| 5 | Right | 2 | 0 | 1 | 0 / 0 |
+| 6 | Left | 0 | 0 | 3 | 0 / 0 |
+| 6 | Right | 0 | 0 | 3 | 0 / 0 |
+
+Video 5's earlier detections are not retained as measured repetitions because
+full standing-to-standing cycles are not uninterrupted in the observed data.
+Video 6's candidates are hypotheses only. Preparation motion affects global
+standing calibration and some candidate starts remain uncertain. Candidate
+counts must not be combined across body sides or added to complete detections
+as a verified repetition total.
+
+## Reproduce Locally
+
+Local videos are excluded from Git. From the repository root on the
+implementation branch, use the configured project Python environment:
+
+```bash
+python -m tools.review_samples sample_video3.mp4 --facing left
+python -m tools.review_samples sample_video4.mp4 --facing right
+python -m tools.review_samples sample_video5.mp4 --facing left
+python -m tools.review_samples sample_video6.mp4 --facing left
+python -m tools.build_review_index
+```
+
+Output defaults to `artifacts/sample-review/`, ignored by Git on the development
+branch. Each recording has an HTML report, measurements CSV, separate candidates
+CSV, detailed JSON, observed-frame images, and a local pose-extraction cache.
+Use `--reuse-extraction` to reuse a cache whose source size/mtime match. Regenerate
+the cache after changing extraction settings. The comparison index can include
+an optional previously saved `baseline-analysis.json`; baseline snapshots are
+local artifacts, not annotations. Facing direction is a human review input.
+
+## Validation and Remaining Work
+
+- Full suite: 217 passed, including real-video integration. Existing dependency
+  deprecation warnings remain.
+- Regression coverage includes aborted descents, boundary chatter, initial
+  partial motion, real double dips, short/long gaps, unknown FPS, missing hips,
+  and an unobserved bottom that must not become an interpolated candidate.
+- Independently annotate repetition counts and boundaries, then evaluate
+  global calibration, detection errors, timing errors, and candidate usefulness.
+- Foot normalization remains withheld without external recording review.
+- Automatic camera/foot validation and calibrated accuracy confidence remain
+  unfinished. No clinical interpretation or ground-contact claim is made.

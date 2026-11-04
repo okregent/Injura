@@ -57,3 +57,12 @@ python -m pytest -q --ignore=tests/test_pose_estimator.py --ignore=tests/test_sq
 
 Some existing video tests contain machine-specific paths. Update those paths
 when setting up another computer.
+
+## Local sample review
+
+On `feature/biomechanics`, run `python -m tools.review_samples sample_video3.mp4
+--facing left`, then `python -m tools.build_review_index`. The generated local
+report is `artifacts/sample-review/index.html`. Review candidates are separate
+from measured repetitions and have no phase timing or metric values. See the
+[initial sample investigation](docs/validation/sample-review-2026-11-04.md) for
+the four-video results and limitations.
