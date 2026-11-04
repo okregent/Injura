@@ -89,3 +89,7 @@
   fallback experiment: 32 baseline boundary parity checks passed; Heavy video 4
   left improves 11 to 14, other 30 combination counts unchanged. Inspected source
   contact sheet; production defaults/calibration unchanged, independent validation pending.
+- Investigated user's video 3 jump report independently of pose predictions:
+  abrupt subject motion at 309 to 310 differs from remaining pose gap 444.
+  Frames around video 3 gap 444 and video 5 gap 230 appear continuous; source
+  corruption/editing is not established. Saved descriptive pixel/flow/time diagnostics.

@@ -270,3 +270,37 @@ comparison CSV, explicitly unverified predicted-boundary CSV, and original-frame
 contact sheet. Compilation and whitespace checks passed. Existing manual CSV
 and browser drafts are untouched. Next test the fixed hypothesis on independent
 recordings before choosing an opt-in production implementation.
+
+## User-Reported Video 3 Jump Versus Model Gaps
+
+The user reported a jump during video 3 and no apparent source problem in video
+5. Scanned both videos sequentially using grayscale absolute differences,
+fixed-background forward/backward optical-flow tracks, and decoder timestamps;
+these are descriptive diagnostics, not validated cut or corruption detection.
+
+Video 3 transition 309 to 310 (12.9167 seconds) has the largest pixel change of
+its 587 transitions (mean grayscale change 8.331 at width 360). The original
+frame strip shows an abrupt lifter-position change while background median
+displacement is only 0.0067 resized pixels. This supports a subject-motion
+discontinuity candidate rather than whole-screen camera motion. It does not
+prove editing, missing captured frames, or which jump the user noticed.
+
+The remaining Heavy gap at source 444 (18.5 seconds) is a different interval:
+its change is 0.816, ranked 304 of 587, with stationary background tracks.
+Inspected frames 442-446 appear continuous. Video 5's Heavy gap at 230
+(9.5833 seconds) has change 1.726, ranked 69 of 328; inspected frames 228-232
+show continuous posture movement and near-stationary background. No source
+defect is established at either model-gap location.
+
+Decoder time steps at the three transitions are all approximately 41.667 ms.
+Regular encoded timestamps do not exclude prior editing or capture omissions.
+There is no established causal link between video 3's transition at 310 and its
+later pose gap at 444. Treat source discontinuity and model failure separately;
+do not blame video 5's detection failure on a source issue without evidence.
+
+Reproduce with `python -m tools.review_source_continuity`. Local output:
+`model-comparison/source-continuity/index.html`, transition CSVs, summary JSON,
+and three source-frame contact sheets. All contact sheets were inspected;
+compilation and whitespace checks passed. No production metrics, exclusions,
+default models, or annotation files changed. Further source checking may
+investigate the reported jump, while pose recovery remains a separate task.
