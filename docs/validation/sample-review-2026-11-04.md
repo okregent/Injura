@@ -458,3 +458,23 @@ versus three candidates on video 6, and video 5's two complete detections.
 All generated local links resolve. Python compilation and whitespace checks
 passed. The prior engine regression result remains 277 passed; no engine code
 was changed in this presentation-only step.
+
+## Source-Bound Recording Review Gates
+
+Added side-specific human review with true/false/unknown conditions, reviewer
+and notes. Item gates distinguish approved, unknown and rejected; rule evaluation
+withholds unapproved items while retaining raw measurements. Timing conditions
+do not reject unrelated visible angles, and missing foot review does not reject
+torso measurement. Existing quality/calibration restrictions still apply.
+
+The CLI binds review files to source filename/size/mtime and rejects duplicate
+sides or invalid flags. The template tool writes null conditions and no reviewer
+and never overwrites a review. No actual source approval was fabricated.
+Real video 3 replay preserves six raw repetitions per side; missing or unsigned
+review withholds test-only enabled rules. Default empty rules remain unchanged.
+
+Full suite: **290 passed**; stale-source, tri-state distinction, side matching,
+item isolation, raw-value preservation, invalid flags and template overwrite
+protection are tested. CLI template/report generation, compilation and whitespace
+checks passed. Source metadata binding is not a content hash, and library callers
+own source/review association. Review eligibility is not measurement validation.

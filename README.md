@@ -90,6 +90,11 @@ this option does not bridge missing frames or establish measurement accuracy.
 rules are empty; partial/unavailable measurements and experimental calibration
 withhold evaluation. See [rule configuration](docs/architecture/measurement-rules.md).
 
+Rule interpretation additionally requires a reviewed capture record, supplied
+with `--recording-review PATH`. Missing review stays unknown and withholds rules;
+raw measurements remain inspectable. See [recording review](docs/architecture/recording-review.md)
+for source-bound templates and item-specific conditions.
+
 `python -m tools.build_review_index` consolidates saved results in the Korean
 local dashboard at `artifacts/sample-review/index.html`: per-video/side detected
 cycles, separate candidates, metric availability counts, calibration/recovery,

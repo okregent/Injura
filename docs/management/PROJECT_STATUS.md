@@ -67,7 +67,8 @@ Full remains default. See the cross-video results in
 ## Next Steps
 - Follow [supported capture conditions](../product/RECORDING_GUIDE.md) and
   [E3 acceptance gates](../validation/E3_ACCEPTANCE.md).
-- Connect recording review to interpretation; unknown review is not approval.
+- Recording review gates are connected to configured-rule interpretation; next
+  prepare the evaluation manifest and predeclare limits. Unknown review is not approval.
 - Predeclare metric error/coverage limits and evaluate compliant clips against
   reviewed references; preserve exclusions and annotation uncertainty.
 - Validate posture feedback after measurement validation. Rule infrastructure
@@ -76,7 +77,7 @@ Full remains default. See the cross-video results in
   these are not prerequisites for the manually reviewed side-view MVP.
 
 ## Latest Validation
-- Full local suite: 277 passed, including real-video extraction, phase/rep detection,
+- Full local suite: 290 passed, including real-video extraction, phase/rep detection,
   and integrated `SquatAnalyzer` analysis (2026-11-04).
 - External-library deprecation warnings remain; no test failures.
 - Initial sample review completed for videos 3-6. Videos 3 and 4 retain 6 and 14

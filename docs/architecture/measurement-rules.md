@@ -35,6 +35,10 @@ Disabled rules remain disabled regardless of measurement quality. Full coverage
 does not establish anatomical accuracy; matches are numeric comparisons only.
 No automatic side/model selection or metric mutation occurs.
 
+Enabled rules also require an approved, side-matched human recording review for
+their metric. Missing/unknown/rejected review withholds interpretation without
+erasing raw measurements. See [recording review](recording-review.md).
+
 Review JSON records `configured_rules` and side-specific `rule_evaluations`;
 HTML renders configured results with evidence. Availability notices remain
 separate. Empty rules preserve prior measurements and report behavior.
