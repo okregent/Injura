@@ -201,3 +201,22 @@ state bug, while occlusion at squat bottoms made some complete repetitions
 unobservable. The report must expose these hypotheses without presenting them
 as measurements. Global calibration can still misplace boundaries during
 preparation; human annotation and detector calibration remain necessary.
+
+### ADR-018: Opt-in Image Recovery and Explicit Model Comparisons
+
+**Decision:** Retry bounded missing source images using full-image and neighboring
+crop inference, without coordinate interpolation or lowering detection confidence.
+Preserve original detections, require agreement with both observed hip anchors,
+record recovered source indices, and mark affected metric outcomes for review.
+Keep image recovery and median-standing/P95-bottom calibration opt-in. Recorded
+user counts are evaluation references only, never detector parameters.
+
+Allow explicit integer model selection 0/1/2, retaining Full (1) by default.
+Separate model caches and record primary/recovery model choices; the review CLI
+uses the same model for extraction and recovery. Heavy's improvement on video 6
+does not justify a global default change or claims of valid occluded joint angles.
+
+**Reason:** Stable count detection, landmark continuity, anatomical accuracy, and
+measurement availability are distinct validation targets. Source-image inference
+can recover data but must not erase uncertainty or make sample-specific results
+look like independently validated accuracy.

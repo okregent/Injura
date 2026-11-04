@@ -66,3 +66,10 @@ report is `artifacts/sample-review/index.html`. Review candidates are separate
 from measured repetitions and have no phase timing or metric values. See the
 [initial sample investigation](docs/validation/sample-review-2026-11-04.md) for
 the four-video results and limitations.
+
+Experimental `--recover-gaps` and `--posture-calibration` options are opt-in.
+`--model-complexity 2` selects Heavy; Full (`1`) remains the default. Recovery
+uses the selected model and marks recovered-frame measurements as partial.
+The investigation document includes reproduction commands, user count
+references, and the limits of the Full/Heavy comparison. Count agreement alone
+does not validate joint angles or other anatomical measurements.

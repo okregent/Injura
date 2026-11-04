@@ -74,3 +74,62 @@ local artifacts, not annotations. Facing direction is a human review input.
 - Foot normalization remains withheld without external recording review.
 - Automatic camera/foot validation and calibrated accuracy confidence remain
   unfinished. No clinical interpretation or ground-contact claim is made.
+
+## Follow-up: User References and Source-Image Recovery
+
+The user reports video 3 as 6-7 depending on inclusion of the initial motion
+that starts at bottom, then 14, 2, and 3 repetitions for videos 4, 5, and 6.
+The full standing-to-standing interpretation for video 3 is 6; retain the user's
+6-7 range in count references rather than silently declaring exact boundaries.
+Local count annotations are compared with `tools.evaluate_counts`; this is
+count-only agreement, not event matching, precision/recall, or timing validation.
+`tools.prepare_manual_review` produces video playback and non-overwritten CSV
+templates for independent annotation.
+
+Opt-in source-image re-detection and posture calibration recover video 5's two
+cycles with phase timing. Six missing poses are re-detected; two unresolved
+source gaps remain outside those measured cycles. In Full-model video 6,
+10/14 missing images produce accepted re-detections. Frames 309, 386, 450, and
+468 remain unresolved because detection fails or anchor agreement is insufficient.
+
+## Follow-up: Full vs Heavy on Video 6
+
+Original frame/landmark inspection supports unstable landmark placement on the
+same foreground lifter after occlusion; it does not establish a switch to a
+different person. Across the four investigated gaps, mean hip displacement is
+0.115-0.121 image-width units for Full and 0.007-0.048 for Heavy. These are selected
+diagnostic displacements, not velocities or anatomical accuracy measurements.
+
+| Primary and recovery configuration | Detected reps per side | Candidates per side | Phase timing |
+|---|---:|---:|---|
+| Full, no recovery | 0 | 3 | Unavailable |
+| Full with Full recovery | 0 | 3 | Unavailable |
+| Heavy, no recovery | 2 | 1 | Both detections |
+| Heavy with Heavy recovery | 3 | 0 | All three detections |
+
+All comparison runs request the same experimental posture calibration. Detection
+confidence and association limits are unchanged. Heavy plus recovery re-detects
+three missing source images; one measured repetition includes a re-detection and
+is explicitly marked partial. Other remaining source gaps lie outside the
+measured repetitions. Both sides lack valid bottom knee/hip angles, so those
+values remain unavailable. Count agreement does not imply all metrics are usable.
+
+### Reproduce the Model Comparison
+
+Run on `feature/biomechanics` with local sample video 6. Heavy may download its
+official weights on first use; it runs on the local machine. The default stays
+Full. Model weights live in the ignored virtual environment.
+
+```bash
+python -m tools.review_samples sample_video6.mp4 --facing left --reuse-extraction --posture-calibration --recover-missing-poses
+python -m tools.review_samples sample_video6.mp4 --facing left --model-complexity 2 --posture-calibration --output artifacts/sample-review/model-comparison/video6-heavy --reuse-extraction
+python -m tools.review_samples sample_video6.mp4 --facing left --model-complexity 2 --posture-calibration --recover-missing-poses --output artifacts/sample-review/model-comparison/video6-heavy-recovered --reuse-extraction
+python -m tools.build_model_comparison
+python -m tools.build_review_index
+```
+
+Full local regression suite now passes **245 tests**, including real-video
+integration, model selection, model-separated caching, source-change cache
+invalidation, and matching the recovery model to primary extraction. Heavy is
+still an experiment on these recordings; evaluate independent recordings and
+annotated anatomy/boundaries before adopting a new default or feedback rules.
