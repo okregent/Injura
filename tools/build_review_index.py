@@ -151,6 +151,7 @@ def build_index(root: Path):
     ]
     investigation_links = []
     for title, relative in [
+        ("E3 검증 준비·평가 실행 상태", "../e3-evaluation/index.html"),
         ("3~6번 Full/Heavy 비교", "model-comparison/batch-comparison.html"),
         ("원본 영상의 프레임 연속성", "model-comparison/source-continuity/index.html"),
         ("보정 실험과 경계 변화", "model-comparison/calibration-experiment/index.html"),
