@@ -9,6 +9,8 @@
 - Always monitor .gitignore throughout the project. When new files or directories are introduced that should be ignored (e.g. build artifacts, env files, caches, generated files), explicitly mention it to the user.
 
 ## Coding Rules
+- Maintain project documentation on `main` and synchronize it into feature branches.
+- Documents describing unmerged code must identify its implementation branch.
 - Small commits
 - One feature per branch
 - Add tests for analysis logic
@@ -36,12 +38,12 @@ docs/
 │   ├── DECISIONS.md         ← ADR log
 │   └── DAILY_LOG.md         ← daily activity log
 └── sessions/
-    └── 2026-06-19.md        ← latest session log
+    └── 2026-11-04.md        ← latest session log
 ```
 
 ## Session Context
-Last session: 2026-07-21
-See docs/sessions/2026-07-21.md for full context.
+Last session: 2026-11-04
+See docs/sessions/2026-11-04.md for full context.
 
 ### Current Status
 - E1 (Semantic Pose Foundation) complete
@@ -50,8 +52,11 @@ See docs/sessions/2026-07-21.md for full context.
 - `feature/biomechanics` active branch
 
 ### In Progress
-- E3-B (Core Metrics) — biomechanical metrics layer
+- E3 empirical validation; core metrics, timing, consistency, and analyzer implemented
+- Per-metric availability and observed coverage implemented; calibrated confidence pending
 
 ### Next Steps
-- Squat Depth metric (first Core Metric)
-- Torso lean, knee travel, heel lift, neutral spine proxy
+- Validate measurement proxies against annotated side-view recordings
+- Validate automatic camera/foot-orientation detection (currently explicit external review)
+- Calibrate confidence before exposing accuracy claims
+- E4 feedback engine after measurement validation

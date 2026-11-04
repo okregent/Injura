@@ -82,3 +82,102 @@ docs/
 ### ADR-012: Semantic Separation Principle
 **Decision:** Split pose layer into three distinct modules: `landmarks.py` (semantic definitions), `accessors.py` (access logic), `chains.py` (body groupings)
 **Reason:** Each module has a single responsibility; semantic definition is not the same as data access logic; improves maintainability and testability
+
+---
+
+## 2026-07-28
+
+### ADR-013: Separate Direct Measurements from Feedback Inferences
+
+**Decision:** E3 squat metrics produce observable, explainable measurements.
+Claims that require interpretation across multiple measurements belong to the
+E4 feedback layer.
+
+**MVP direct measurements:**
+- Relative hip descent and hip-to-knee depth
+- Knee and hip flexion angles at bottom
+- Torso lean
+- Body-segment-normalized knee travel
+- Heel lift magnitude and duration
+- Descent, bottom, ascent, and total duration
+- Rep-to-rep consistency
+- Analysis confidence and data quality
+
+**E4 feedback inferences:**
+- Possible trunk collapse
+- Possible ankle mobility limitation
+- Excessive movement variability
+- Compensation patterns
+
+**Reason:** MediaPipe side-view landmarks can support the listed measurements,
+but they cannot directly establish lumbar curvature, mobility restriction, or
+injury-related conclusions. Keeping measurement separate from interpretation
+preserves explainability and prevents proxy values from being presented as
+diagnoses.
+
+**Implications:**
+- Current relative hip descent remains an MVP consistency measurement; it is
+  not an absolute squat-depth classification.
+- "Neutral spine / lumbar rounding" is renamed to a conservative trunk-collapse
+  proxy and handled as feedback inference.
+- Ankle mobility limitation is inferred from multiple measurements rather than
+  implemented as a standalone metric.
+- Hip shift, knee valgus, and left-right asymmetry are excluded from the
+  side-view MVP and deferred to multi-view analysis.
+- Generic movement smoothness is decomposed into measurable timing and
+  variability features.
+
+---
+
+### ADR-014: Side-View MVP Metric Portfolio
+
+**Decision:** The side-view MVP prioritizes depth, joint angles, torso lean,
+normalized knee travel, heel lift, phase timing, repetition consistency, and
+analysis confidence.
+
+**Reason:** This set provides sufficient coverage of range of motion,
+compensation, control, and measurement reliability while remaining observable
+from a single side-view recording.
+
+**Implications:**
+- Bottom bounce is deferred until velocity, acceleration, FPS, and smoothing
+  contracts are validated.
+- Every metric must expose its units, required landmarks, representative frame,
+  validity, and limitations in the metric catalog.
+- Original video frame mapping and video timing metadata are required for
+  overlays and tempo measurements.
+
+## 2026-11-04
+
+### Documentation Branch Policy
+
+Continue the 2026-05-21 policy: maintain project documentation on `main`, and keep
+unmerged implementation on its feature branch. Documentation that describes
+unmerged features must name the implementation branch. Synchronize document
+updates back into the feature branch without merging engine code into `main`.
+
+### ADR-015: Preserve Measurement Availability and Original Time
+
+**Decision:** Integrate E3 metrics through `SquatAnalyzer` with independent
+outcomes, exclusion reasons, and observed-data coverage. Split repetition
+detection at missing hip observations or nonconsecutive source frames. Do not
+interpolate. Phase timing requires contiguous source observations and ordered
+descent/bottom/ascent runs; measure half-open intervals ending at the return to
+standing. FPS-based timing assumes constant frame rate.
+
+**Reason:** Missing observations must not compress time, create repetitions, or
+silently change metric baselines. One unavailable metric must not erase other
+usable measurements. Coverage is data support, not calibrated confidence.
+
+### ADR-016: Keep Projected Foot and Heel Measurements Explicit
+
+**Decision:** Normalize knee travel by the within-rep median usable projected
+foot length only after explicit external confirmation of side view and side-on
+foot orientation. Unknown conditions withhold normalization. Use toe-relative
+heel height change from a valid rep-start baseline as a separately documented
+heel-rise proxy, with configurable image-coordinate tolerance and observed
+duration coverage.
+
+**Reason:** Visibility cannot establish camera or foot orientation. A projected
+heel change cannot prove loss of ground contact. Automatic recording validation
+and empirically calibrated measurement confidence remain pending.

@@ -3,7 +3,11 @@
 ## Overview
 **Project:** Injura — Adaptive AI Squat Analyzer
 **Stage:** In Development
-**Last Updated:** 2026-06-06
+**Last Updated:** 2026-11-04
+
+**Branch scope:** Documents are maintained on `main`; implementation and test
+status below refer to `feature/biomechanics`. Its engine code has not been merged
+into `main`.
 
 ## Completed
 - Product name finalised: Injura
@@ -42,12 +46,24 @@
 ## In Progress
 - E3 — Squat Movement Analysis (`engine/squat/`)
   - A. Phase & Rep ✅
-  - B. Core Metrics (next)
+  - B. Core metric implementation ✅ (2D proxies; empirical validation pending)
+  - C. Phase timing and rep consistency ✅
+  - `ExerciseAnalyzer` and `SquatAnalyzer` integration ✅
+  - Data availability, coverage, and per-metric exclusion reasons ✅
+  - Infrastructure: visibility, explicit side selection, and derived-feature
+    preprocessing contract ✅
 
 ## Blocked
 - None
 
 ## Next Steps
-- E3-B Core Metrics: squat depth, torso lean, knee travel, heel lift, neutral spine proxy
-- `ExerciseAnalyzer` base class
-- `SquatAnalyzer` implementation
+- Validate measurements against annotated recordings with varied camera geometry
+- Validate an automatic side-view/foot-orientation detector; manual review is required today
+- Calibrate measurement confidence empirically; current coverage is not accuracy probability
+- Decide whether validated interpolation or automatic side selection is needed
+- Implement E4 feedback rules after measurement validation
+
+## Latest Validation
+- Full local suite: 203 passed, including real-video extraction, phase/rep detection,
+  and integrated `SquatAnalyzer` analysis (2026-11-04).
+- External-library deprecation warnings remain; no test failures.
