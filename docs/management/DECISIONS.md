@@ -149,6 +149,13 @@ from a single side-view recording.
 
 ## 2026-11-04
 
+### Documentation Branch Policy
+
+Continue the 2026-05-21 policy: maintain project documentation on `main`, and keep
+unmerged implementation on its feature branch. Documentation that describes
+unmerged features must name the implementation branch. Synchronize document
+updates back into the feature branch without merging engine code into `main`.
+
 ### ADR-015: Preserve Measurement Availability and Original Time
 
 **Decision:** Integrate E3 metrics through `SquatAnalyzer` with independent

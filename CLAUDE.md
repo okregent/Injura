@@ -9,6 +9,8 @@
 - Always monitor .gitignore throughout the project. When new files or directories are introduced that should be ignored (e.g. build artifacts, env files, caches, generated files), explicitly mention it to the user.
 
 ## Coding Rules
+- Maintain project documentation on `main` and synchronize it into feature branches.
+- Documents describing unmerged code must identify its implementation branch.
 - Small commits
 - One feature per branch
 - Add tests for analysis logic

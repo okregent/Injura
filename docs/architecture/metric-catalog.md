@@ -1,6 +1,8 @@
 # Squat Metric Catalog
 
 This document defines the current measurement contract for squat metrics.
+Implemented metrics below refer to `feature/biomechanics`, not the code currently
+on `main`. Documents are maintained on `main` independently of engine merges.
 Metrics return explainable measurements only. User-specific interpretation and
 feedback belong to the future feedback engine.
 

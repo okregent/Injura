@@ -5,6 +5,10 @@
 **Stage:** In Development
 **Last Updated:** 2026-11-04
 
+**Branch scope:** Documents are maintained on `main`; implementation and test
+status below refer to `feature/biomechanics`. Its engine code has not been merged
+into `main`.
+
 ## Completed
 - Product name finalised: Injura
 - Documentation structure established (`docs/`)

@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(cd /c/Users/okreg/projects/Injura && python -m pytest tests/test_squat_detect_multiple_reps.py tests/test_squat_smooth_phases.py tests/test_squat_phase_smoothing_integration.py -v 2>&1)",
-      "Bash(tail:*)",
-      "Bash(cd /c/Users/okreg/projects/Injura && python -c \"\nimport sys\nsys.path.insert\\(0, '.'\\)\nfrom engine.pose.landmarks import PoseLandmark\nprint\\('RIGHT_KNEE:', PoseLandmark.RIGHT_KNEE\\)\nprint\\('RIGHT_KNEE value:', PoseLandmark.RIGHT_KNEE.value\\)\nprint\\('LEFT_KNEE:', PoseLandmark.LEFT_KNEE\\)\nprint\\('LEFT_KNEE value:', PoseLandmark.LEFT_KNEE.value\\)\n\" 2>&1)"
-    ]
-  }
-}

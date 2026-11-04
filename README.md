@@ -2,6 +2,10 @@
 
 Adaptive AI Squat Analyzer
 
+Project documentation is maintained on `main`. The measurement engine described
+below is implemented on `feature/biomechanics` and has not been merged into
+`main`. Switch to that branch before running the analysis example.
+
 The side-view measurement engine extracts squat repetitions and produces
 per-repetition depth, joint angles, torso lean, knee travel, heel-rise proxies,
 phase timing, data coverage, and between-repetition consistency.

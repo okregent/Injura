@@ -57,3 +57,5 @@
   project status, README, and the session handoff.
 - Full suite passed: 203 tests, including real-video integrated analysis.
 - User authorized commit and push on feature/biomechanics; main merge is deferred.
+- Reaffirmed documentation-on-main policy: synchronize documentation separately
+  and label unmerged implementation as feature/biomechanics. Engine merge remains deferred.
