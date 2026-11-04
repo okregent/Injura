@@ -1,7 +1,13 @@
 import pytest
+import math
 
+from engine.pose.landmarks import PoseLandmark
+from engine.pose.side import BodySide
+from engine.pose.types import Landmark
+from engine.squat.features import extract_squat_features
 from engine.squat.metrics.torso_lean import (
     calculate_torso_lean,
+    calculate_torso_lean_from_features,
 )
 from engine.squat.reps import SquatRep
 
@@ -16,6 +22,76 @@ def make_rep(
         bottom_index=bottom_index,
         end_index=end_index,
     )
+
+
+def make_torso_features(angles, invalid_indices=()):
+    frames = []
+    width, height = 1920, 1080
+    for index, angle in enumerate(angles):
+        frame = [Landmark(0.0, 0.0, 0.0, 0.0) for _ in range(33)]
+        radians = math.radians(angle)
+        frame[PoseLandmark.LEFT_HIP] = Landmark(0.5, 0.7, 0.0, 1.0)
+        frame[PoseLandmark.LEFT_SHOULDER] = Landmark(
+            0.5 + 200 * math.sin(radians) / width,
+            0.7 - 200 * math.cos(radians) / height,
+            0.0,
+            0.1 if index in invalid_indices else 1.0,
+        )
+        frames.append(frame)
+    return extract_squat_features(
+        frames, BodySide.LEFT, image_size=(width, height),
+    )
+
+
+def test_torso_lean_from_features_matches_existing_calculation():
+    angles = [5, 10, 18, 32, 25, 12]
+    result = calculate_torso_lean_from_features(make_torso_features(angles), make_rep())
+    expected = calculate_torso_lean(angles, make_rep())
+    assert result.max_lean_angle == pytest.approx(expected.max_lean_angle)
+    assert result.max_lean_index == expected.max_lean_index
+    assert result.standing_angle == pytest.approx(expected.standing_angle)
+    assert result.lean_change == pytest.approx(expected.lean_change)
+
+
+def test_torso_lean_from_features_skips_missing_frames_and_keeps_indices():
+    features = make_torso_features([70, 10, 60, 32, 25, 12, 80], invalid_indices=(2,))
+    result = calculate_torso_lean_from_features(features, make_rep())
+    assert result.max_lean_index == 3
+    assert result.max_lean_angle == pytest.approx(32)
+    assert result.standing_angle == pytest.approx(10)
+    assert result.lean_change == pytest.approx(22)
+
+
+def test_torso_lean_from_features_honors_numeric_frame_mask():
+    features = make_torso_features([5, 10, 60, 32, 25, 12])
+    features.valid_masks["torso_angle"][2] = False
+    result = calculate_torso_lean_from_features(features, make_rep())
+    assert result.max_lean_index == 3
+
+
+@pytest.mark.parametrize("masked_only", [False, True])
+def test_torso_lean_rejects_missing_rep_start_instead_of_shifting_baseline(masked_only):
+    features = make_torso_features(
+        [5, 10, 18, 32, 25, 12], invalid_indices=() if masked_only else (1,),
+    )
+    features.valid_masks["torso_angle"][1] = False
+    with pytest.raises(ValueError, match="rep start must have a valid torso angle"):
+        calculate_torso_lean_from_features(features, make_rep())
+
+
+def test_torso_lean_rejects_rep_without_valid_angles():
+    features = make_torso_features([5, 10, 18], invalid_indices=(1, 2))
+    with pytest.raises(ValueError, match="rep contains no valid torso angles"):
+        calculate_torso_lean_from_features(
+            features, make_rep(start_index=1, end_index=2),
+        )
+
+
+def test_torso_lean_rejects_misaligned_mask():
+    features = make_torso_features([5, 10, 18, 32, 25, 12])
+    features.valid_masks["torso_angle"].pop()
+    with pytest.raises(ValueError, match="must have the same length"):
+        calculate_torso_lean_from_features(features, make_rep())
 
 
 def test_calculate_torso_lean_returns_expected_result():

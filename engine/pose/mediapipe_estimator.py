@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import math
 
 from .base_estimator import BasePoseEstimator
 from .types import Landmark, PoseExtractionResult, PoseSequence
@@ -31,6 +32,8 @@ class MediaPipePoseEstimator(BasePoseEstimator):
         image_size = None
 
         cap = cv2.VideoCapture(video_path)
+        source_fps = cap.get(cv2.CAP_PROP_FPS)
+        fps = source_fps if math.isfinite(source_fps) and source_fps > 0 else None
         
 
         while cap.isOpened():
@@ -75,6 +78,7 @@ class MediaPipePoseEstimator(BasePoseEstimator):
             source_frame_indices=source_frame_indices,
             source_frame_count=source_frame_count,
             image_size=image_size,
+            fps=fps,
         )
     
     def close(self):

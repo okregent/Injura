@@ -2,6 +2,7 @@
 #List is to provide type info
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
+import math
 
 @dataclass
 class Landmark:
@@ -21,8 +22,13 @@ class PoseExtractionResult:
     source_frame_indices: List[int]
     source_frame_count: int
     image_size: Optional[Tuple[int, int]] = None
+    fps: Optional[float] = None
 
     def __post_init__(self) -> None:
+        if self.fps is not None and (
+            isinstance(self.fps, bool) or not math.isfinite(self.fps) or self.fps <= 0
+        ):
+            raise ValueError("fps must be finite and positive when provided")
         if self.image_size is not None and (
             len(self.image_size) != 2
             or any(

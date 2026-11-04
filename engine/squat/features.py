@@ -29,6 +29,7 @@ class SquatFeatures:
     heel_y_values: OptionalFloatSequence
     foot_lengths: OptionalFloatSequence
     valid_masks: Dict[str, List[bool]]
+    image_size: Optional[tuple[int, int]] = None
 
     @property
     def frame_count(self) -> int:
@@ -183,4 +184,5 @@ def extract_squat_features(
         heel_y_values=heel_y_values,
         foot_lengths=foot_lengths,
         valid_masks=valid_masks,
+        image_size=image_size,
     )

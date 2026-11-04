@@ -1,6 +1,13 @@
 import pytest
 
-from engine.squat.metrics.depth import calculate_squat_depth
+from engine.pose.landmarks import PoseLandmark
+from engine.pose.side import BodySide
+from engine.pose.types import Landmark
+from engine.squat.features import extract_squat_features
+from engine.squat.metrics.depth import (
+    calculate_squat_depth,
+    calculate_squat_depth_from_features,
+)
 from engine.squat.phases import SquatPhaseThresholds
 from engine.squat.reps import SquatRep
 
@@ -26,6 +33,60 @@ def make_thresholds(
         bottom_y=bottom_y,
         velocity_threshold=0.01,
     )
+
+
+def make_depth_features(hip_values, invalid_indices=()):
+    frames = []
+    for index, hip_y in enumerate(hip_values):
+        frame = [Landmark(0.0, 0.0, 0.0, 0.0) for _ in range(33)]
+        frame[PoseLandmark.LEFT_HIP] = Landmark(
+            0.5, hip_y, 0.0, 0.1 if index in invalid_indices else 1.0,
+        )
+        frames.append(frame)
+    return extract_squat_features(
+        frames, BodySide.LEFT, image_size=(1920, 1080),
+    )
+
+
+def test_depth_from_features_matches_existing_calculation():
+    values = [0.50, 0.52, 0.60, 0.68, 0.64, 0.53]
+    assert calculate_squat_depth_from_features(
+        make_depth_features(values), make_rep(), make_thresholds(),
+    ) == calculate_squat_depth(values, make_rep(), make_thresholds())
+
+
+def test_depth_from_features_skips_missing_values_and_preserves_indices():
+    features = make_depth_features(
+        [0.99, 0.52, 0.95, 0.68, 0.64, 0.53, 0.99], invalid_indices=(2,),
+    )
+    result = calculate_squat_depth_from_features(features, make_rep(), make_thresholds())
+    assert result.deepest_index == 3
+    assert result.deepest_hip_y == pytest.approx(0.68)
+    assert result.depth_ratio == pytest.approx(0.90)
+
+
+def test_depth_from_features_honors_valid_mask_for_numeric_values():
+    features = make_depth_features([0.50, 0.52, 0.95, 0.68, 0.64, 0.53])
+    features.valid_masks["hip_y"][2] = False
+    result = calculate_squat_depth_from_features(features, make_rep(), make_thresholds())
+    assert result.deepest_index == 3
+
+
+def test_depth_from_features_rejects_rep_without_valid_values():
+    features = make_depth_features([0.50, 0.60, 0.70], invalid_indices=(1, 2))
+    with pytest.raises(ValueError, match="rep contains no valid hip y-values"):
+        calculate_squat_depth_from_features(
+            features, make_rep(start_index=1, end_index=2), make_thresholds(),
+        )
+
+
+def test_depth_from_features_rejects_misaligned_mask():
+    features = make_depth_features([0.50, 0.60, 0.70])
+    features.valid_masks["hip_y"].pop()
+    with pytest.raises(ValueError, match="must have the same length"):
+        calculate_squat_depth_from_features(
+            features, make_rep(start_index=0, end_index=2), make_thresholds(),
+        )
 
 
 def test_calculate_squat_depth_returns_expected_result():

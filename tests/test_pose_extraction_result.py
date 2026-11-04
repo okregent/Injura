@@ -62,6 +62,9 @@ def test_estimator_extracts_size_from_decoded_frames(monkeypatch, has_pose):
         def isOpened(self):
             return True
 
+        def get(self, property_id):
+            return 30.0
+
         def read(self):
             frame = next(self.frames, None)
             return frame is not None, frame
@@ -80,6 +83,7 @@ def test_estimator_extracts_size_from_decoded_frames(monkeypatch, has_pose):
 
     result = estimator.extract_with_metadata("fake.mp4")
     assert result.image_size == (192, 108)
+    assert result.fps == 30.0
     assert result.source_frame_count == 1
     assert result.source_frame_indices == ([0] if has_pose else [])
     assert capture.released
