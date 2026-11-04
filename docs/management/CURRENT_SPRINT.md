@@ -11,10 +11,11 @@ is complete; empirical acceptance remains open.
 - [x] Connect reviewed recording conditions to configured-rule interpretation gates.
 - [x] Predeclare initial engineering error/coverage limits and prepare a versioned source inventory ([protocol v0.1](../validation/E3_PROTOCOL_v0.1.md)).
 - [x] Implement registration, independent-reference aids, frozen-input verification and scoring ([workflow](../architecture/e3-evaluation-workflow.md)).
+- [x] Prepare empty reference scaffolds, failed-item triage and an unapproved E4 evidence-review packet ([workflow](../architecture/e3-evaluation-workflow.md#prepare-later-review-stages)); implementation stays on `feature/biomechanics`.
 - [ ] Register eligible evaluation clips and reviewed references; freeze the evaluated dataset before runs.
 - [ ] Evaluate against reviewed references; resolve or restrict failed items.
 
-Latest regression: 331 passed (2026-11-05). The local development smoke result
+Latest regression: 345 passed (2026-11-05). The local development smoke result
 remains not evaluated. New sources/reviewed references are still required.
 
 Prepare evidence autonomously; the user need not annotate every frame. Existing
