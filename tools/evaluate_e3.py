@@ -17,6 +17,7 @@ from engine.validation.dataset import (prepare, register, check, freeze, verify_
     write_new, local_path, sha256, analysis_fingerprint, evaluation_fingerprint, environment_signature)
 from engine.validation.scoring import score_compliant, score_violation, decision
 from engine.validation.aids import prepare_aids
+from engine.validation.handoff import build_handoff, scaffold_reference
 
 
 def extract(video):
@@ -174,7 +175,10 @@ def main():
     registrar = commands.add_parser('register')
     registrar.add_argument('root', type=Path)
     registrar.add_argument('videos', type=Path, nargs='+')
-    for command in ('check', 'freeze', 'run', 'aids', 'status'):
+    scaffolder = commands.add_parser('reference-scaffold')
+    scaffolder.add_argument('reference', type=Path)
+    scaffolder.add_argument('--output', type=Path, required=True)
+    for command in ('check', 'freeze', 'run', 'aids', 'status', 'handoff'):
         item = commands.add_parser(command)
         item.add_argument('root', type=Path)
         if command == 'run':
@@ -185,6 +189,8 @@ def main():
             print(prepare(args.videos, args.output).resolve())
         elif args.command == 'register':
             print(register(args.videos, args.root).resolve())
+        elif args.command == 'reference-scaffold':
+            print(scaffold_reference(args.reference, args.output).resolve())
         elif args.command == 'check':
             report = check(args.root)
             print(json.dumps(report, indent=2))
@@ -195,6 +201,8 @@ def main():
             print(prepare_aids(args.root).resolve())
         elif args.command == 'status':
             print(build_status(args.root).resolve())
+        elif args.command == 'handoff':
+            print(build_handoff(args.root).resolve())
         else:
             print(run(args.root, smoke=args.development_smoke).resolve())
     except (OSError, ValueError, KeyError, TypeError) as error:
