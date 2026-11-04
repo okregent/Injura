@@ -9,7 +9,8 @@ is complete; empirical acceptance remains open.
 - [x] Define [MVP capture conditions](../product/RECORDING_GUIDE.md).
 - [x] Define [item gates and E3 acceptance](../validation/E3_ACCEPTANCE.md).
 - [x] Connect reviewed recording conditions to configured-rule interpretation gates.
-- [ ] Predeclare metric error/coverage limits and prepare a versioned evaluation manifest.
+- [x] Predeclare initial engineering error/coverage limits and prepare a versioned source inventory ([protocol v0.1](../validation/E3_PROTOCOL_v0.1.md)).
+- [ ] Register eligible evaluation clips and reviewed references; freeze the evaluated dataset before runs.
 - [ ] Evaluate against reviewed references; resolve or restrict failed items.
 
 Prepare evidence autonomously; the user need not annotate every frame. Existing

@@ -122,3 +122,7 @@
 - Connected human recording review to configured-rule interpretation, with
   per-item tri-state eligibility, source-bound CLI files and unknown templates.
   Raw metrics preserved; full regression 290 passed. Next validation manifest/limits.
+- Predeclared E3 protocol v0.1, engineering limits and SHA-256 source inventory.
+  Development videos 1-6 are excluded from independent evaluation; unclassified
+  original file quarantined. Six collection slots remain pending; no evaluation
+  results or reference labels invented. Phase-duration interpretation stays restricted.
