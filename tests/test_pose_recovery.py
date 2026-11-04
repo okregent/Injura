@@ -100,6 +100,15 @@ def test_unknown_timing_metadata_is_rejected():
         recover_pose_gaps("fake.mp4", extraction)
 
 
+def test_recovery_can_use_same_model_as_primary_without_relaxing_gate(monkeypatch):
+    points = [Landmark(.5, .5, .1, 1) for _ in range(33)]
+    state = setup_detector(monkeypatch, [points, None])
+    recovered = recover_pose_gaps("fake.mp4", make_extraction(), model_complexity=2)
+    assert recovered.recovered_frame_indices == [1]
+    assert state["settings"]["model_complexity"] == 2
+    assert state["settings"]["min_detection_confidence"] == .5
+
+
 def test_recovery_provenance_requires_real_result_indices():
     with pytest.raises(ValueError, match="sorted unique source indices"):
         PoseExtractionResult([], [], 0, recovered_frame_indices=[1])

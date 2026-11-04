@@ -28,6 +28,7 @@ def _compatible(points, before, after, image_size, max_distance, visibility):
 def recover_pose_gaps(
     video_path: str, extraction: PoseExtractionResult, *, max_gap_seconds: float = 0.2,
     max_hip_distance: float = 0.08, visibility_threshold: float = 0.5,
+    model_complexity: int = 1,
 ) -> PoseExtractionResult:
     """Retry actual missing source images at unchanged 0.5 detection confidence.
 
@@ -39,6 +40,8 @@ def recover_pose_gaps(
     """
     if not math.isfinite(max_gap_seconds) or max_gap_seconds < 0:
         raise ValueError("max_gap_seconds must be finite and nonnegative")
+    if not isinstance(model_complexity, int) or isinstance(model_complexity, bool) or model_complexity not in (0, 1, 2):
+        raise ValueError("model_complexity must be 0, 1, or 2")
     if not math.isfinite(max_hip_distance) or max_hip_distance <= 0:
         raise ValueError("max_hip_distance must be finite and positive")
     if not 0 <= visibility_threshold <= 1:
@@ -53,7 +56,7 @@ def recover_pose_gaps(
 
     import mediapipe as mp
     detector = mp.solutions.pose.Pose(
-        static_image_mode=True, model_complexity=1, smooth_landmarks=False,
+        static_image_mode=True, model_complexity=model_complexity, smooth_landmarks=False,
         min_detection_confidence=0.5,
     )
     cap = cv2.VideoCapture(video_path)

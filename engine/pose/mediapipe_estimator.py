@@ -6,14 +6,17 @@ from .base_estimator import BasePoseEstimator
 from .types import Landmark, PoseExtractionResult, PoseSequence
 
 class MediaPipePoseEstimator(BasePoseEstimator):
-    def __init__(self):
+    def __init__(self, model_complexity: int = 1):
+        if not isinstance(model_complexity, int) or isinstance(model_complexity, bool) or model_complexity not in (0, 1, 2):
+            raise ValueError("model_complexity must be 0, 1, or 2")
+        self.model_complexity = model_complexity
         self.mp_pose = mp.solutions.pose
         self.mp_drawing = mp.solutions.drawing_utils
         self.pose = self.mp_pose.Pose(
             #video tracking mode
             static_image_mode=False,
             #accuracy vs speed tradeoff
-            model_complexity=1,
+            model_complexity=model_complexity,
             #smoothing landmarks across frames to reduce jitter
             smooth_landmarks=True,
             #minimum confidence for detecting landmarks in a frame

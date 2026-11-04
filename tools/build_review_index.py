@@ -34,6 +34,8 @@ def build_index(root: Path):
         'table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccd;padding:9px}th{background:#eef}'
         '.note{background:#fff2cf;padding:16px;border-left:4px solid #bd8a1e}img{max-width:100%}</style>',
         '<h1>Sample analysis: causes and revised results</h1>',
+        ('<p><a href="model-comparison/index.html">Video 6: Full vs Heavy model comparison and tracking investigation</a></p>'
+         if (root / "model-comparison/index.html").exists() else ''),
         ('<p><a href="count-evaluation.html">User-reported counts and count-only evaluation</a></p>'
          if (root / "count-evaluation.html").exists() else ''),
         ('<p><a href="manual-review.html">Manual video review and annotation templates</a></p>'

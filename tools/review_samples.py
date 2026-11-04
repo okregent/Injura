@@ -21,17 +21,19 @@ from engine.pose.recovery import recover_pose_gaps
 from engine.squat.analyzer import SquatAnalyzer
 
 
-def load_extraction(video: Path, output: Path, reuse: bool = False):
+def load_extraction(video: Path, output: Path, reuse: bool = False, model_complexity: int = 1):
     """Cache extraction locally, invalidating when the source file changes."""
     signature = {"size": video.stat().st_size, "mtime_ns": video.stat().st_mtime_ns, "schema": 1}
-    cache = output / "pose-cache.json"
+    if model_complexity != 1:
+        signature["model_complexity"] = model_complexity
+    cache = output / ("pose-cache.json" if model_complexity == 1 else f"pose-cache-model-{model_complexity}.json")
     if reuse and cache.exists():
         saved = json.loads(cache.read_text(encoding="utf-8"))
         if saved["signature"] == signature:
             data = saved["extraction"]
             data["pose_sequence"] = [[Landmark(**point) for point in frame] for frame in data["pose_sequence"]]
             return PoseExtractionResult(**data)
-    estimator = MediaPipePoseEstimator()
+    estimator = MediaPipePoseEstimator(model_complexity=model_complexity)
     try:
         extraction = estimator.extract_with_metadata(str(video))
     finally:
@@ -42,20 +44,22 @@ def load_extraction(video: Path, output: Path, reuse: bool = False):
 
 def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extraction: bool = False,
                  recover_missing_poses: bool = False,
-                 posture_calibration: bool = False):
+                 posture_calibration: bool = False, model_complexity: int = 1):
     if not video.is_file():
         raise FileNotFoundError(video)
     output.mkdir(parents=True, exist_ok=True)
-    extraction = load_extraction(video, output, reuse_extraction)
+    extraction = load_extraction(video, output, reuse_extraction, model_complexity)
     if extraction.image_size is None:
         raise ValueError(f"No video frames decoded: {video}")
     if recover_missing_poses:
-        extraction = recover_pose_gaps(str(video), extraction)
+        extraction = recover_pose_gaps(str(video), extraction, model_complexity=model_complexity)
         (output / "recovered-pose-cache.json").write_text(
             json.dumps(asdict(extraction), allow_nan=False), encoding="utf-8",
         )
     metadata = {
         "video": video.name, "fps": extraction.fps, "image_size": extraction.image_size,
+        "model_complexity": model_complexity,
+        "recovery_model_complexity": model_complexity if recover_missing_poses else None,
         "source_frames": extraction.source_frame_count,
         "pose_frames": len(extraction.pose_sequence), "facing": facing.value,
         "source_frame_indices": extraction.source_frame_indices,
@@ -187,6 +191,8 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
         f"<h1>{html.escape(video.name)}</h1>",
         f"<p>{extraction.source_frame_count} source frames; {len(extraction.pose_sequence)} pose frames; "
         f"{extraction.fps} FPS; {extraction.image_size}. Facing: {facing.value} (review input).</p>",
+        f'<p>Primary model complexity: {model_complexity}; '
+        f'recovery model: {metadata["recovery_model_complexity"]} (if enabled).</p>',
         f'<p>Source-image pose re-detections: {len(extraction.recovered_frame_indices)}. '
         'These remain marked for review even when source-frame coverage is complete. No coordinate interpolation was used.</p>',
         f'<p>Experimental options: {html.escape(str(metadata["experimental_options"]))}.</p>',
@@ -238,10 +244,12 @@ def main():
     parser.add_argument("--reuse-extraction", action="store_true", help="Reuse a local pose cache if source size and mtime match")
     parser.add_argument("--recover-missing-poses", action="store_true", help="Opt in to source-image re-detection of bounded missing frames")
     parser.add_argument("--posture-calibration", action="store_true", help="Opt in to experimental standing-posture median and bottom P95 calibration")
+    parser.add_argument("--model-complexity", type=int, choices=(0, 1, 2), default=1,
+                        help="MediaPipe model (default 1); 0/2 may download official weights on first use")
     args = parser.parse_args()
     review_video(args.video, FacingDirection(args.facing), args.output or Path("artifacts/sample-review") / args.video.stem,
                  reuse_extraction=args.reuse_extraction, recover_missing_poses=args.recover_missing_poses,
-                 posture_calibration=args.posture_calibration)
+                 posture_calibration=args.posture_calibration, model_complexity=args.model_complexity)
 
 
 if __name__ == "__main__":
