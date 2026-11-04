@@ -44,7 +44,7 @@ def build(root=Path("artifacts/sample-review")):
                 "bottom_hip_angle_available": sum(rep.metrics["hip_flexion"].value is not None for rep in result.repetitions),
                 "calibration": result.calibration_method,
             })
-        if link:
+        if link and (output / link).is_file():
             links.append(f'<li><a href="{link}">{html.escape(label)}</a></li>')
     with (output / "model-comparison.csv").open("w", newline="", encoding="utf-8-sig") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
@@ -76,14 +76,19 @@ def build(root=Path("artifacts/sample-review")):
         parts.append('<tr>' + ''.join(f'<td>{html.escape(str(v))}</td>' for v in row.values()) + '</tr>')
     parts.extend([
         '</table></div><h2>Detailed outputs</h2><ul>', *links,
-        '</ul><p><a href="model-comparison.csv">Comparison CSV</a> | '
-        '<a href="joint-continuity.csv">Investigated joint displacements</a></p>',
-        '<h2>Original Full-model tracking before/after gaps</h2>'
-        '<img src="../sample_video6/tracking-gaps-overview.jpg" alt="Original frames and pose overlays around missing frames">',
-        '<h2>Heavy plus retry: deepest observed frames</h2>'
-        '<img src="heavy-recovered-bottoms.jpg" alt="Three deepest observed frames from Heavy plus retry">',
-        '</html>',
+        '</ul><p><a href="model-comparison.csv">Comparison CSV</a></p>',
     ])
+    if (output / "joint-continuity.csv").is_file():
+        parts.append('<p><a href="joint-continuity.csv">Investigated joint displacements</a></p>')
+    for title, source, description in [
+        ("Original Full-model tracking before/after gaps", "../sample_video6/tracking-gaps-overview.jpg",
+         "Original frames and pose overlays around missing frames"),
+        ("Heavy plus retry: deepest observed frames", "heavy-recovered-bottoms.jpg",
+         "Three deepest observed frames from Heavy plus retry"),
+    ]:
+        if (output / source).is_file():
+            parts.append(f'<h2>{title}</h2><img src="{source}" alt="{description}">')
+    parts.append('</html>')
     (output / "index.html").write_text('\n'.join(parts), encoding="utf-8")
     return rows
 
