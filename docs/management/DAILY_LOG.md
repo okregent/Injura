@@ -101,3 +101,7 @@
   result provenance, unsupported-range fallback and unchanged defaults/gap rules.
   All 48 cached experiment comparisons match; full suite 252 passed. Separate
   Heavy video 4 opt-in report gives 14/14 versus baseline 11/14.
+- Confirmed Full primary tracking covers Heavy's missing frames in videos 3/5;
+  isolated Full retries against Heavy anchors do not recover them. Retain Full
+  for those clips and record Heavy's limitation; no cross-model coordinate
+  mixing, confidence relaxation or promotion of candidates to measured reps.
