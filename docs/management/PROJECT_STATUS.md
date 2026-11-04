@@ -70,7 +70,7 @@ Full remains default. See the cross-video results in
 - Implement E4 feedback rules after measurement validation
 
 ## Latest Validation
-- Full local suite: 252 passed, including real-video extraction, phase/rep detection,
+- Full local suite: 257 passed, including real-video extraction, phase/rep detection,
   and integrated `SquatAnalyzer` analysis (2026-11-04).
 - External-library deprecation warnings remain; no test failures.
 - Initial sample review completed for videos 3-6. Videos 3 and 4 retain 6 and 14

@@ -55,7 +55,7 @@ See docs/sessions/2026-11-04.md for full context.
 - E3 empirical validation; core metrics, timing, consistency, and analyzer implemented
 - Per-metric availability and observed coverage implemented; calibrated confidence pending
 - Initial videos 3-6 reviewed; cycle-state fixes and unverified gap candidates implemented
-- Latest full test suite: 252 passed; see docs/validation/sample-review-2026-11-04.md
+- Latest full test suite: 257 passed; see docs/validation/sample-review-2026-11-04.md
 - Opt-in recovery/posture calibration and explicit Full/Heavy comparison implemented; Full remains default
 
 ### Next Steps

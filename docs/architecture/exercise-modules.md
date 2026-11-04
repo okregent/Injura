@@ -41,3 +41,19 @@ call intentionally makes no claim to have reviewed camera or foot orientation.
 Missing source/hip observations split rep detection. Results are measurement
 proxies; adaptive feedback remains a separate E4 responsibility. Refer to the
 metric catalog for timing, baseline, coverage, and missing-data contracts.
+
+## Measurement Availability Notices
+
+On the implementation branch, `engine/squat/feedback.py` provides
+`build_measurement_feedback(analysis)`. It returns Korean messages with stable
+machine-readable `code`, `level` (`info`/`review`), and one-based measured
+repetition/metric references including original quality reasons. Codes cover
+detected/no complete cycles, gap candidates, experimental calibration,
+unavailable/partial metrics, recovered observations, and measurement scope.
+
+This is an E4 foundation for explaining existing results, not a technique rule
+engine. It supplies no score, diagnosis, calibrated confidence, adaptive posture
+thresholds, or automatic side/model selection. Candidates never become measured
+repetitions or metric references. The function does not mutate analysis results.
+`tools.review_samples` includes notices in each side's JSON and HTML, with
+expandable evidence. Raw measurement values and provenance remain available.

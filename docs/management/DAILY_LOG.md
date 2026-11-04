@@ -105,3 +105,7 @@
   isolated Full retries against Heavy anchors do not recover them. Retain Full
   for those clips and record Heavy's limitation; no cross-model coordinate
   mixing, confidence relaxation or promotion of candidates to measured reps.
+- Started E4 foundation: Korean measurement availability notices with stable
+  codes and per-repetition metric evidence, integrated into sample JSON/HTML.
+  Full regression 257 passed; sample counts unchanged. Technique rule engine,
+  posture scoring, medical inference and adaptive thresholds remain pending.
