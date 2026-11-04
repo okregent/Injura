@@ -85,3 +85,7 @@
 - Prepared exact source-frame annotation workspace for 2,059 local frames;
   added boundary marking, review notes, browser draft storage and CSV export.
   UI logic smoke checks passed. Human boundary annotation remains pending.
+- User deferred manual labeling. Continued autonomously with an offline P5/P95
+  fallback experiment: 32 baseline boundary parity checks passed; Heavy video 4
+  left improves 11 to 14, other 30 combination counts unchanged. Inspected source
+  contact sheet; production defaults/calibration unchanged, independent validation pending.
