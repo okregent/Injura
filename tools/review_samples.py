@@ -20,6 +20,7 @@ from engine.pose.types import Landmark, PoseExtractionResult
 from engine.pose.recovery import recover_pose_gaps
 from engine.squat.analyzer import SquatAnalyzer
 from engine.squat.feedback import build_measurement_feedback
+from engine.squat.rules import load_rules, evaluate_rules
 
 
 def load_extraction(video: Path, output: Path, reuse: bool = False, model_complexity: int = 1):
@@ -46,9 +47,10 @@ def load_extraction(video: Path, output: Path, reuse: bool = False, model_comple
 def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extraction: bool = False,
                  recover_missing_poses: bool = False,
                  posture_calibration: bool = False, model_complexity: int = 1,
-                 robust_fallback: bool = False):
+                 robust_fallback: bool = False, rules=()):
     if robust_fallback and not posture_calibration:
         raise ValueError("robust fallback requires posture calibration")
+    rules = tuple(rules)
     if not video.is_file():
         raise FileNotFoundError(video)
     output.mkdir(parents=True, exist_ok=True)
@@ -72,6 +74,7 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                                  "posture_calibration": posture_calibration,
                                  "robust_fallback": robust_fallback},
         "recording_conditions": "Unverified; normalized knee travel withheld",
+        "configured_rules": [asdict(rule) for rule in rules],
         "sides": {},
     }
     rows = []
@@ -86,6 +89,7 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                                               use_robust_fallback=robust_fallback)
             side_data = {
                 "measurement_feedback": [asdict(item) for item in build_measurement_feedback(analysis)],
+                "rule_evaluations": [asdict(item) for item in evaluate_rules(analysis, rules)],
                 "issues": analysis.issues,
                 "consistency": {name: asdict(value) for name, value in analysis.consistency.items()},
                 "repetitions": [],
@@ -227,6 +231,14 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                 parts.append('</ul></details>')
             parts.append('</li>')
         parts.append('</ul>')
+        if data["rule_evaluations"]:
+            parts.append('<h3>설정 규칙 평가</h3><p>설정한 수치 조건의 비교 결과입니다. 자세 점수나 검증된 코칭 기준을 의미하지 않습니다.</p><ul>')
+            for evaluation in data["rule_evaluations"]:
+                text = (f"반복 {evaluation['repetition']} · {evaluation['rule_id']}: {evaluation['status']} · "
+                        f"{evaluation['value']} {evaluation['unit']} {evaluation['comparator']} {evaluation['threshold']} · "
+                        f"{evaluation['message'] or evaluation['reason'] or ''}")
+                parts.append('<li>' + html.escape(text) + '</li>')
+            parts.append('</ul>')
     parts.append('<div class="scroll"><table><tr>' + ''.join(f"<th>{html.escape(key)}</th>" for key in columns) + '</tr>')
     for row in rows:
         parts.append('<tr>' + ''.join(
@@ -260,6 +272,7 @@ def main():
     parser.add_argument("video", type=Path)
     parser.add_argument("--facing", required=True, choices=[direction.value for direction in FacingDirection])
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--rules", type=Path, help="Explicit JSON measurement rules; no built-in technique thresholds")
     parser.add_argument("--reuse-extraction", action="store_true", help="Reuse a local pose cache if source size and mtime match")
     parser.add_argument("--recover-missing-poses", action="store_true", help="Opt in to source-image re-detection of bounded missing frames")
     parser.add_argument("--posture-calibration", action="store_true", help="Opt in to experimental standing-posture median and bottom P95 calibration")
@@ -269,10 +282,14 @@ def main():
     args = parser.parse_args()
     if args.robust_fallback and not args.posture_calibration:
         parser.error("--robust-fallback requires --posture-calibration")
+    try:
+        rules = load_rules(args.rules) if args.rules else []
+    except (ValueError, OSError) as error:
+        parser.error(str(error))
     review_video(args.video, FacingDirection(args.facing), args.output or Path("artifacts/sample-review") / args.video.stem,
                  reuse_extraction=args.reuse_extraction, recover_missing_poses=args.recover_missing_poses,
                  posture_calibration=args.posture_calibration, model_complexity=args.model_complexity,
-                 robust_fallback=args.robust_fallback)
+                 robust_fallback=args.robust_fallback, rules=rules)
 
 
 if __name__ == "__main__":
