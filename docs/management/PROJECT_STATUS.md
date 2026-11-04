@@ -9,6 +9,12 @@
 status below refer to `feature/biomechanics`. Its engine code has not been merged
 into `main`.
 
+**Latest sample validation:** Heavy plus recovery improves video 6 to three
+complete detections per side, but regresses on videos 3/5 and on video 4's left
+side compared with Full under the same experimental calibration/recovery.
+Full remains default. See the cross-video results in
+[sample validation](../validation/sample-review-2026-11-04.md).
+
 ## Completed
 - Product name finalised: Injura
 - Documentation structure established (`docs/`)

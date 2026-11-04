@@ -133,3 +133,41 @@ integration, model selection, model-separated caching, source-change cache
 invalidation, and matching the recovery model to primary extraction. Heavy is
 still an experiment on these recordings; evaluate independent recordings and
 annotated anatomy/boundaries before adopting a new default or feedback rules.
+
+## Follow-up: Heavy on Videos 3-5
+
+Compared all four videos with identical experimental posture calibration,
+unchanged confidence/association thresholds, and model-matched source-image
+recovery. Facing direction is the reviewed input: right for video 4, left for
+3/5/6. User count references are displayed only, never supplied to analysis.
+
+| Video | User reference | Full + retry, left/right | Heavy + retry, left/right | Heavy candidates, left/right |
+|---|---|---|---|---|
+| 3 | 6-7, starts at bottom | 6 / 6 | 5 / 5 | 1 / 1 |
+| 4 | 14 | 14 / 14 | 11 / 14 | 0 / 0 |
+| 5 | 2 | 2 / 2 | 1 / 1 | 1 / 1 |
+| 6 | 3 | 0 / 0 | 3 / 3 | 0 / 0 |
+
+Heavy without recovery produces 1/1, 11/14, 0/0, and 2/2 complete detections
+respectively. Full without recovery but WITH posture calibration produces
+6/6, 14/14, 1/1, and 0/0; earlier baseline results used different calibration.
+Heavy retry recovers 9/0/3/3 frames across videos 3/4/5/6. A greater total pose
+coverage therefore does not necessarily yield more complete repetitions.
+
+Bottom knee and hip angles are available on the left for all detected reps in
+videos 3/5 and on the right for all 14 detections in video 4, for both models.
+The opposite sides fail quality checks; video 6 lacks these angles on both
+sides even with Heavy. Inspected representative bottom overlays from videos
+3/4/5. This is visual review, not joint-coordinate or angle ground truth.
+
+Keep Full as default: Heavy improves the count on video 6 but regresses on
+other recordings. Do not automatically select a model or body side using the
+known counts. Next investigate the remaining gaps in videos 3/5 and the
+left-side cycle/calibration differences in video 4 against annotated frames.
+
+To reproduce, run the Heavy recovery command above for each video 3-5, changing
+the input and output directory to `videoN-heavy-recovered`; use `--facing right`
+for video 4. Then run `python -m tools.build_batch_comparison`. This reads both
+raw/recovered model caches and writes local `model-comparison/batch-comparison.html`
+and CSV. Model/recovery targeted regression tests: **19 passed**. The prior
+full suite result remains 245 passed; engine behavior was not changed here.

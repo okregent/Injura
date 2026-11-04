@@ -74,3 +74,7 @@
   reaches 3 with Heavy recovery. Video 6 bottom joint angles remain unavailable.
   Full stays the default; independent accuracy validation remains pending.
 - Full suite: 245 passed. Local comparison artifacts are excluded from Git.
+- Cross-video Heavy validation: with matched recovery/calibration, Heavy has
+  5/5, 11/14, 1/1, 3/3 left/right detections on videos 3/4/5/6 versus Full's
+  6/6, 14/14, 2/2, 0/0. Full remains default. Added local batch comparison
+  HTML/CSV generation; inspected representative overlays. Targeted tests: 19 passed.
