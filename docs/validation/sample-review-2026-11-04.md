@@ -369,3 +369,30 @@ report from cached Heavy extraction: 14/14 complete detections versus the
 preserved baseline 11/14. This enables further testing; it does not validate
 physical angles, exact timing, or independent generalization. Full and existing
 calibration remain default; original annotation files are unchanged.
+
+## Remaining Heavy Gaps: Tracking Versus Static Retry
+
+Verified that Full's primary tracking cache already contains video 3 frame 444
+and video 5 frame 230. These are not intrinsically undecodable source images.
+The complete Full pipeline with its existing optional recovery/calibration
+detects 6 and 2 complete repetitions per side on those recordings.
+
+As a diagnostic only, retried Full static detection against the original Heavy
+gap anchors while preserving confidence and association settings. Neither gap
+is recovered. For video 3 (anchors 442/445), one proposal fails association;
+the probe covers both 443 and 444, so rejection cannot be attributed specifically
+to 444. For video 5 (229/231), no usable static proposal is produced. Heavy's
+own isolated retry behavior remains unchanged. Streaming tracking success must
+not be equated with isolated static detection or cross-model compatibility.
+
+Extended `python -m tools.build_model_diagnostics` to save this evidence in
+`diagnostics/gap-retry.json` and the existing local HTML. Cross-model proposals
+are discarded after inspection; no coordinates, caches, confidence settings,
+association limits or metrics are modified. Full detection availability is not
+an anatomical accuracy guarantee. The tool run, compilation and whitespace
+checks passed; engine behavior is unchanged from the 252-test regression run.
+
+Use Full for the current video 3/5 workflow; treat their remaining Heavy gaps
+as known experimental limitations rather than relaxing acceptance or promoting
+candidates to measured repetitions. Video 6 remains the case where Heavy helps.
+Automatic model selection and cross-model recovery remain outside the contract.
