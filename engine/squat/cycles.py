@@ -6,6 +6,27 @@ from statistics import median
 import math
 
 
+def robust_position_thresholds(values):
+    """Experimental P5/P95 fallback; no posture or accuracy guarantee.
+
+    Ignore nonfinite observations and retain extrema fallback if fewer than five
+    usable samples or a collapsed central range cannot support calibration.
+    """
+    ordered = sorted(value for value in values if value is not None and math.isfinite(value))
+    if len(ordered) < 5:
+        return None
+
+    def percentile(fraction):
+        rank = fraction * (len(ordered) - 1)
+        lower = int(rank)
+        return ordered[lower] + (rank - lower) * (ordered[min(lower + 1, len(ordered) - 1)] - ordered[lower])
+
+    standing, bottom = percentile(.05), percentile(.95)
+    if standing >= bottom:
+        return None
+    return SquatPhaseThresholds(standing, bottom, .03 * (bottom - standing))
+
+
 def standing_posture_reference(features: SquatFeatures, max_flexion: float = 25.0):
     """Experimental reference from near-extended knees, not a posture diagnosis.
 

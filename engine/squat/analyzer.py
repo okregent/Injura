@@ -15,7 +15,7 @@ from engine.squat.phases import (
 )
 from engine.squat.reps import SquatRep, detect_squat_reps
 from engine.squat.smoothing import smooth_squat_phases
-from engine.squat.cycles import detect_cycle_phases, standing_posture_reference
+from engine.squat.cycles import detect_cycle_phases, standing_posture_reference, robust_position_thresholds
 from engine.squat.metrics.bottom_angles import calculate_bottom_joint_angles
 from engine.squat.metrics.consistency import ConsistencyResult, calculate_consistency
 from engine.squat.metrics.depth import calculate_squat_depth_from_features
@@ -64,6 +64,7 @@ class SquatAnalyzer(ExerciseAnalyzer):
         heel_lift_threshold: float = 0.005,
         candidate_max_gap_seconds: float = 0.2,
         use_posture_calibration: bool = False,
+        use_robust_fallback: bool = False,
     ) -> SquatAnalysisResult:
         """Analyze complete reps within uninterrupted, usable hip observations.
 
@@ -73,6 +74,8 @@ class SquatAnalyzer(ExerciseAnalyzer):
         """
         if extraction.image_size is None:
             raise ValueError("source image size is unavailable")
+        if use_robust_fallback and not use_posture_calibration:
+            raise ValueError("robust fallback requires posture calibration")
         if not isinstance(facing_direction, FacingDirection):
             raise ValueError("unsupported facing_direction")
         if not isinstance(phase_min_duration, int) or phase_min_duration < 1:
@@ -105,6 +108,14 @@ class SquatAnalyzer(ExerciseAnalyzer):
                 issues.append(f"Experimental standing calibration uses {samples} near-extended-knee frames; requires review.")
             else:
                 issues.append("Posture calibration unavailable; retained sequence-extrema calibration.")
+                if use_robust_fallback:
+                    robust = robust_position_thresholds(features.hip_y_values)
+                    if robust is not None:
+                        thresholds = robust
+                        calibration_method = "position_p05_p95_fallback_experimental"
+                        issues[-1] = "Posture calibration unavailable; using experimental position P5/P95 fallback; requires review."
+                    else:
+                        issues.append("Experimental position fallback unavailable; retained sequence-extrema calibration.")
 
         spans = []
         start = None

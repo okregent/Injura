@@ -44,7 +44,10 @@ def load_extraction(video: Path, output: Path, reuse: bool = False, model_comple
 
 def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extraction: bool = False,
                  recover_missing_poses: bool = False,
-                 posture_calibration: bool = False, model_complexity: int = 1):
+                 posture_calibration: bool = False, model_complexity: int = 1,
+                 robust_fallback: bool = False):
+    if robust_fallback and not posture_calibration:
+        raise ValueError("robust fallback requires posture calibration")
     if not video.is_file():
         raise FileNotFoundError(video)
     output.mkdir(parents=True, exist_ok=True)
@@ -65,7 +68,8 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
         "source_frame_indices": extraction.source_frame_indices,
         "recovered_frame_indices": extraction.recovered_frame_indices,
         "experimental_options": {"recover_missing_poses": recover_missing_poses,
-                                 "posture_calibration": posture_calibration},
+                                 "posture_calibration": posture_calibration,
+                                 "robust_fallback": robust_fallback},
         "recording_conditions": "Unverified; normalized knee travel withheld",
         "sides": {},
     }
@@ -77,7 +81,8 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
     try:
         for side in BodySide:
             analysis = SquatAnalyzer().analyze(extraction, side=side, facing_direction=facing,
-                                              use_posture_calibration=posture_calibration)
+                                              use_posture_calibration=posture_calibration,
+                                              use_robust_fallback=robust_fallback)
             side_data = {
                 "issues": analysis.issues,
                 "consistency": {name: asdict(value) for name, value in analysis.consistency.items()},
@@ -207,6 +212,7 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
     ]
     for side, data in metadata["sides"].items():
         parts.append(f"<p><b>{side}: {len(data['repetitions'])} uninterrupted detected reps; {len(data['candidates'])} unverified candidates.</b> "
+                     + f"Calibration: {html.escape(data['calibration_method'])}. "
                      + html.escape(" ".join(data["issues"])) + "</p>")
     parts.append('<div class="scroll"><table><tr>' + ''.join(f"<th>{html.escape(key)}</th>" for key in columns) + '</tr>')
     for row in rows:
@@ -244,12 +250,16 @@ def main():
     parser.add_argument("--reuse-extraction", action="store_true", help="Reuse a local pose cache if source size and mtime match")
     parser.add_argument("--recover-missing-poses", action="store_true", help="Opt in to source-image re-detection of bounded missing frames")
     parser.add_argument("--posture-calibration", action="store_true", help="Opt in to experimental standing-posture median and bottom P95 calibration")
+    parser.add_argument("--robust-fallback", action="store_true", help="Opt in to P5/P95 fallback when posture calibration is unavailable; requires --posture-calibration")
     parser.add_argument("--model-complexity", type=int, choices=(0, 1, 2), default=1,
                         help="MediaPipe model (default 1); 0/2 may download official weights on first use")
     args = parser.parse_args()
+    if args.robust_fallback and not args.posture_calibration:
+        parser.error("--robust-fallback requires --posture-calibration")
     review_video(args.video, FacingDirection(args.facing), args.output or Path("artifacts/sample-review") / args.video.stem,
                  reuse_extraction=args.reuse_extraction, recover_missing_poses=args.recover_missing_poses,
-                 posture_calibration=args.posture_calibration, model_complexity=args.model_complexity)
+                 posture_calibration=args.posture_calibration, model_complexity=args.model_complexity,
+                 robust_fallback=args.robust_fallback)
 
 
 if __name__ == "__main__":

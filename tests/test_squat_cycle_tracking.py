@@ -130,3 +130,46 @@ def test_insufficient_standing_samples_leave_extrema_calibration_unchanged():
     alternative = analyze(use_posture_calibration=True)
     assert alternative.calibration_method == "sequence_extrema"
     assert any("unavailable" in issue for issue in alternative.issues)
+
+
+def test_robust_fallback_limits_isolated_extrema():
+    from engine.squat.cycles import robust_position_thresholds
+    result = robust_position_thresholds([-10] + [.3] * 20 + [.8] * 20 + [10])
+    assert result.standing_y == pytest.approx(.3)
+    assert result.bottom_y == pytest.approx(.8)
+
+
+@pytest.mark.parametrize("values", [[0, 1, 2, 3], [1] * 30 + [20], [None, float('nan'), float('inf'), 0, 1, 2, 3]])
+def test_robust_fallback_withholds_unsupported_range(values):
+    from engine.squat.cycles import robust_position_thresholds
+    assert robust_position_thresholds(values) is None
+
+
+def test_robust_fallback_requires_explicit_posture_mode():
+    with pytest.raises(ValueError, match="requires posture"):
+        analyze(use_robust_fallback=True)
+
+
+def test_robust_fallback_records_method_and_does_not_bridge_gaps():
+    extraction = sample_extraction()
+    extraction.source_frame_indices = [i if i < 5 else i + 1 for i in range(11)]
+    extraction.source_frame_count = 12
+    result = analyze(extraction, use_posture_calibration=True, use_robust_fallback=True)
+    assert result.calibration_method == "position_p05_p95_fallback_experimental"
+    assert result.repetitions == []
+    assert len(result.candidates) == 1
+    assert any("requires review" in issue for issue in result.issues)
+
+
+def test_robust_fallback_preserves_successful_posture_calibration():
+    extraction = sample_extraction(two_reps=True)
+    indices = side_landmarks(BodySide.LEFT)
+    for frame in extraction.pose_sequence:
+        if frame[indices["hip"]].y == .3:
+            frame[indices["knee"]].x = frame[indices["hip"]].x
+            frame[indices["ankle"]].x = frame[indices["hip"]].x
+    expected = analyze(extraction, use_posture_calibration=True)
+    actual = analyze(extraction, use_posture_calibration=True, use_robust_fallback=True)
+    assert actual.calibration_method == expected.calibration_method
+    assert actual.phase_thresholds == expected.phase_thresholds
+    assert actual.repetitions == expected.repetitions

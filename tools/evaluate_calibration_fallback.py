@@ -79,6 +79,12 @@ def evaluate(root=Path("artifacts/sample-review"), numbers=(3, 4, 5, 6)):
                     else:
                         eligible = False
                 proposed = replay(result.features, extraction.source_frame_indices, threshold)
+                integrated = SquatAnalyzer().analyze(
+                    extraction, side=side, facing_direction=facing,
+                    use_posture_calibration=True, use_robust_fallback=True,
+                )
+                if proposed != [r.rep for r in integrated.repetitions] or threshold != integrated.phase_thresholds:
+                    raise AssertionError("Opt-in analyzer diverged from offline hypothesis")
                 source = extraction.source_frame_indices
                 shifts = [abs(source[getattr(a, field)] - source[getattr(b, field)])
                           for a, b in zip(baseline, proposed) for field in ("start_index", "end_index")]
