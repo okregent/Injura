@@ -78,3 +78,7 @@
   5/5, 11/14, 1/1, 3/3 left/right detections on videos 3/4/5/6 versus Full's
   6/6, 14/14, 2/2, 0/0. Full remains default. Added local batch comparison
   HTML/CSV generation; inspected representative overlays. Targeted tests: 19 passed.
+- Diagnosed Heavy gaps at video 3 frame 444 and video 5 frame 230 as unusable
+  static pose proposals, not association rejections. Video 4's left calibration
+  fallback lacks initial standing and two bottom crossings. Added local evidence
+  tooling, phase CSV and plots; production thresholds/behavior stay unchanged.
