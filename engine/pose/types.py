@@ -1,6 +1,6 @@
 #dataclass is a decorator
 #List is to provide type info
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 import math
 
@@ -23,8 +23,14 @@ class PoseExtractionResult:
     source_frame_count: int
     image_size: Optional[Tuple[int, int]] = None
     fps: Optional[float] = None
+    recovered_frame_indices: List[int] = field(default_factory=list)
 
     def __post_init__(self) -> None:
+        if (
+            self.recovered_frame_indices != sorted(set(self.recovered_frame_indices))
+            or not set(self.recovered_frame_indices).issubset(self.source_frame_indices)
+        ):
+            raise ValueError("recovered_frame_indices must be sorted unique source indices in the result")
         if self.fps is not None and (
             isinstance(self.fps, bool) or not math.isfinite(self.fps) or self.fps <= 0
         ):

@@ -1,6 +1,25 @@
 """Position-based squat state transitions with bottom-exit hysteresis."""
 
 from engine.squat.phases import SquatPhase, SquatPhaseThresholds
+from engine.squat.features import SquatFeatures
+from statistics import median
+import math
+
+
+def standing_posture_reference(features: SquatFeatures, max_flexion: float = 25.0):
+    """Experimental reference from near-extended knees, not a posture diagnosis.
+
+    A median reduces sensitivity to isolated hip-position extrema during setup.
+    Require at least five valid samples; otherwise report no usable reference.
+    The threshold is an engineering proxy requiring independent validation.
+    """
+    values = [
+        y for index, (y, angle) in enumerate(zip(features.hip_y_values, features.knee_angles))
+        if y is not None and angle is not None and math.isfinite(y) and math.isfinite(angle)
+        and features.valid_masks["hip_y"][index] and features.valid_masks["knee_angle"][index]
+        and 0 <= angle <= max_flexion
+    ]
+    return (median(values), len(values)) if len(values) >= 5 else (None, len(values))
 
 
 def detect_cycle_phases(values: list[float], thresholds: SquatPhaseThresholds) -> list[SquatPhase]:

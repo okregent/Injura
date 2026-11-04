@@ -92,3 +92,41 @@ def test_unobserved_bottom_does_not_become_candidate_from_interpolation():
 def test_invalid_candidate_gap_setting_rejected(seconds):
     with pytest.raises(ValueError, match="finite and nonnegative"):
         analyze(candidate_max_gap_seconds=seconds)
+
+
+def test_standing_proxy_uses_median_instead_of_single_extreme():
+    from engine.squat.cycles import standing_posture_reference
+    from tests.test_squat_remaining_metrics import sample_features
+    features = sample_features()
+    features.hip_y_values = [.01, .50, .51, .50, .49, .50, .8, .8, .8, .8, .8]
+    features.knee_angles = [0] * 6 + [90] * 5
+    assert standing_posture_reference(features) == (.50, 6)
+
+
+def test_standing_proxy_requires_enough_valid_near_extended_samples():
+    from engine.squat.cycles import standing_posture_reference
+    from tests.test_squat_remaining_metrics import sample_features
+    features = sample_features()
+    features.knee_angles = [90] * 11
+    assert standing_posture_reference(features) == (None, 0)
+
+
+def test_experimental_calibration_is_explicit_and_does_not_change_default():
+    extraction = sample_extraction(two_reps=True)
+    indices = side_landmarks(BodySide.LEFT)
+    for frame in extraction.pose_sequence:
+        if frame[indices["hip"]].y == .3:
+            frame[indices["knee"]].x = frame[indices["hip"]].x
+            frame[indices["ankle"]].x = frame[indices["hip"]].x
+    baseline = analyze(extraction)
+    alternative = analyze(extraction, use_posture_calibration=True)
+    assert baseline.calibration_method == "sequence_extrema"
+    assert alternative.calibration_method == "posture_median_p95_experimental"
+    assert alternative.phase_thresholds.bottom_y <= baseline.phase_thresholds.bottom_y
+    assert any("Experimental" in issue for issue in alternative.issues)
+
+
+def test_insufficient_standing_samples_leave_extrema_calibration_unchanged():
+    alternative = analyze(use_posture_calibration=True)
+    assert alternative.calibration_method == "sequence_extrema"
+    assert any("unavailable" in issue for issue in alternative.issues)

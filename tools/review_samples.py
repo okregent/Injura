@@ -17,6 +17,7 @@ from engine.pose.mediapipe_estimator import MediaPipePoseEstimator
 from engine.pose.orientation import FacingDirection
 from engine.pose.side import BodySide, side_landmarks
 from engine.pose.types import Landmark, PoseExtractionResult
+from engine.pose.recovery import recover_pose_gaps
 from engine.squat.analyzer import SquatAnalyzer
 
 
@@ -39,18 +40,28 @@ def load_extraction(video: Path, output: Path, reuse: bool = False):
     return extraction
 
 
-def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extraction: bool = False):
+def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extraction: bool = False,
+                 recover_missing_poses: bool = False,
+                 posture_calibration: bool = False):
     if not video.is_file():
         raise FileNotFoundError(video)
     output.mkdir(parents=True, exist_ok=True)
     extraction = load_extraction(video, output, reuse_extraction)
     if extraction.image_size is None:
         raise ValueError(f"No video frames decoded: {video}")
+    if recover_missing_poses:
+        extraction = recover_pose_gaps(str(video), extraction)
+        (output / "recovered-pose-cache.json").write_text(
+            json.dumps(asdict(extraction), allow_nan=False), encoding="utf-8",
+        )
     metadata = {
         "video": video.name, "fps": extraction.fps, "image_size": extraction.image_size,
         "source_frames": extraction.source_frame_count,
         "pose_frames": len(extraction.pose_sequence), "facing": facing.value,
         "source_frame_indices": extraction.source_frame_indices,
+        "recovered_frame_indices": extraction.recovered_frame_indices,
+        "experimental_options": {"recover_missing_poses": recover_missing_poses,
+                                 "posture_calibration": posture_calibration},
         "recording_conditions": "Unverified; normalized knee travel withheld",
         "sides": {},
     }
@@ -61,7 +72,8 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
     cap = cv2.VideoCapture(str(video))
     try:
         for side in BodySide:
-            analysis = SquatAnalyzer().analyze(extraction, side=side, facing_direction=facing)
+            analysis = SquatAnalyzer().analyze(extraction, side=side, facing_direction=facing,
+                                              use_posture_calibration=posture_calibration)
             side_data = {
                 "issues": analysis.issues,
                 "consistency": {name: asdict(value) for name, value in analysis.consistency.items()},
@@ -70,6 +82,8 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                 "hip_y_values": analysis.features.hip_y_values,
                 "hip_visibility": [frame[side_landmarks(side)["hip"]].visibility for frame in extraction.pose_sequence],
                 "phases": [phase.name for phase in analysis.phases],
+                "calibration_method": analysis.calibration_method,
+                "phase_thresholds": asdict(analysis.phase_thresholds) if analysis.phase_thresholds else None,
             }
             metadata["sides"][side.value] = side_data
             for number, candidate in enumerate(analysis.candidates, 1):
@@ -173,6 +187,9 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
         f"<h1>{html.escape(video.name)}</h1>",
         f"<p>{extraction.source_frame_count} source frames; {len(extraction.pose_sequence)} pose frames; "
         f"{extraction.fps} FPS; {extraction.image_size}. Facing: {facing.value} (review input).</p>",
+        f'<p>Source-image pose re-detections: {len(extraction.recovered_frame_indices)}. '
+        'These remain marked for review even when source-frame coverage is complete. No coordinate interpolation was used.</p>',
+        f'<p>Experimental options: {html.escape(str(metadata["experimental_options"]))}.</p>',
         '<p>Compare both sides manually. Rep counts are detector outputs, not verified ground truth. '
         'Gaps may split or exclude reps. Angles are 2D proxies. Foot normalization is withheld pending recording review.</p>',
         '<p>Units: angles in degrees; hip/knee gap and heel rise in image-height units; '
@@ -209,6 +226,7 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                       "pose_frames": len(extraction.pose_sequence),
                       "reps": {side: len(data["repetitions"]) for side, data in metadata["sides"].items()},
                       "candidates": {side: len(data["candidates"]) for side, data in metadata["sides"].items()},
+                      "recovered_frames": len(extraction.recovered_frame_indices),
                       "report": str((output / "index.html").resolve())}), flush=True)
 
 
@@ -218,9 +236,12 @@ def main():
     parser.add_argument("--facing", required=True, choices=[direction.value for direction in FacingDirection])
     parser.add_argument("--output", type=Path)
     parser.add_argument("--reuse-extraction", action="store_true", help="Reuse a local pose cache if source size and mtime match")
+    parser.add_argument("--recover-missing-poses", action="store_true", help="Opt in to source-image re-detection of bounded missing frames")
+    parser.add_argument("--posture-calibration", action="store_true", help="Opt in to experimental standing-posture median and bottom P95 calibration")
     args = parser.parse_args()
     review_video(args.video, FacingDirection(args.facing), args.output or Path("artifacts/sample-review") / args.video.stem,
-                 reuse_extraction=args.reuse_extraction)
+                 reuse_extraction=args.reuse_extraction, recover_missing_poses=args.recover_missing_poses,
+                 posture_calibration=args.posture_calibration)
 
 
 if __name__ == "__main__":

@@ -11,11 +11,11 @@ from engine.pose.types import PoseExtractionResult
 from engine.squat.assessment import MetricOutcome, assess_metric
 from engine.squat.features import SquatFeatures, extract_squat_features
 from engine.squat.phases import (
-    SquatPhase, calculate_squat_phase_thresholds,
+    SquatPhase, SquatPhaseThresholds, calculate_squat_phase_thresholds,
 )
 from engine.squat.reps import SquatRep, detect_squat_reps
 from engine.squat.smoothing import smooth_squat_phases
-from engine.squat.cycles import detect_cycle_phases
+from engine.squat.cycles import detect_cycle_phases, standing_posture_reference
 from engine.squat.metrics.bottom_angles import calculate_bottom_joint_angles
 from engine.squat.metrics.consistency import ConsistencyResult, calculate_consistency
 from engine.squat.metrics.depth import calculate_squat_depth_from_features
@@ -51,6 +51,8 @@ class SquatAnalysisResult:
     consistency: Dict[str, ConsistencyResult]
     issues: List[str]
     candidates: List[SquatRepCandidate] = field(default_factory=list)
+    calibration_method: str = "sequence_extrema"
+    phase_thresholds: Optional[SquatPhaseThresholds] = None
 
 
 class SquatAnalyzer(ExerciseAnalyzer):
@@ -61,6 +63,7 @@ class SquatAnalyzer(ExerciseAnalyzer):
         visibility_threshold: float = 0.5, phase_min_duration: int = 3,
         heel_lift_threshold: float = 0.005,
         candidate_max_gap_seconds: float = 0.2,
+        use_posture_calibration: bool = False,
     ) -> SquatAnalysisResult:
         """Analyze complete reps within uninterrupted, usable hip observations.
 
@@ -88,6 +91,20 @@ class SquatAnalyzer(ExerciseAnalyzer):
             )
         except ValueError as error:
             return SquatAnalysisResult(features, phases, [], {}, [str(error)])
+
+        calibration_method = "sequence_extrema"
+        if use_posture_calibration:
+            standing, samples = standing_posture_reference(features)
+            ordered = sorted(value for value in features.hip_y_values if value is not None)
+            rank = .95 * (len(ordered) - 1)
+            lower = int(rank)
+            bottom = ordered[lower] + (rank - lower) * (ordered[min(lower + 1, len(ordered) - 1)] - ordered[lower])
+            if standing is not None and standing < bottom:
+                thresholds = SquatPhaseThresholds(standing, bottom, .03 * (bottom - standing))
+                calibration_method = "posture_median_p95_experimental"
+                issues.append(f"Experimental standing calibration uses {samples} near-extended-knee frames; requires review.")
+            else:
+                issues.append("Posture calibration unavailable; retained sequence-extrema calibration.")
 
         spans = []
         start = None
@@ -198,4 +215,5 @@ class SquatAnalyzer(ExerciseAnalyzer):
                 getattr(item.metrics[name].value, attribute) if item.metrics[name].value is not None else None
                 for item in analyses
             ])
-        return SquatAnalysisResult(features, phases, analyses, consistency, issues, candidates)
+        return SquatAnalysisResult(features, phases, analyses, consistency, issues, candidates,
+                                   calibration_method, thresholds)

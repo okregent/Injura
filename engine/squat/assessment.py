@@ -15,6 +15,7 @@ class MetricQuality:
     coverage: float
     status: str
     reason: Optional[str]
+    recovered_frames: int = 0
 
 
 @dataclass
@@ -39,5 +40,9 @@ def assess_metric(
         for index in range(rep.start_index, rep.end_index + 1)
     )
     coverage = valid / expected
-    status = "unavailable" if not available else ("available" if coverage == 1 else "partial")
-    return MetricQuality(valid, expected, coverage, status, reason)
+    recovered = sum(source[rep.start_index] <= index <= source[rep.end_index]
+                    for index in extraction.recovered_frame_indices)
+    status = "unavailable" if not available else ("available" if coverage == 1 and not recovered else "partial")
+    if available and recovered:
+        reason = (reason + " " if reason else "") + "Includes source-image pose re-detections; requires review."
+    return MetricQuality(valid, expected, coverage, status, reason, recovered)
