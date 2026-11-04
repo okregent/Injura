@@ -109,3 +109,6 @@
   codes and per-repetition metric evidence, integrated into sample JSON/HTML.
   Full regression 257 passed; sample counts unchanged. Technique rule engine,
   posture scoring, medical inference and adaptive thresholds remain pending.
+- Added explicit JSON measurement-rule engine with empty defaults, numeric
+  evidence and quality/calibration withholding. Optional CLI/report integration;
+  full suite 277 passed. No built-in coaching thresholds or default-model change.
