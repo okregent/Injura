@@ -171,3 +171,37 @@ for video 4. Then run `python -m tools.build_batch_comparison`. This reads both
 raw/recovered model caches and writes local `model-comparison/batch-comparison.html`
 and CSV. Model/recovery targeted regression tests: **19 passed**. The prior
 full suite result remains 245 passed; engine behavior was not changed here.
+
+## Failure Diagnosis: Heavy Gaps and Video 4 Side Differences
+
+Reproduced the remaining Heavy failures without modifying production parameters.
+Video 3's candidate spans source 417-484 and retains missing frame 444;
+video 5's candidates span 213-255 (left) / 218-251 (right) and retain frame 230.
+Both images decode successfully. Repeating recovery on the original bounding
+anchors (442/445 and 229/231) reproduces the gaps. Video 3 recovers 443 but not
+444; video 5 recovers neither proposal at 230. No proposed pose is rejected by
+the association guard in these isolated runs. Thus these targets fail to yield
+a usable 33-landmark proposal, rather than being discarded by association.
+Original images show upper-body occlusion by the plate; this does not establish
+the precise internal reason for detector failure. Missing frames remain missing.
+
+Video 4 has no missing source/hip observations. Heavy's left side falls back to
+sequence extrema because posture calibration is unavailable; the right uses
+posture median/P95. Left standing/bottom-entry cutoffs are 0.489409/0.613386;
+right cutoffs are 0.539181/0.653438 (source-normalized hip y).
+
+- The right's first repetition (5-26) has no preceding left standing state;
+  left remains UNKNOWN through frame 25.
+- The windows 36-70 and 240-280 have left hip maxima 0.610626 and 0.606664,
+  below the left bottom-entry cutoff. Descents return to standing without a
+  detected bottom, explaining the other two omitted repetitions.
+- Other matched repetitions can still have different boundaries: for example,
+  left 366-409 versus right 380-409. Count agreement is not timing validation.
+
+`python -m tools.build_model_diagnostics` creates local original-frame strips,
+the observed hip/threshold plot, per-frame phase CSV, isolated retry JSON, and
+`model-comparison/diagnostics/index.html`. The plot and representative source
+images were visually inspected. No interpolation, threshold relaxation, automatic
+side/model choice, or engine behavior change was introduced. Next work should
+annotate boundaries and visible joints, then evaluate calibration changes on
+independent recordings; do not tune to these known counts.
