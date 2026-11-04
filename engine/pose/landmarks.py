@@ -9,13 +9,14 @@ class PoseLandmark(IntEnum):
     RIGHT_ELBOW = 14
 
     LEFT_WRIST = 15
-    RIGHT_WIRST = 16
+    RIGHT_WRIST = 16
+    RIGHT_WIRST = RIGHT_WRIST
 
     LEFT_HIP = 23
     RIGHT_HIP = 24
 
     LEFT_KNEE = 25
-    RIGHT_KNEE = 25
+    RIGHT_KNEE = 26
 
     LEFT_ANKLE = 27
     RIGHT_ANKLE = 28

@@ -16,7 +16,6 @@ This document is a design backlog for the final product, not an implementation c
 
 ## Biomechanics
 
-- Anthropometric normalization (limb-length aware metrics)
 - Individual mobility baseline calibration
 - Dynamic range-of-motion analysis
 - Joint angle velocity / acceleration metrics
@@ -27,8 +26,7 @@ This document is a design backlog for the final product, not an implementation c
 ### Squat Depth
 
 - Competition-standard depth classification
-- Relative depth normalized by body proportions
-- Depth consistency across repetitions
+- Multi-view depth validation
 
 ### Torso Lean
 
@@ -38,21 +36,19 @@ This document is a design backlog for the final product, not an implementation c
 
 ### Lumbar Rounding
 
-- Improved lumbar curvature estimation
+- Direct lumbar curvature estimation beyond the side-view MediaPipe proxy
 - Pelvis orientation integration
 - Confidence score for lumbar assessment
 
 ### Heel Lift
 
-- Heel elevation magnitude
-- Heel lift duration
-- Heel lift timing within each repetition
+- Multi-view foot-pressure and contact inference
+- Footwear-aware heel-contact estimation
 
 ### Knee Tracking
 
 - Dynamic knee path analysis
-- Knee travel consistency
-- Knee travel normalized by foot length
+- Multi-view knee tracking
 
 ## Stability
 
@@ -60,12 +56,13 @@ This document is a design backlog for the final product, not an implementation c
 - Bilateral stability score
 - Weight shift estimation
 - Balance consistency across repetitions
+- Bottom bounce detection after velocity and acceleration validation
+- Jerk-based movement smoothness scoring
 
 ## Tempo
 
-- Separate eccentric / concentric timing
 - Pause detection at multiple positions
-- Tempo consistency score
+- Automatic tempo prescription comparison
 
 ## Fatigue
 

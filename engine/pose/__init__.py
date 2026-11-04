@@ -1,5 +1,6 @@
-from .types import Landmark, PoseFrame, PoseSequence
+from .types import Landmark, PoseExtractionResult, PoseFrame, PoseSequence
 from .landmarks import PoseLandmark
+from .side import BodySide, side_landmarks
 from .accessors import get_landmark, get_landmarks
 from .chains import (
     LEFT_ARM_CHAIN,

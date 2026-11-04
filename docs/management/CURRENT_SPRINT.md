@@ -43,26 +43,32 @@ Complete E3 (Squat Movement Analysis).
 - [x] Integration test — `test_squat_pipeline.py`
 
 **B. Core Metrics**
-- [ ] Squat depth
-- [ ] Torso lean
-- [ ] Knee travel
+- [x] Relative hip descent (MVP squat-depth proxy)
+- [ ] Hip-to-knee depth
+- [ ] Knee flexion angle at bottom
+- [ ] Hip flexion angle at bottom
+- [x] Torso lean
+- [x] Knee travel (image-normalized MVP proxy)
+- [ ] Body-segment-normalized knee travel
 - [ ] Heel lift
-- [ ] Neutral spine / lumbar rounding proxy
+- [ ] Metric validity and confidence
 
 **C. Control & Stability**
-- [ ] Tempo
-- [ ] Bottom bounce detection
-- [ ] Movement smoothness
-- [ ] Hip stability / hip shift
+- [ ] Descent, bottom, ascent, and total rep duration
+- [ ] Depth, tempo, torso-angle, and knee-travel consistency
 
-**D. Mobility / Compensation**
-- [ ] Ankle mobility limitation proxy
-
-**E. Future / Multi-view** _(not in this sprint)_
+**D. Future / Multi-view** _(not in this sprint)_
+- [ ] Hip shift
 - [ ] Knee valgus
 - [ ] Left–right asymmetry
 
 **Infrastructure**
+- [x] Visibility policy and valid-frame masks
+- [x] Explicit side-selection policy
+- [x] Derived squat feature extraction
+- [ ] Automatic side selection
+- [ ] Missing-feature interpolation policy
+- [ ] Video FPS metadata
 - [ ] `ExerciseAnalyzer` base class
 - [ ] `SquatAnalyzer` implementation
 - [ ] Tests

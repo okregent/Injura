@@ -50,8 +50,11 @@ See docs/sessions/2026-07-21.md for full context.
 - `feature/biomechanics` active branch
 
 ### In Progress
-- E3-B (Core Metrics) — biomechanical metrics layer
+- E3 infrastructure — connect metrics to validated derived features
+- E3-B (Core Metrics) — remaining side-view MVP measurements
 
 ### Next Steps
-- Squat Depth metric (first Core Metric)
-- Torso lean, knee travel, heel lift, neutral spine proxy
+- Connect existing metrics to `SquatFeatures`
+- Add video FPS metadata for timing metrics
+- Hip-to-knee depth, joint angles, normalized knee travel, heel lift
+- Timing, rep consistency, and metric confidence

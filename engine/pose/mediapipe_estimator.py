@@ -2,7 +2,7 @@ import cv2
 import mediapipe as mp
 
 from .base_estimator import BasePoseEstimator
-from .types import Landmark, PoseSequence
+from .types import Landmark, PoseExtractionResult, PoseSequence
 
 class MediaPipePoseEstimator(BasePoseEstimator):
     def __init__(self):
@@ -22,7 +22,13 @@ class MediaPipePoseEstimator(BasePoseEstimator):
         )
 
     def extract(self, video_path: str) -> PoseSequence:
+        return self.extract_with_metadata(video_path).pose_sequence
+
+    def extract_with_metadata(self, video_path: str) -> PoseExtractionResult:
         pose_sequence : PoseSequence = []
+        source_frame_indices = []
+        source_frame_count = 0
+        image_size = None
 
         cap = cv2.VideoCapture(video_path)
         
@@ -32,13 +38,20 @@ class MediaPipePoseEstimator(BasePoseEstimator):
 
             if not success:
                 break
+
+            if image_size is None:
+                height, width = frame.shape[:2]
+                image_size = (width, height)
+
+            source_frame_index = source_frame_count
+            source_frame_count += 1
             
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
             results = self.pose.process(rgb_frame)  
             
             if results.pose_landmarks is None:
-                continue          
+                continue
 
             frame_landmarks = []
 
@@ -52,11 +65,17 @@ class MediaPipePoseEstimator(BasePoseEstimator):
                     )
                 )
             pose_sequence.append(frame_landmarks)
+            source_frame_indices.append(source_frame_index)
 
         cap.release()
         cv2.destroyAllWindows()
 
-        return pose_sequence
+        return PoseExtractionResult(
+            pose_sequence=pose_sequence,
+            source_frame_indices=source_frame_indices,
+            source_frame_count=source_frame_count,
+            image_size=image_size,
+        )
     
     def close(self):
         self.pose.close()

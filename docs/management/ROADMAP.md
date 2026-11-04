@@ -37,10 +37,10 @@ Convert semantic landmarks into biomechanics-aware mathematical representations.
 #### E3 — Squat Movement Analysis
 Interpret biomechanics data as meaningful squat movement.
 - **A. Phase & Rep:** phase detection (STANDING / DESCENDING / BOTTOM / ASCENDING / LOCKOUT / UNKNOWN), rep counting
-- **B. Core Metrics:** squat depth, torso lean, knee travel, heel lift, neutral spine / lumbar rounding proxy
-- **C. Control & Stability:** tempo, bottom bounce, movement smoothness, hip stability / hip shift
-- **D. Mobility / Compensation:** ankle mobility limitation proxy
-- **E. Future / Multi-view:** knee valgus, left–right asymmetry (front view required)
+- **B. Core Metrics:** relative and hip-to-knee depth, knee and hip angles, torso lean, normalized knee travel, heel lift, metric confidence
+- **C. Control & Consistency:** phase timing and rep-to-rep consistency
+- **D. Feedback Inferences:** possible trunk collapse, ankle mobility limitation, excessive variability, compensation patterns
+- **E. Future / Multi-view:** hip shift, knee valgus, left–right asymmetry
 
 #### E4 — Feedback Engine
 Translate movement analysis into adaptive, explainable feedback.

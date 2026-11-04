@@ -56,13 +56,15 @@ roadmap.md
 
 -   Phase detection
 -   Rep detection
--   Squat depth
+-   Relative and hip-to-knee squat depth
+-   Knee and hip flexion angles
 -   Torso lean
--   Knee travel
--   Heel lift
--   Lumbar rounding proxy
--   Tempo
--   Movement smoothness
+-   Body-segment-normalized knee travel
+-   Heel lift magnitude and duration
+-   Rep phase timing
+-   Rep-to-rep consistency
+-   Metric validity and confidence
+-   Conservative feedback inferences
 -   Explainable feedback
 
 ### Future
@@ -74,6 +76,8 @@ roadmap.md
 -   Pelvic tilt
 -   Lumbar curvature estimation
 -   Ankle mobility inference
+-   Bottom bounce detection
+-   Jerk-based movement smoothness
 -   Compensation-chain analysis
 -   Fatigue detection
 -   Additional exercises

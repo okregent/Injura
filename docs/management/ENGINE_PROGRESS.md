@@ -20,7 +20,7 @@ Update this file whenever a task is started, completed, or a phase status change
 ## Current Focus
 
 **Phase: E3 — Squat Movement Analysis**
-**Current task:** E3-B Core Metrics — squat depth, torso lean, knee travel, heel lift, neutral spine proxy
+**Current task:** E3 infrastructure — visibility and derived-feature preprocessing contract
 
 ---
 
@@ -69,31 +69,38 @@ Interpret biomechanics data as meaningful squat movement.
 - [x] Integration test — `test_squat_pipeline.py` (video → pose → phases → reps)
 
 ### B. Core Metrics
-- [ ] Squat depth
-- [ ] Torso lean
-- [ ] Knee travel
+- [x] Relative hip descent (MVP squat-depth proxy)
+- [ ] Hip-to-knee depth
+- [ ] Knee flexion angle at bottom
+- [ ] Hip flexion angle at bottom
+- [x] Torso lean
+- [x] Knee travel (image-normalized MVP proxy)
+- [ ] Body-segment-normalized knee travel
 - [ ] Heel lift
-- [ ] Neutral spine / lumbar rounding proxy
-  - [ ] Shoulder–hip line angle
-  - [ ] Torso angle change across frames
-  - [ ] Hip angle collapse detection
-  - [ ] Trunk collapse detection at bottom position
-  - [ ] Spine posture change tracking (descending → bottom)
+- [ ] Metric validity and confidence
 
 ### C. Control & Stability
-- [ ] Tempo
-- [ ] Bottom bounce detection
-- [ ] Movement smoothness
-- [ ] Hip stability / hip shift
+- [ ] Descent duration
+- [ ] Bottom duration
+- [ ] Ascent duration
+- [ ] Total rep duration
+- [ ] Depth consistency
+- [ ] Tempo consistency
+- [ ] Torso-angle consistency
+- [ ] Knee-travel consistency
 
-### D. Mobility / Compensation
-- [ ] Ankle mobility limitation proxy
-
-### E. Future / Multi-view Expansion
+### D. Future / Multi-view Expansion
+- [ ] Hip shift
 - [ ] Knee valgus (requires front view)
 - [ ] Left–right asymmetry (requires front view)
 
 ### Infrastructure
+- [x] Visibility policy and valid-frame masks
+- [x] Explicit side-selection policy
+- [x] Derived squat feature extraction
+- [ ] Automatic side selection
+- [ ] Missing-feature interpolation policy
+- [ ] Video FPS metadata
 - [ ] `ExerciseAnalyzer` base class
 - [ ] `SquatAnalyzer` implementation
 - [ ] Tests
@@ -108,6 +115,10 @@ Translate movement analysis into adaptive, explainable feedback.
 - [ ] Rule engine implementation
 - [ ] Adaptive thresholds based on user profile
 - [ ] Explainable feedback messages
+- [ ] Possible trunk-collapse inference
+- [ ] Possible ankle-mobility-limitation inference
+- [ ] Excessive-variability inference
+- [ ] Compensation-pattern inference
 - [ ] Tests
 
 ---

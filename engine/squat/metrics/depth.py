@@ -18,6 +18,13 @@ def calculate_squat_depth(
     rep: SquatRep,
     thresholds: SquatPhaseThresholds,
 ) -> SquatDepthResult:
+    """Measure rep descent relative to the calibrated hip movement range.
+
+    This is a within-sequence relative movement metric, not an absolute
+    assessment of whether the hip reached a biomechanical depth standard.
+    Values are intentionally not clamped to the 0–1 range.
+    """
+
     if not hip_y_values:
         raise ValueError("hip_y_values list cannot be empty")
 

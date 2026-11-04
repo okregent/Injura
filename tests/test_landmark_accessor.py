@@ -46,6 +46,15 @@ def test_get_landmarks():
     assert left_leg[1].x == 0.3
     assert left_leg[2].x == 0.5
 
+
+def test_right_side_landmark_indices_match_mediapipe():
+    assert PoseLandmark.RIGHT_WRIST.value == 16
+    assert PoseLandmark.RIGHT_KNEE.value == 26
+
+
+def test_legacy_right_wrist_name_remains_compatible():
+    assert PoseLandmark.RIGHT_WIRST is PoseLandmark.RIGHT_WRIST
+
 if __name__ == "__main__":
     test_get_landmark()
     test_get_landmarks()

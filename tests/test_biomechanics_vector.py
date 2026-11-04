@@ -1,6 +1,6 @@
 from engine.pose.types import Landmark
 from engine.biomechanics.vector import (
-    to_vetor, 
+    to_vector,
     vector_length,
     dot_product,
 )
@@ -12,7 +12,7 @@ def test_to_vector():
     a = Landmark(x=0.0, y=0.0, z=0.0, visibility=1.0)
     b = Landmark(x=3.0, y=4.0, z=0.0, visibility=1.0)
 
-    v = to_vetor(a, b)
+    v = to_vector(a, b)
 
     assert v == (3.0, 4.0)
 

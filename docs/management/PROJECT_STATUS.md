@@ -42,12 +42,16 @@
 ## In Progress
 - E3 — Squat Movement Analysis (`engine/squat/`)
   - A. Phase & Rep ✅
-  - B. Core Metrics (next)
+  - B. Core Metrics 🚧
+  - Infrastructure: visibility, explicit side selection, and derived-feature
+    preprocessing contract ✅
 
 ## Blocked
 - None
 
 ## Next Steps
-- E3-B Core Metrics: squat depth, torso lean, knee travel, heel lift, neutral spine proxy
+- Connect existing metrics to validated derived features
+- Add video FPS metadata for timing metrics
+- E3-B remaining measurements: hip-to-knee depth, joint angles, normalized knee travel, heel lift, timing, consistency, confidence
 - `ExerciseAnalyzer` base class
 - `SquatAnalyzer` implementation

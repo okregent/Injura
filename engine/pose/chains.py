@@ -24,7 +24,7 @@ LEFT_ARM_CHAIN = [
 RIGHT_ARM_CHAIN = [
     PoseLandmark.RIGHT_SHOULDER,
     PoseLandmark.RIGHT_ELBOW,
-    PoseLandmark.RIGHT_WIRST,
+    PoseLandmark.RIGHT_WRIST,
 
 ]
 
