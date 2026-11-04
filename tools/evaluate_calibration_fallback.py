@@ -1,6 +1,7 @@
 """Offline P5/P95 fallback experiment; no production settings or labels change."""
 
 import csv
+import argparse
 import html
 import json
 from pathlib import Path
@@ -45,12 +46,13 @@ def percentile(values, fraction):
     return ordered[lower] + (rank - lower) * (ordered[min(lower + 1, len(ordered) - 1)] - ordered[lower])
 
 
-def evaluate(root=Path("artifacts/sample-review")):
+def evaluate(root=Path("artifacts/sample-review"), numbers=(3, 4, 5, 6)):
     output = root / "model-comparison/calibration-experiment"
     output.mkdir(parents=True, exist_ok=True)
     rows, boundaries = [], []
-    for number in (3, 4, 5, 6):
-        full = root / f"sample_video{number}"
+    for number in numbers:
+        stem = "sample_video" if number == 1 else f"sample_video{number}"
+        full = root / stem
         heavy = root / f"model-comparison/video{number}-heavy-recovered"
         facing = FacingDirection(json.loads((full / "analysis.json").read_text())["facing"])
         for label, path in [("Full", full / "pose-cache.json"),
@@ -77,12 +79,17 @@ def evaluate(root=Path("artifacts/sample-review")):
                     else:
                         eligible = False
                 proposed = replay(result.features, extraction.source_frame_indices, threshold)
+                source = extraction.source_frame_indices
+                shifts = [abs(source[getattr(a, field)] - source[getattr(b, field)])
+                          for a, b in zip(baseline, proposed) for field in ("start_index", "end_index")]
+                max_shift = max(shifts, default=0) if len(baseline) == len(proposed) else None
                 before = threshold.standing_y
                 movement = threshold.bottom_y - before
                 rows.append({"video": number, "model": label, "side": side.value,
                              "baseline_calibration": result.calibration_method,
                              "experimental_fallback_applied": eligible,
                              "baseline_reps": len(baseline), "experimental_reps": len(proposed),
+                             "max_start_end_shift_frames": max_shift,
                              "experimental_standing_cut": before + .15 * movement,
                              "experimental_bottom_cut": before + .85 * movement})
                 for variant, repetitions in [("baseline", baseline), ("experimental", proposed)]:
@@ -119,7 +126,7 @@ def evaluate(root=Path("artifacts/sample-review")):
             strips.append(cv2.hconcat(images))
     finally:
         cap.release()
-    if not cv2.imwrite(str(output / "video4-predicted-boundaries.jpg"), cv2.vconcat(strips)):
+    if strips and not cv2.imwrite(str(output / "video4-predicted-boundaries.jpg"), cv2.vconcat(strips)):
         raise OSError("Could not write boundary contact sheet")
     parts = ['<!doctype html><meta charset="utf-8"><title>Offline calibration experiment</title>',
              '<style>body{font:15px system-ui;margin:28px;line-height:1.6}td,th{border:1px solid #ccd;padding:7px}table{border-collapse:collapse}</style>',
@@ -127,15 +134,24 @@ def evaluate(root=Path("artifacts/sample-review")):
              '<p>P5 standing / P95 bottom only where posture calibration is unavailable. '
              'This reduces the influence of extrema; it is an unvalidated engineering hypothesis. '
              'No count labels, interpolation, gap bridging, confidence changes, or automatic side selection. '
-             'Production analyzer and default Full model remain unchanged. All 32 baseline replays '
+             f'Production analyzer and default Full model remain unchanged. All {len(rows)} baseline replays '
              'must exactly match the analyzer before experimental output is generated.</p>',
-             '<p>These recordings were used to discover the problem. Count agreement here is exploratory, '
-             'not independent validation. Boundaries below remain unverified predictions.</p>',
-             '<h2>Previously omitted video 4 cycles: predicted start / deepest / end</h2>'
-             '<img style="max-width:100%" src="video4-predicted-boundaries.jpg" alt="Original frames at experimental predicted boundaries for repetitions 1, 2 and 7">',
-             '<p><a href="comparison.csv">Comparison CSV</a> | <a href="boundaries.csv">Predicted boundaries</a> | '
-             '<a href="../diagnostics/index.html">Failure evidence</a></p>',
+             '<p>Counts and boundaries remain unverified predictions. No count references are used. '
+             'Unchanged counts do not establish unchanged boundaries or metric accuracy. For additional '
+             'recordings, inspect camera suitability and actual repetitions before interpreting performance.</p>',
+             '<p><a href="comparison.csv">Comparison CSV</a> | <a href="boundaries.csv">Predicted boundaries</a></p>',
              '<table><tr>' + ''.join(f'<th>{html.escape(k)}</th>' for k in rows[0]) + '</tr>']
+    if strips:
+        parts.insert(-1, '<h2>Previously omitted video 4 cycles: predicted start / deepest / end</h2>'
+                     '<img style="max-width:100%" src="video4-predicted-boundaries.jpg" alt="Original frames at experimental predicted boundaries for repetitions 1, 2 and 7">')
+    if (output.parent / "diagnostics/index.html").is_file():
+        parts.insert(-1, '<p><a href="../diagnostics/index.html">Failure evidence</a></p>')
+    if 1 in numbers:
+        parts.insert(-1, '<p><b>Video 1 has a frontal/oblique view; it is a robustness check, '
+                     'not validation of side-view angles. Facing input is a placeholder there and '
+                     'does not enter this hip-y cycle replay. Actual counts and exact boundaries '
+                     'for videos 1/2 are unannotated. These recordings were already used in project '
+                     'tests, so they are additional recordings, not an untouched independent test set.</b></p>')
     parts.extend('<tr>' + ''.join(f'<td>{html.escape(str(v))}</td>' for v in row.values()) + '</tr>' for row in rows)
     parts.append('</table>')
     (output / "index.html").write_text('\n'.join(parts), encoding="utf-8")
@@ -144,4 +160,8 @@ def evaluate(root=Path("artifacts/sample-review")):
 
 
 if __name__ == "__main__":
-    evaluate()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=Path("artifacts/sample-review"))
+    parser.add_argument("--videos", type=int, nargs="+", default=[3, 4, 5, 6], choices=range(1, 7))
+    args = parser.parse_args()
+    evaluate(args.root, args.videos)
