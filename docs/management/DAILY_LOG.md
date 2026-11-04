@@ -115,3 +115,7 @@
 - Consolidated existing reports into a Korean local summary dashboard; preserved
   side/candidate separation, metric availability and user count ranges. Checked
   cards/data/local links; analysis and default configuration unchanged.
+- Agreed capture-limited MVP and deferred tempo goals. Added recording guide
+  and E3 acceptance gates, separating implemented data checks from pending
+  recording-review/interpretation gates and empirical validation. Synchronized
+  actual E4/E5 phase status; no engine changes or new accuracy claims.

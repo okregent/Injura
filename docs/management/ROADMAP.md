@@ -8,15 +8,20 @@
 ### Engine Development Plan
 
 > Tracks the internal engine build-out required to power the MVP.
-> These phases run sequentially before the product layers (API, mobile) are assembled.
+> E3 validation remains the priority. E4/E5 foundations may overlap, but they
+> do not imply validated posture feedback or a released product.
 
 | Phase | Name | Status |
 |-------|------|--------|
 | E1 | Semantic Pose Foundation | ✅ Completed |
 | E2 | Biomechanics Foundation | ✅ Completed |
 | E3 | Squat Movement Analysis | 🚧 Implemented; empirical validation pending |
-| E4 | Feedback Engine | ⏳ Not Started |
-| E5 | Visualization & UX | ⏳ Not Started |
+| E4 | Feedback Engine | 🚧 Availability/configured-rule foundations; coaching pending |
+| E5 | Visualization & UX | 🚧 Local developer reports; API/mobile not started |
+
+Current gates: [E3 acceptance](../validation/E3_ACCEPTANCE.md).
+Supported input: [recording guide](../product/RECORDING_GUIDE.md). User-defined
+tempo targets are deferred; timing measurement remains in E3.
 
 #### E1 — Semantic Pose Foundation
 Convert raw MediaPipe indices into semantic abstractions.
@@ -39,12 +44,12 @@ Interpret biomechanics data as meaningful squat movement.
 - **A. Phase & Rep:** phase detection (STANDING / DESCENDING / BOTTOM / ASCENDING / LOCKOUT / UNKNOWN), rep counting
 - **B. Core Metrics:** relative and hip-to-knee depth, knee and hip angles, torso lean, normalized knee travel, heel lift, metric confidence
 - **C. Control & Consistency:** phase timing and rep-to-rep consistency
-- **D. Feedback Inferences:** possible trunk collapse, ankle mobility limitation, excessive variability, compensation patterns
+- **D. Interpretation boundary:** validated posture/coaching inferences belong to E4 after measurement validation
 - **E. Future / Multi-view:** hip shift, knee valgus, left–right asymmetry
 
 #### E4 — Feedback Engine
 Translate movement analysis into adaptive, explainable feedback.
-- Rule engine (`squat_rules.yaml`)
+- Explicit JSON rule engine (`squat_rules.json`, empty defaults; YAML deferred)
 - Adaptive thresholds based on user profile
 - Explainable feedback messages
 

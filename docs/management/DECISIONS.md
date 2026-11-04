@@ -220,3 +220,23 @@ does not justify a global default change or claims of valid occluded joint angle
 measurement availability are distinct validation targets. Source-image inference
 can recover data but must not erase uncertainty or make sample-specific results
 look like independently validated accuracy.
+
+### ADR-019: Supported Capture Scope and Validation Before Posture Feedback
+
+**Decision:** Limit the MVP to reviewed fixed-camera, continuous, full-body
+side-view recordings with usable joints. Define item-level withholding and E3
+acceptance separately from implementation/test completion. Human capture review
+is acceptable initially; automatic camera/side detection and interpolation are
+not prerequisites. Unknown review is not approval. Preserve supported items
+when another measurement is unavailable.
+
+Defer user-defined tempo goals; retain timing measurement. Prioritize recording
+review, predeclared error/coverage limits and reference-based evaluation before
+validated posture feedback. Existing exploratory clips/count matches are not
+joint-angle ground truth or injury-prevention evidence. E4 rule foundations and
+E5 local reports are started; validated coaching and API/mobile remain pending.
+
+**Reason:** The user reaffirmed reliable posture guidance supporting injury
+prevention as the purpose, rather than tempo targets or unrestricted camera
+support. Narrowing capture scope makes validation concrete without transferring
+full-frame labeling to the user. See the recording guide and E3 acceptance gates.
