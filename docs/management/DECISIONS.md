@@ -240,3 +240,23 @@ E5 local reports are started; validated coaching and API/mobile remain pending.
 prevention as the purpose, rather than tempo targets or unrestricted camera
 support. Narrowing capture scope makes validation concrete without transferring
 full-frame labeling to the user. See the recording guide and E3 acceptance gates.
+
+### ADR-020: Frozen Evaluation Inputs and Blinded Reference Preparation
+
+**Decision:** Implement E3 evaluation separately from production measurement and
+coaching rules. Register source hashes, participant/source groups and reviewed
+provenance; initialize unknown capture reviews and unconfirmed references.
+Freeze dataset/reference/limits bytes, analysis/policy/evaluator source, runtime
+and primary landmark/detector weights/graph before acceptance evaluation.
+Changes invalidate the frozen run. Preserve previous reviews and append backups.
+
+Use raw source frames without predicted labels for reference preparation.
+Require explicit independent confirmation/uncertainty and preselected positions.
+Keep missing values in coverage and candidates out of measurement/count matches.
+Development smoke always remains not evaluated and its local source history
+cannot be promoted to held-out acceptance. Hashes supplement, not replace,
+truthful provenance and annotation review. Keep outputs local under artifacts.
+
+**Reason:** The user requested advancing all feasible work before supplying new
+video. Preparing a reproducible workflow is useful now; fabricating ground truth,
+acceptance or medical efficacy would undermine the purpose of measurement validation.
