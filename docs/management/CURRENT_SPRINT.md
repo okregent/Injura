@@ -1,8 +1,9 @@
 # Current Sprint
 
 ## Sprint Goal
-Validate E3 within the supported fixed-camera side-view scope. Core implementation
-is complete; empirical acceptance remains open.
+Develop E4 observation and next-action presentation while new filming and E3
+empirical evaluation are deferred by the user. E3 implementation is complete;
+empirical acceptance remains open.
 
 ## Current Priorities
 
@@ -15,7 +16,10 @@ is complete; empirical acceptance remains open.
 - [ ] Register eligible evaluation clips and reviewed references; freeze the evaluated dataset before runs.
 - [ ] Evaluate against reviewed references; resolve or restrict failed items.
 
-Latest regression: 345 passed (2026-11-05). The local development smoke result
+- [x] Add per-repetition measurement feedback cards with capture review, retake,
+  measurement review and observation states on `feature/biomechanics`.
+
+Latest regression: 350 passed (2026-11-05). The local development smoke result
 remains not evaluated. New sources/reviewed references are still required.
 
 Prepare evidence autonomously; the user need not annotate every frame. Existing
