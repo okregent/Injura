@@ -67,8 +67,9 @@ Full remains default. See the cross-video results in
 ## Next Steps
 - Follow [supported capture conditions](../product/RECORDING_GUIDE.md) and
   [E3 acceptance gates](../validation/E3_ACCEPTANCE.md).
-- Recording review gates are connected to configured-rule interpretation; next
-  prepare the evaluation manifest and predeclare limits. Unknown review is not approval.
+- Recording review gates and [protocol v0.1](../validation/E3_PROTOCOL_v0.1.md)
+  with initial limits/source inventory are prepared. Next register eligible
+  evaluation clips and reviewed references. Unknown review is not approval.
 - Predeclare metric error/coverage limits and evaluate compliant clips against
   reviewed references; preserve exclusions and annotation uncertainty.
 - Validate posture feedback after measurement validation. Rule infrastructure

@@ -20,7 +20,7 @@ Update this file whenever a task is started, completed, or a phase status change
 ## Current Focus
 
 **Phase: E3 — Squat Movement Analysis**
-**Current task:** Validate E3 under the supported side-view capture scope. Recording review gates are connected; next predeclare acceptance limits and prepare a versioned evaluation manifest. User-defined tempo goals are deferred.
+**Current task:** Validate E3 under the supported side-view capture scope. Recording review gates and protocol v0.1/source inventory are prepared. Next register eligible evaluation clips and reviewed references before running acceptance. User-defined tempo goals are deferred.
 
 See [recording guide](../product/RECORDING_GUIDE.md) and
 [E3 acceptance gates](../validation/E3_ACCEPTANCE.md). Core implementation is

@@ -21,8 +21,9 @@ if documented human review is used, but an unreviewed clip is not approved.
 
 ## Recording Review and Item Gates
 
-The following is the required validation/interpretation contract, not a claim
-that a general recording-review gate has already been implemented.
+The following is the validation/interpretation contract. Human recording-review
+gates are connected to configured rules; automated view classification and
+empirical measurement validation remain pending.
 
 | Condition | Required action | Current enforcement |
 |---|---|---|
@@ -69,12 +70,13 @@ test-count, model benchmark, or sample-count constitutes empirical acceptance.
 - [x] Core metric implementation, provenance, candidates and regression tests.
 - [x] General recording-review record/gate connected to configured-rule interpretation;
   record reviewer, status and reasons, with unknown distinct from rejected.
-- [ ] Validation manifest records clip identity/version, view, side/direction,
+- [x] Validation manifest records clip identity/version, view, side/direction,
   cadence/continuity review, annotation origin and development/evaluation use.
-- [ ] Define acceptance limits **before** the next evaluation: per-metric units,
+- [x] Define initial engineering acceptance limits **before** the next evaluation: per-metric units,
   allowed reference uncertainty, boundary/measurement error targets, count
-  criteria, usable-item coverage and withholding checks. Numeric tolerances are
-  currently unset; this is an open gate, not permission to declare a pass.
+  criteria, usable-item coverage and withholding checks. See the versioned
+  [v0.1 protocol](E3_PROTOCOL_v0.1.md). Defined targets are not validated accuracy;
+  missing reviews, references or evaluation clips prevent acceptance.
 - [ ] Review a bounded set of compliant recordings from different people and a
   small set of known violations. Keep clips used to tune the algorithm separate
   from later evaluation clips; do not claim statistical generalization from a
@@ -101,7 +103,9 @@ Heavy helps video 6 and has documented failures elsewhere. These observations
 are not empirical acceptance of joint accuracy or timing boundaries.
 
 Recording-review gates are implemented for configured-rule evaluation; see
-[review contract](../architecture/recording-review.md). Next define
-the versioned evaluation manifest/limits. Continue within the agreed capture
+[review contract](../architecture/recording-review.md). The
+[source inventory](e3-manifest-v0.1.json) and [limits](e3-limits-v0.1.json) are
+prepared; no eligible evaluation clips or results exist. Next register sources,
+complete recording/reference review and freeze the evaluation set. Continue within the agreed capture
 scope rather than adding tempo targets, more report variants or unsupported
 biomechanical diagnoses. See [sample evidence](sample-review-2026-11-04.md).

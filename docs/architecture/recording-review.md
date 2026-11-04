@@ -63,6 +63,7 @@ existing foot-normalization recording conditions; metric masks still apply.
 The CLI facing-direction input remains explicit and is not inferred by review.
 
 Default rules remain empty and absent review remains unknown. No default
-technique limits or automated recording classifier are introduced. Next define
-the versioned validation manifest and predeclared acceptance limits under
+technique limits or automated recording classifier are introduced. The
+[versioned protocol](../validation/E3_PROTOCOL_v0.1.md) defines initial limits
+and source inventory. Next collect reviewed evaluation inputs under
 [E3 acceptance](../validation/E3_ACCEPTANCE.md).

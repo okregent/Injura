@@ -17,6 +17,10 @@ establish measurement accuracy or injury-prevention efficacy. E4/E5 foundations
 exist; validated coaching and API/mobile integration remain pending.
 User-defined target-tempo functionality is deferred.
 
+[Evaluation protocol v0.1](docs/validation/E3_PROTOCOL_v0.1.md) records initial
+engineering limits and a source inventory. Existing clips are development data;
+evaluation inputs/references remain pending and no accuracy pass is claimed.
+
 ## Analyze a recording
 
 Use the project Python 3.9 environment with `requirements.txt` installed:

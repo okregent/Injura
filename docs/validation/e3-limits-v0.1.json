@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "protocol_version": "e3-v0.1",
+  "status": "predeclared_initial_engineering_targets_not_validated",
+  "purpose": "Measurement acceptance under supported capture scope, not posture or injury-risk thresholds",
+  "decision_states": ["pass", "fail", "not_evaluated"],
+  "primary_model_complexity": 1,
+  "reference_requirements": {
+    "capture_review": "approved_per_item_with_named_reviewer",
+    "annotation_origin": "independent_review_not_unconfirmed_model_or_assistant_proposals",
+    "boundary_uncertainty_max_frames": 2,
+    "angle_reference_uncertainty_max_degrees": 2,
+    "image_coordinate_reference_uncertainty_max_units": 0.005,
+    "derived_reference_uncertainty_max_fraction_of_mae_target": 0.5,
+    "reference_sample_positions": "Standing before first complete rep, and descent midpoint, deepest posture, ascent midpoint in each of first three complete reps",
+    "unresolved_uncertainty": "not_evaluated_and_counted_as_missing_reference"
+  },
+  "collection_targets": {
+    "compliant_clips": 3,
+    "distinct_participants_in_compliant_clips": 3,
+    "complete_repetitions_per_compliant_clip_target": 3,
+    "known_violation_cases": ["wrong_view", "required_joint_occlusion", "timing_discontinuity_or_unknown_cadence"],
+    "meaning": "Initial bounded coverage plan, not statistical sufficiency or injury-prevention evidence"
+  },
+  "metrics": {
+    "complete_repetitions": {"max_missed_per_compliant_clip": 0, "max_spurious_per_compliant_clip": 0, "candidate_counts_as_detection": false, "minimum_matching_temporal_iou": 0.5},
+    "start_boundary": {"max_absolute_error_frames": 3},
+    "end_boundary": {"max_absolute_error_frames": 3},
+    "deepest_observed_frame": {"max_distance_from_reference_interval_frames": 2},
+    "total_duration": {"max_absolute_error_source_intervals": 6, "seconds_conversion": "6 / reviewed_constant_fps"},
+    "phase_duration": {"status": "arithmetic_only_until_independent_phase_event_semantics_are_defined", "sum_tolerance_seconds": 1e-9},
+    "knee_flexion": {"unit": "degrees", "max_mean_absolute_error": 5, "max_absolute_error": 10},
+    "hip_flexion": {"unit": "degrees", "max_mean_absolute_error": 5, "max_absolute_error": 10},
+    "torso_lean": {"unit": "degrees_from_vertical", "max_mean_absolute_error": 5, "max_absolute_error": 10},
+    "hip_to_knee_gap": {"unit": "image_height", "max_mean_absolute_error": 0.01, "max_absolute_error": 0.02},
+    "relative_descent": {"unit": "ratio", "max_mean_absolute_error": 0.05, "max_absolute_error": 0.1},
+    "raw_knee_travel": {"unit": "image_width", "max_mean_absolute_error": 0.01, "max_absolute_error": 0.02},
+    "foot_normalized_knee_travel": {"unit": "foot_length_ratio", "max_mean_absolute_error": 0.05, "max_absolute_error": 0.1},
+    "heel_rise_magnitude": {"unit": "image_height", "max_mean_absolute_error": 0.005, "max_absolute_error": 0.01},
+    "heel_rise_duration": {"status": "not_evaluated_until_independent_event_reference_is_defined"},
+    "consistency": {"prerequisite": "constituent_metric_passes_and_exclusion_set_matches", "recomputation_absolute_tolerance": 1e-9}
+  },
+  "coverage": {
+    "minimum_interpretation_ready_fraction_per_metric_per_compliant_clip": 0.9,
+    "minimum_preselected_reference_frames_per_framewise_metric_per_compliant_clip": 10,
+    "partial_recovered_or_experimental_counts_as_interpretation_ready": false,
+    "exclude_missing_references_from_denominator": false
+  },
+  "withholding": {
+    "required_affected_item_withholding_fraction": 1.0,
+    "requires_actionable_reason": true,
+    "requires_raw_measurement_preservation": true,
+    "requires_unaffected_item_isolation": true,
+    "approval_or_match_implies_good_posture": false
+  },
+  "results": null
+}
