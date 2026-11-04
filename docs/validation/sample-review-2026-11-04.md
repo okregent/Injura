@@ -347,3 +347,25 @@ Local report: `additional-validation/model-comparison/calibration-experiment/ind
 Compilation/whitespace checks passed; no engine behavior changed. The fixed
 hypothesis still needs genuinely independent suitable recordings and reference
 boundaries before performance claims or a default change.
+
+## Explicit Opt-In Analyzer Integration
+
+Integrated the tested hypothesis behind `use_robust_fallback=False` (default).
+Enable only with `use_posture_calibration=True`; CLI requires
+`--posture-calibration --robust-fallback`. The fallback uses finite hip-y P5/P95
+only when posture calibration is unavailable, with at least five usable samples
+and a positive central range. Insufficient/flat data retain existing extrema.
+Successful posture calibration is not replaced. The result method and issue
+list explicitly identify experimental position fallback and require review.
+
+The offline tool now asserts that opt-in analyzer thresholds and every detected
+repetition boundary match its experiment, in addition to baseline parity. All
+48 combinations across videos 1-6 passed. Full suite: **252 passed**, including
+outlier resistance, collapsed/insufficient input, explicit-mode dependency,
+posture precedence, default preservation, and missing-frame separation.
+
+Generated a separate local `model-comparison/video4-heavy-robust/index.html`
+report from cached Heavy extraction: 14/14 complete detections versus the
+preserved baseline 11/14. This enables further testing; it does not validate
+physical angles, exact timing, or independent generalization. Full and existing
+calibration remain default; original annotation files are unchanged.
