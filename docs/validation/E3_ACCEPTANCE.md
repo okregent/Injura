@@ -29,11 +29,11 @@ that a general recording-review gate has already been implemented.
 | Cannot decode frames or determine image size | Stop analysis with a reason | Implemented |
 | Nonfinite or insufficiently visible required joint | Withhold dependent values/segments | Implemented via masks and metric outcomes |
 | Missing source/hip observations inside a cycle | Exclude incomplete measured cycle; preserve separate candidates | Implemented |
-| Wrong/unknown view or selected side/direction | Withhold posture interpretation; inspect or request another recording | Human review; general interpretation gate pending |
-| Camera motion, zoom, body clipping or overlapping people | Review affected intervals/items; request another recording when support is inadequate | Human review; no validated automatic detector |
+| Wrong/unknown view or selected side/direction | Withhold posture interpretation; inspect or request another recording | Human review gate for view/side implemented; facing remains explicit caller input |
+| Camera motion, zoom, body clipping or overlapping people | Review affected intervals/items; request another recording when support is inadequate | Human item-level recording gates; no validated automatic detector or interval-specific review |
 | Unverified side view or foot orientation | Withhold foot-normalized knee travel | Implemented external-review flags |
 | Missing FPS | Withhold timing and dependent summaries | Implemented |
-| Variable/uncertain frame cadence or edit within measured interval | Withhold timing interpretation until source timing/continuity is established | Human review; analyzer still assumes constant FPS |
+| Variable/uncertain frame cadence or edit within measured interval | Withhold timing interpretation until source timing/continuity is established | Human timing gate implemented; raw analyzer still assumes constant FPS |
 | Initial/final partial movement or setup | Exclude from complete-cycle references | Cycle-state support implemented; reference review required |
 | Source-image re-detection or partial metric coverage | Preserve provenance; review before interpretation | Implemented quality status and rule withholding |
 | Experimental calibration | Label experimental; withhold configured-rule interpretation | Implemented; independent validation pending |
@@ -67,7 +67,7 @@ test-count, model benchmark, or sample-count constitutes empirical acceptance.
 
 - [x] Supported recording scope and item-level withholding policy documented.
 - [x] Core metric implementation, provenance, candidates and regression tests.
-- [ ] General recording-review record/gate connected to any posture interpretation;
+- [x] General recording-review record/gate connected to configured-rule interpretation;
   record reviewer, status and reasons, with unknown distinct from rejected.
 - [ ] Validation manifest records clip identity/version, view, side/direction,
   cadence/continuity review, annotation origin and development/evaluation use.
@@ -93,14 +93,15 @@ and E4's posture interpretation are separate validation work, not E3 test claims
 
 ## Current Evidence and Next Work
 
-Current automated suite: 277 passed at the last code change. Videos 1-6 support
+Current automated suite: 290 passed at the last code change. Videos 1-6 support
 debugging and exploratory comparisons; 1/2 were existing test clips, 3-6 informed
 algorithm changes. None forms an untouched independently annotated release set.
 Full 3/4/5 produces 6/14/2 complete cycles with optional recovery/calibration;
 Heavy helps video 6 and has documented failures elsewhere. These observations
 are not empirical acceptance of joint accuracy or timing boundaries.
 
-Next implement the recording-review record and interpretation gate, then define
+Recording-review gates are implemented for configured-rule evaluation; see
+[review contract](../architecture/recording-review.md). Next define
 the versioned evaluation manifest/limits. Continue within the agreed capture
 scope rather than adding tempo targets, more report variants or unsupported
 biomechanical diagnoses. See [sample evidence](sample-review-2026-11-04.md).

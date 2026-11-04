@@ -119,3 +119,6 @@
   and E3 acceptance gates, separating implemented data checks from pending
   recording-review/interpretation gates and empirical validation. Synchronized
   actual E4/E5 phase status; no engine changes or new accuracy claims.
+- Connected human recording review to configured-rule interpretation, with
+  per-item tri-state eligibility, source-bound CLI files and unknown templates.
+  Raw metrics preserved; full regression 290 passed. Next validation manifest/limits.
