@@ -46,6 +46,21 @@ def build(root=Path("artifacts/sample-review/model-comparison")):
         findings[str(number)] = {"target": target, "anchor_sources": subset.source_frame_indices,
                                  "proposal_scope": "All frames in the original bounded gap",
                                  "valid_pose_proposals": attempts, "recovered": result.recovered_frame_indices}
+        full = json.loads((root.parent / f"sample_video{number}/pose-cache.json").read_text())
+        full = full.get("extraction", full)
+        findings[str(number)]["full_tracking_target_observed"] = target in full["source_frame_indices"]
+        # Diagnostic only: do not merge Full proposals into the Heavy stream.
+        attempts = []
+        recovery._compatible = inspect
+        try:
+            full_retry = recovery.recover_pose_gaps(f"sample_video{number}.mp4", subset, model_complexity=1)
+        finally:
+            recovery._compatible = original
+        findings[str(number)]["full_static_probe_on_heavy_anchors"] = {
+            "proposal_scope": "All frames in the original bounded Heavy gap; not target-only",
+            "valid_pose_proposals": attempts, "recovered": full_retry.recovered_frame_indices,
+            "diagnostic_only": True,
+        }
         cap = cv2.VideoCapture(f"sample_video{number}.mp4")
         images = []
         try:
@@ -102,6 +117,14 @@ def build(root=Path("artifacts/sample-review/model-comparison")):
         '<p>Both target images decode successfully. The isolated retries reproduced the remaining gaps '
         'without association rejections: the targets yielded no usable 33-landmark proposal. '
         'The plates obscure the upper body in these frames, but the precise cause of model failure is unproven.</p>'
+        '<h2>Full tracking versus isolated retry</h2>'
+        '<p>Full primary video tracking observes both target frames, 444 and 230. Full static '
+        'retry against the original Heavy anchors does not recover either bounded gap. '
+        'For video 3 the Full gap-level probe yields a proposal rejected by association; '
+        'it cannot be attributed to target 444 specifically because the gap also contains 443. '
+        'For video 5 it yields no usable proposal. Tracking and static detection differ, '
+        'so success in one does not imply success in the other. No cross-model coordinates '
+        'are merged, no association threshold is relaxed, and primary caches are unchanged.</p>'
         '<h2>Video 3, around source 444</h2><img src="video3-gap.jpg" alt="Source frames 443-445">'
         '<h2>Video 5, around source 230</h2><img src="video5-gap.jpg" alt="Source frames 229-231">'
         '<p>Video 4 has no missing pose or hip observations. Left calibration falls back to sequence extrema; '
