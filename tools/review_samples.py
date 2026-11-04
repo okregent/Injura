@@ -19,6 +19,7 @@ from engine.pose.side import BodySide, side_landmarks
 from engine.pose.types import Landmark, PoseExtractionResult
 from engine.pose.recovery import recover_pose_gaps
 from engine.squat.analyzer import SquatAnalyzer
+from engine.squat.feedback import build_measurement_feedback
 
 
 def load_extraction(video: Path, output: Path, reuse: bool = False, model_complexity: int = 1):
@@ -84,6 +85,7 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                                               use_posture_calibration=posture_calibration,
                                               use_robust_fallback=robust_fallback)
             side_data = {
+                "measurement_feedback": [asdict(item) for item in build_measurement_feedback(analysis)],
                 "issues": analysis.issues,
                 "consistency": {name: asdict(value) for name, value in analysis.consistency.items()},
                 "repetitions": [],
@@ -214,6 +216,17 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
         parts.append(f"<p><b>{side}: {len(data['repetitions'])} uninterrupted detected reps; {len(data['candidates'])} unverified candidates.</b> "
                      + f"Calibration: {html.escape(data['calibration_method'])}. "
                      + html.escape(" ".join(data["issues"])) + "</p>")
+        parts.append(f'<h2>{html.escape(side)}: 결과 안내</h2><ul>')
+        for feedback in data["measurement_feedback"]:
+            parts.append('<li>' + html.escape(feedback["message"]))
+            if feedback["references"]:
+                parts.append('<details><summary>관련 반복·측정 항목과 사유</summary><ul>')
+                for reference in feedback["references"]:
+                    text = f"반복 {reference['repetition']} · {reference['metric']}: {reference['reason'] or '사유 없음'}"
+                    parts.append('<li>' + html.escape(text) + '</li>')
+                parts.append('</ul></details>')
+            parts.append('</li>')
+        parts.append('</ul>')
     parts.append('<div class="scroll"><table><tr>' + ''.join(f"<th>{html.escape(key)}</th>" for key in columns) + '</tr>')
     for row in rows:
         parts.append('<tr>' + ''.join(
