@@ -78,3 +78,7 @@ Add `--robust-fallback` together with `--posture-calibration` to explicitly enab
 the experimental P5/P95 position fallback when standing posture calibration is
 unavailable. It is off by default. The report identifies the calibration used;
 this option does not bridge missing frames or establish measurement accuracy.
+
+`--rules PATH` explicitly loads configured JSON measurement conditions. Default
+rules are empty; partial/unavailable measurements and experimental calibration
+withhold evaluation. See [rule configuration](docs/architecture/measurement-rules.md).

@@ -57,3 +57,7 @@ thresholds, or automatic side/model selection. Candidates never become measured
 repetitions or metric references. The function does not mutate analysis results.
 `tools.review_samples` includes notices in each side's JSON and HTML, with
 expandable evidence. Raw measurement values and provenance remain available.
+
+Explicit numeric comparison rules are available separately; see
+[measurement rule contract](measurement-rules.md). Default rules are empty and
+adaptive/validated coaching thresholds remain pending.

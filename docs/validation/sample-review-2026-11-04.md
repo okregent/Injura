@@ -416,3 +416,24 @@ Full suite: **257 passed**, including gap-candidate separation, unavailable FPS
 reason propagation, recovery review, explicit experimental calibration,
 deterministic output and analysis immutability. This is a first E4 data-quality
 explanation layer. Configurable/adaptive technique rules remain unimplemented.
+
+## Explicit Configured Rule Engine
+
+Added validated JSON rules and per-repetition numeric comparisons with stable
+outcomes and evidence. Default rules are empty; individual rules default to
+disabled. Partial/unavailable/recovered observations and experimental calibration
+withhold evaluation. Candidates never receive evaluations. No coaching limits,
+grades or medical rules are supplied.
+
+Full suite: **277 passed**, covering comparison boundaries, unsupported targets
+and operators, finite thresholds, disabled defaults, quality/calibration gates,
+candidate separation, configuration validation and duplicate IDs. Real-cache
+wiring check on video 3: an explicitly enabled, test-only positive-duration
+condition matches six baseline repetitions; the same six evaluations are
+withheld with experimental posture calibration. This condition is not a
+committed fitness threshold. Empty-config CLI preserves video 3's 6/6 counts.
+Whitespace checks passed. See `docs/architecture/measurement-rules.md`.
+
+E4 has availability explanations and configured comparison infrastructure;
+adaptive profiles and validated coaching rules remain pending. No model
+default or measurement algorithm changed.

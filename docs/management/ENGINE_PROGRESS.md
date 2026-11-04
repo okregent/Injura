@@ -123,8 +123,8 @@ Translate movement analysis into adaptive, explainable feedback.
 
 - [x] Measurement availability notices with per-repetition evidence (foundation only)
 
-- [ ] `squat_rules.yaml` — configurable rule definitions
-- [ ] Rule engine implementation
+- [x] Explicit configurable measurement rules (`squat_rules.json`, empty by default; YAML deferred)
+- [x] Quality-gated numeric rule evaluation with evidence and withholding reasons
 - [ ] Adaptive thresholds based on user profile
 - [ ] Explainable feedback messages
 - [ ] Possible trunk-collapse inference
