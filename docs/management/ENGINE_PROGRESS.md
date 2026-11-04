@@ -20,7 +20,7 @@ Update this file whenever a task is started, completed, or a phase status change
 ## Current Focus
 
 **Phase: E3 — Squat Movement Analysis**
-**Current task:** E3 measurement and analyzer implementation complete; empirical recording validation and confidence calibration pending
+**Current task:** Initial sample review and cycle-tracking fixes complete; annotated ground truth, calibration, and recording validation remain pending
 
 ---
 
@@ -108,6 +108,9 @@ Interpret biomechanics data as meaningful squat movement.
 - [x] `ExerciseAnalyzer` base class
 - [x] `SquatAnalyzer` implementation
 - [x] Metric and analyzer regression tests
+- [x] Initial review of sample videos 3-6 and stable cycle-state transitions
+- [x] Separate gap-crossing review candidates from measured repetitions
+- [ ] Annotated repetition boundaries and independent measurement validation
 
 ---
 

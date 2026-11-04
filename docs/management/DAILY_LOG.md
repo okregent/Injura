@@ -59,3 +59,11 @@
 - User authorized commit and push on feature/biomechanics; main merge is deferred.
 - Reaffirmed documentation-on-main policy: synchronize documentation separately
   and label unmerged implementation as feature/biomechanics. Engine merge remains deferred.
+
+- Follow-up: reviewed sample videos 3-6; corrected phase chatter, aborted descents,
+  and initial partial-cycle detection. Added separate unverified gap candidates.
+- Videos 3/4 have 6/14 uninterrupted detections with phase timing on both sides.
+  Video 5 has 2 left / 1 right candidates; video 6 has 3 per side. All counts
+  remain unannotated. Full suite: 217 passed.
+- Recorded the investigation in docs/validation/sample-review-2026-11-04.md;
+  implementation stays on feature/biomechanics and documentation stays on main.

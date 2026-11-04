@@ -181,3 +181,23 @@ duration coverage.
 **Reason:** Visibility cannot establish camera or foot orientation. A projected
 heel change cannot prove loss of ground contact. Automatic recording validation
 and empirically calibrated measurement confidence remain pending.
+
+### ADR-017: Stable Cycle Phases and Unverified Gap Candidates
+
+**Decision:** Preserve the uninterrupted-observation requirement for measured
+repetitions. Use a standing-armed position state machine, bottom entry/exit
+hysteresis (85%/75% of calibrated descent), and cancel aborted descents on return
+to standing. Preserve genuine bottom re-entry rather than forcing ordered timing.
+
+With known FPS, separately track unverified candidates across individual gaps
+of at most 0.2 seconds by default (zero disables this). Both standing and bottom
+must be observed. Candidates expose original boundaries, deepest observed
+frame, and missing-observation count, but have no measured metrics or phase
+durations and never enter consistency statistics. No coordinates or missing
+phases are interpolated.
+
+**Reason:** Real recordings exposed direction chatter and an aborted-descent
+state bug, while occlusion at squat bottoms made some complete repetitions
+unobservable. The report must expose these hypotheses without presenting them
+as measurements. Global calibration can still misplace boundaries during
+preparation; human annotation and detector calibration remain necessary.

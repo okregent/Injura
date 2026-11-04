@@ -241,7 +241,19 @@ Current derived features:
   recording_conditions=...)` after pose extraction.
 - It calibrates phase thresholds using the selected-side valid hip signal,
   detects reps separately in uninterrupted source/hip spans, and never bridges
-  missing pose or hip frames. No missing-feature interpolation is performed.
+  missing pose or hip frames for measured repetitions. No missing-feature
+  interpolation is performed.
+- Cycle phases require observed standing before descent. Direction is retained
+  through small coordinate reversals; bottom entry is 85% and exit is 75% of
+  calibrated descent. An aborted descent is cancelled on returning to standing.
+  Genuine ascent-to-bottom reversals remain explicit and fail ordered timing.
+- `candidates` is separate from `repetitions`. With known FPS, optional tracking
+  across individual gaps of at most `candidate_max_gap_seconds=0.2` produces
+  unverified hypotheses with original indices and missing-observation counts.
+  It does not fill coordinates, phases, angles, or times; candidates contribute
+  no metrics or consistency values. Set the limit to zero to disable tracking.
+  Standing and bottom must be observed even for a candidate. These thresholds
+  are engineering defaults requiring empirical validation, not ground truth.
 - Each rep includes depth, hip-to-knee gap, knee/hip bottom angles, torso lean,
   raw and normalized knee travel, heel rise, and timing as separate outcomes.
   Expected missing-data failures yield unavailable results plus reasons; other

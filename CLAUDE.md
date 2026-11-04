@@ -54,6 +54,8 @@ See docs/sessions/2026-11-04.md for full context.
 ### In Progress
 - E3 empirical validation; core metrics, timing, consistency, and analyzer implemented
 - Per-metric availability and observed coverage implemented; calibrated confidence pending
+- Initial videos 3-6 reviewed; cycle-state fixes and unverified gap candidates implemented
+- Latest full test suite: 217 passed; see docs/validation/sample-review-2026-11-04.md
 
 ### Next Steps
 - Validate measurement proxies against annotated side-view recordings
