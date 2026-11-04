@@ -3,7 +3,7 @@
 ## Overview
 **Project:** Injura — Adaptive AI Squat Analyzer
 **Stage:** In Development
-**Last Updated:** 2026-11-04
+**Last Updated:** 2026-11-05
 
 **Branch scope:** Documents are maintained on `main`; implementation and test
 status below refer to `feature/biomechanics`. Its engine code has not been merged
@@ -52,6 +52,9 @@ Full remains default. See the cross-video results in
 ## In Progress
 - Phase 1 MVP: E3 validation is current. E4 has availability/configured-rule
   foundations; E5 has local developer reports. API/mobile are not started.
+- E3 source registration, blinded frame aids, readiness/freeze checks and
+  reference scoring infrastructure are implemented. Independent evaluation
+  videos/references remain pending; smoke runs never establish acceptance.
 - E3 — Squat Movement Analysis (`engine/squat/`)
   - A. Phase & Rep ✅
   - B. Core metric implementation ✅ (2D proxies; empirical validation pending)
@@ -78,8 +81,8 @@ Full remains default. See the cross-video results in
   these are not prerequisites for the manually reviewed side-view MVP.
 
 ## Latest Validation
-- Full local suite: 290 passed, including real-video extraction, phase/rep detection,
-  and integrated `SquatAnalyzer` analysis (2026-11-04).
+- Full local suite: 331 passed, including real-video extraction, phase/rep detection,
+  integrated `SquatAnalyzer` and evaluation lifecycle/scoring tests (2026-11-05).
 - External-library deprecation warnings remain; no test failures.
 - Initial sample review completed for videos 3-6. Videos 3 and 4 retain 6 and 14
   detections with all phase timings available on both sides. Video 5 has no

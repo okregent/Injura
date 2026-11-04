@@ -70,6 +70,8 @@ test-count, model benchmark, or sample-count constitutes empirical acceptance.
 - [x] Core metric implementation, provenance, candidates and regression tests.
 - [x] General recording-review record/gate connected to configured-rule interpretation;
   record reviewer, status and reasons, with unknown distinct from rejected.
+- [x] Evaluation registration, blinded source-frame aids, readiness checks,
+  input/code/runtime freeze and reference-based scoring infrastructure.
 - [x] Validation manifest records clip identity/version, view, side/direction,
   cadence/continuity review, annotation origin and development/evaluation use.
 - [x] Define initial engineering acceptance limits **before** the next evaluation: per-metric units,
@@ -95,7 +97,7 @@ and E4's posture interpretation are separate validation work, not E3 test claims
 
 ## Current Evidence and Next Work
 
-Current automated suite: 290 passed at the last code change. Videos 1-6 support
+Current automated suite: 331 passed at the last code change (2026-11-05). Videos 1-6 support
 debugging and exploratory comparisons; 1/2 were existing test clips, 3-6 informed
 algorithm changes. None forms an untouched independently annotated release set.
 Full 3/4/5 produces 6/14/2 complete cycles with optional recovery/calibration;
@@ -109,3 +111,7 @@ prepared; no eligible evaluation clips or results exist. Next register sources,
 complete recording/reference review and freeze the evaluation set. Continue within the agreed capture
 scope rather than adding tempo targets, more report variants or unsupported
 biomechanical diagnoses. See [sample evidence](sample-review-2026-11-04.md).
+
+The [evaluation workflow](../architecture/e3-evaluation-workflow.md) is now
+implemented. Its development-only smoke reproduces video 3's six detections
+without claiming accuracy, and cannot become a primary acceptance result.

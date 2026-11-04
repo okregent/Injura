@@ -21,6 +21,11 @@ User-defined target-tempo functionality is deferred.
 engineering limits and a source inventory. Existing clips are development data;
 evaluation inputs/references remain pending and no accuracy pass is claimed.
 
+The [E3 evaluation workflow](docs/architecture/e3-evaluation-workflow.md) now
+provides `python -m tools.evaluate_e3` commands for registration, blind frame
+review, readiness, input freeze, evaluation and local status reports. All data
+outputs stay under ignored `artifacts/`; independent reference approval is required.
+
 ## Analyze a recording
 
 Use the project Python 3.9 environment with `requirements.txt` installed:

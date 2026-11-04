@@ -126,3 +126,15 @@
   Development videos 1-6 are excluded from independent evaluation; unclassified
   original file quarantined. Six collection slots remain pending; no evaluation
   results or reference labels invented. Phase-duration interpretation stays restricted.
+
+## 2026-11-05
+
+- User authorized advancing work while away before new video delivery.
+- Built E3 registration/append, blind frame aids, readiness checks, exclusive
+  source/input/code/policy/runtime/model freeze, reference scoring and status hub.
+- Preserved unknown templates and prior reference/review files; known development
+  content and local smoke reuse cannot become held-out acceptance.
+- Added 41 tests; full suite 331 passed. Real video 3 smoke reproduces six raw
+  detections and stays not evaluated; 588 raw frames exported with references untouched.
+- No model defaults, metric algorithms, clinical rules, API/mobile or tempo goals
+  changed. New evaluation videos and independent references are still pending.

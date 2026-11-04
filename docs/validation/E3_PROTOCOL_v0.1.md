@@ -145,6 +145,13 @@ or are explicitly removed from released scope. Do not mark E3 complete yet.
 ## Next Execution Step
 
 Register compliant and violation clips, complete signed capture review and
-reference provenance, freeze the evaluated source list, then implement/run the
-evaluation against these limits. No new accuracy tests were run while writing
-this protocol. Last implementation regression: 290 passed.
+reference provenance, freeze the evaluated source list, then run the implemented
+[evaluation workflow](../architecture/e3-evaluation-workflow.md). Reference
+schema: [v0.1 reference format](E3_REFERENCE_FORMAT_v0.1.md).
+
+Implementation follow-up (2026-11-05): 331 regression tests pass. A real video 3
+development smoke retains six detections and stays not evaluated. There is still
+no independent accuracy result; numeric v0.1 limits are unchanged. The workflow
+records hashes, versioned input/code/runtime/weights and excludes candidates and
+missing-reference shortcuts. Local smoke history supplements reviewed provenance
+but cannot prove all source edits or annotation independence.

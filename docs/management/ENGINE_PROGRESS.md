@@ -20,7 +20,7 @@ Update this file whenever a task is started, completed, or a phase status change
 ## Current Focus
 
 **Phase: E3 — Squat Movement Analysis**
-**Current task:** Validate E3 under the supported side-view capture scope. Recording review gates and protocol v0.1/source inventory are prepared. Next register eligible evaluation clips and reviewed references before running acceptance. User-defined tempo goals are deferred.
+**Current task:** Validate E3 under the supported side-view capture scope. Protocol, registration/reference aids, frozen-input checks and scoring are implemented. Await eligible new clips and reviewed references before primary evaluation. User-defined tempo goals are deferred.
 
 See [recording guide](../product/RECORDING_GUIDE.md) and
 [E3 acceptance gates](../validation/E3_ACCEPTANCE.md). Core implementation is
@@ -115,6 +115,7 @@ Interpret biomechanics data as meaningful squat movement.
 - [x] Initial review of sample videos 3-6 and stable cycle-state transitions
 - [x] Separate gap-crossing review candidates from measured repetitions
 - [ ] Annotated repetition boundaries and independent measurement validation
+- [x] Source-bound evaluation registration, blinded reference aids, frozen-input checks and scoring infrastructure
 - [x] Opt-in source-image re-detection with explicit recovery provenance
 - [x] Experimental posture calibration and model-separated Full/Heavy comparison
 - [ ] Independent validation of Heavy/recovery before any default model change
