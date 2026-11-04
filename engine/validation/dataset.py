@@ -55,8 +55,8 @@ def sha256(path):
 def analysis_fingerprint():
     paths = list((PROJECT / 'engine/pose').glob('*.py')) + list((PROJECT / 'engine/biomechanics').glob('*.py'))
     paths += list((PROJECT / 'engine/squat/metrics').glob('*.py'))
-    paths += [PROJECT / 'engine/squat' / (name + '.py') for name in
-              ('analyzer', 'features', 'cycles', 'phases', 'reps', 'smoothing', 'assessment', 'quality')]
+    paths += list((PROJECT / 'engine/squat').glob('*.py'))
+    paths += list((PROJECT / 'engine').glob('*.py'))
     digest = hashlib.sha256()
     for path in sorted(paths):
         digest.update(path.relative_to(PROJECT).as_posix().encode())
@@ -216,6 +216,8 @@ def reference_problems(reference, entry, limits):
     errors = []
     if not isinstance(reference, dict):
         return ['reference must be an object']
+    if reference.get('schema_version') != 1:
+        errors.append('unsupported reference schema version')
     if reference.get('source_sha256') != entry['sha256']:
         errors.append('reference source hash mismatch')
     if reference.get('confirmed') is not True or not isinstance(reference.get('reviewer'), str) or not reference['reviewer'].strip():

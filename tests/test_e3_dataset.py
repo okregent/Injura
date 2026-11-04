@@ -16,7 +16,7 @@ def reference(entry):
                  uncertainty_frames=0, metrics={name: dict(value=1.0, uncertainty=0) for name in dataset.METRICS})
             for start in (2, 12, 22)]
     positions = dataset.reference_positions(reps)
-    return dict(source_sha256=entry['sha256'], confirmed=True, reviewer='synthetic-fixture-only',
+    return dict(schema_version=1, source_sha256=entry['sha256'], confirmed=True, reviewer='synthetic-fixture-only',
                 origin='independent_review', repetitions=reps,
                 frame_measurements=[dict(metric=name, source_frame=frame, value=1.0, uncertainty=0)
                                     for name in dataset.FRAME_METRICS for frame in positions])
@@ -163,6 +163,27 @@ def test_evaluation_logic_is_frozen_too(ready_bundle, monkeypatch):
     monkeypatch.setattr(dataset, 'evaluation_fingerprint', lambda: 'changed-evaluator')
     with pytest.raises(ValueError, match='evaluation source'):
         dataset.verify_frozen(ready_bundle)
+
+
+def test_recording_policy_changes_affect_analysis_fingerprint(tmp_path, monkeypatch):
+    root = tmp_path / 'project'
+    policy = root / 'engine/squat/recording.py'
+    policy.parent.mkdir(parents=True)
+    policy.write_text('policy_version = 1')
+    monkeypatch.setattr(dataset, 'PROJECT', root)
+    before = dataset.analysis_fingerprint()
+    policy.write_text('policy_version = 2')
+    assert dataset.analysis_fingerprint() != before
+
+
+def test_unknown_reference_schema_cannot_freeze(ready_bundle):
+    path = ready_bundle / 'references/clip-001.json'
+    data = dataset.read_json(path)
+    data['schema_version'] = 2
+    save(path, data)
+    report = dataset.check(ready_bundle)
+    assert not report['ready']
+    assert any('reference schema' in issue for issue in report['clips'][0]['problems'])
 
 
 def test_case_names_require_consistent_human_review(ready_bundle):
