@@ -1,7 +1,20 @@
 # Current Sprint
 
 ## Sprint Goal
-Complete E3 (Squat Movement Analysis).
+Validate E3 within the supported fixed-camera side-view scope. Core implementation
+is complete; empirical acceptance remains open.
+
+## Current Priorities
+
+- [x] Define [MVP capture conditions](../product/RECORDING_GUIDE.md).
+- [x] Define [item gates and E3 acceptance](../validation/E3_ACCEPTANCE.md).
+- [ ] Connect reviewed recording conditions to posture-interpretation gates.
+- [ ] Predeclare metric error/coverage limits and prepare a versioned evaluation manifest.
+- [ ] Evaluate against reviewed references; resolve or restrict failed items.
+
+Prepare evidence autonomously; the user need not annotate every frame. Existing
+exploratory clips are not independent validation. User-defined tempo goals are
+deferred. E4/E5 foundations exist; validated coaching and API/mobile remain pending.
 
 ---
 

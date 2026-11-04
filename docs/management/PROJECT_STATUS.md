@@ -50,6 +50,8 @@ Full remains default. See the cross-video results in
 - `tests/test_squat_phase_smoothing_integration.py` created and passing
 
 ## In Progress
+- Phase 1 MVP: E3 validation is current. E4 has availability/configured-rule
+  foundations; E5 has local developer reports. API/mobile are not started.
 - E3 — Squat Movement Analysis (`engine/squat/`)
   - A. Phase & Rep ✅
   - B. Core metric implementation ✅ (2D proxies; empirical validation pending)
@@ -63,11 +65,15 @@ Full remains default. See the cross-video results in
 - None
 
 ## Next Steps
-- Validate measurements against annotated recordings with varied camera geometry
-- Validate an automatic side-view/foot-orientation detector; manual review is required today
-- Calibrate measurement confidence empirically; current coverage is not accuracy probability
-- Decide whether validated interpolation or automatic side selection is needed
-- Implement E4 feedback rules after measurement validation
+- Follow [supported capture conditions](../product/RECORDING_GUIDE.md) and
+  [E3 acceptance gates](../validation/E3_ACCEPTANCE.md).
+- Connect recording review to interpretation; unknown review is not approval.
+- Predeclare metric error/coverage limits and evaluate compliant clips against
+  reviewed references; preserve exclusions and annotation uncertainty.
+- Validate posture feedback after measurement validation. Rule infrastructure
+  exists, but validated coaching rules are not supplied.
+- Defer user-defined tempo goals, automatic view/side selection and interpolation;
+  these are not prerequisites for the manually reviewed side-view MVP.
 
 ## Latest Validation
 - Full local suite: 277 passed, including real-video extraction, phase/rep detection,

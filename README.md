@@ -10,6 +10,13 @@ The side-view measurement engine extracts squat repetitions and produces
 per-repetition depth, joint angles, torso lean, knee travel, heel-rise proxies,
 phase timing, data coverage, and between-repetition consistency.
 
+Current priority is E3 validation within the
+[supported recording conditions](docs/product/RECORDING_GUIDE.md), using the
+[E3 acceptance gates](docs/validation/E3_ACCEPTANCE.md). Passing tests do not
+establish measurement accuracy or injury-prevention efficacy. E4/E5 foundations
+exist; validated coaching and API/mobile integration remain pending.
+User-defined target-tempo functionality is deferred.
+
 ## Analyze a recording
 
 Use the project Python 3.9 environment with `requirements.txt` installed:

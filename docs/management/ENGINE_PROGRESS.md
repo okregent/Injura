@@ -12,15 +12,19 @@ Update this file whenever a task is started, completed, or a phase status change
 | E1    | Semantic Pose Foundation  | ✅ Completed    |
 | E2    | Biomechanics Foundation   | ✅ Completed    |
 | E3    | Squat Movement Analysis   | 🚧 In Progress  |
-| E4    | Feedback Engine           | ⏳ Not Started  |
-| E5    | Visualization & UX        | ⏳ Not Started  |
+| E4    | Feedback Engine           | 🚧 Foundations implemented; coaching pending |
+| E5    | Visualization & UX        | 🚧 Developer reports; API/mobile pending |
 
 ---
 
 ## Current Focus
 
 **Phase: E3 — Squat Movement Analysis**
-**Current task:** Initial sample review and cycle-tracking fixes complete; annotated ground truth, calibration, and recording validation remain pending
+**Current task:** Validate E3 under the supported side-view capture scope. Connect recording review, predeclare acceptance limits, and compare with reviewed references. User-defined tempo goals are deferred.
+
+See [recording guide](../product/RECORDING_GUIDE.md) and
+[E3 acceptance gates](../validation/E3_ACCEPTANCE.md). Core implementation is
+complete; empirical validation is not. Test counts are not accuracy claims.
 
 ---
 
@@ -59,11 +63,11 @@ Interpret biomechanics data as meaningful squat movement.
 
 ### A. Phase & Rep ✅
 - [x] Phase detection — `STANDING`, `DESCENDING`, `BOTTOM`, `ASCENDING`, `LOCKOUT`, `UNKNOWN` (`engine/squat/phases.py`)
-- [x] Rep counting — `SquatRep`, `detect_squat_reps()` (`engine/squat/phases.py`)
+- [x] Rep counting — `SquatRep`, `detect_squat_reps()` (`engine/squat/reps.py`)
 - [x] Hip y extraction — `extract_hip_y_values()` (`engine/squat/phases.py`)
 - [x] Phase detection logic refactored — position-zone priority over velocity threshold
-- [x] Phase smoothing (hysteresis) — `smooth_squat_phases()` (`engine/squat/phases.py`)
-- [x] Movement windowing — `detect_rough_movement_window()`, `detect_squat_analysis_window()`, `detect_refined_analysis_window()` (`engine/squat/phases.py`)
+- [x] Phase smoothing — `smooth_squat_phases()` (`engine/squat/smoothing.py`)
+- [x] Movement windowing — `detect_rough_movement_window()`, `detect_squat_analysis_window()`, `detect_refined_analysis_window()` (`engine/squat/windowing.py`)
 - [x] Tests — `test_squat_detect_multiple_reps.py`
 - [x] Tests — `test_squat_smooth_phases.py`, `test_squat_phase_smoothing_integration.py`
 - [x] Integration test — `test_squat_pipeline.py` (video → pose → phases → reps)
@@ -117,7 +121,7 @@ Interpret biomechanics data as meaningful squat movement.
 
 ---
 
-## E4 — Feedback Engine ⏳
+## E4 — Feedback Engine 🚧 Foundation Only
 
 Translate movement analysis into adaptive, explainable feedback.
 
@@ -125,22 +129,24 @@ Translate movement analysis into adaptive, explainable feedback.
 
 - [x] Explicit configurable measurement rules (`squat_rules.json`, empty by default; YAML deferred)
 - [x] Quality-gated numeric rule evaluation with evidence and withholding reasons
-- [ ] Adaptive thresholds based on user profile
-- [ ] Explainable feedback messages
+- [ ] Adaptive posture thresholds based on user profile (validation pending; tempo goals deferred)
+- [x] Explainable measurement availability messages
+- [ ] Validated posture interpretation and coaching messages
 - [ ] Possible trunk-collapse inference
 - [ ] Possible ankle-mobility-limitation inference
 - [ ] Excessive-variability inference
 - [ ] Compensation-pattern inference
-- [ ] Tests
+- [x] Availability/configured-rule infrastructure tests
+- [ ] Validated coaching-rule tests
 
 ---
 
-## E5 — Visualization & UX ⏳
+## E5 — Visualization & UX 🚧 Developer Tools Only
 
 Surface analysis results to the user.
 
-- [ ] Landmark overlay visualization
-- [ ] Timeline and metric visualization
+- [x] Local review overlays, diagnostic plots and summary dashboard
+- [ ] Product-facing landmark/timeline/metric visualization
 - [ ] FastAPI backend scaffolding
 - [ ] Video upload endpoint
 - [ ] Analysis endpoint
