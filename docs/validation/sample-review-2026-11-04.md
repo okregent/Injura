@@ -304,3 +304,46 @@ and three source-frame contact sheets. All contact sheets were inspected;
 compilation and whitespace checks passed. No production metrics, exclusions,
 default models, or annotation files changed. Further source checking may
 investigate the reported jump, while pose recovery remains a separate task.
+
+## Additional Recordings 1-2: Fixed Fallback Hypothesis
+
+Applied the same fixed P5/P95 fallback experiment to `sample_video.mp4` (187
+frames at 30 FPS) and `sample_video2.mp4` (451 at 24 FPS), without retuning.
+Both Full and Heavy extract every source frame; recovery adds zero frames.
+With requested posture calibration, both models/sides detect two repetitions
+on video 1 and three on video 2. All 16 baseline replays match the analyzer's
+boundaries exactly, and experimental counts remain unchanged in all 16.
+
+Video 1 has a frontal/oblique view and is unsuitable as side-view angle
+validation. Both sides use posture calibration, so the fallback is never
+exercised there. Facing is a placeholder for its general report; it does not
+enter the hip-y cycle replay. Video 2 faces left on visual review. Its right
+side uses extrema fallback for both models, exercising the proposed alternative
+in four raw/recovered combinations; its left uses posture calibration.
+
+The video 2 right-side start/end boundaries change by at most three source
+frames (0.125 seconds at 24 FPS). For example Full rep 1 changes from 54-149
+to 57-148, while deepest observed frame stays 128. Heavy rep 3 ends at 438
+instead of 439. No reference labels establish which is better. The comparison
+CSV now reports maximum start/end shift for equal-count sequences; differing
+counts leave that pairing-based comparison unavailable.
+
+Inspected recording views and a representative video 2 bottom overlay. These
+files were already used in project tests and lack independently annotated
+boundaries, so this is additional exploratory coverage, not an untouched
+validation set or proof of anatomical accuracy. No new production fallback or
+default model is enabled. Rechecked the original 32 parity comparisons after
+extending the tool; their count-change results remain the same.
+
+Reproduce Full/Heavy recovery reports under
+`artifacts/sample-review/additional-validation/sample_video` / `sample_video2`
+and `model-comparison/video1-heavy-recovered` / `video2-heavy-recovered`, then run:
+
+```bash
+python -m tools.evaluate_calibration_fallback --root artifacts/sample-review/additional-validation --videos 1 2
+```
+
+Local report: `additional-validation/model-comparison/calibration-experiment/index.html`.
+Compilation/whitespace checks passed; no engine behavior changed. The fixed
+hypothesis still needs genuinely independent suitable recordings and reference
+boundaries before performance claims or a default change.

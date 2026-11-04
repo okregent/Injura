@@ -93,3 +93,7 @@
   abrupt subject motion at 309 to 310 differs from remaining pose gap 444.
   Frames around video 3 gap 444 and video 5 gap 230 appear continuous; source
   corruption/editing is not established. Saved descriptive pixel/flow/time diagnostics.
+- Applied fixed calibration hypothesis to videos 1/2: 16 replay parity checks
+  pass; both models keep 2/3 detections per side. Video 2 right-side boundaries
+  shift at most 3 frames. Video 1 is frontal/oblique and does not exercise the
+  fallback. Existing test clips are not independent ground truth; defaults unchanged.
