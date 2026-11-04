@@ -24,6 +24,8 @@ def build_index(root: Path):
                 str(len(before["repetitions"])) if before else "unavailable",
                 str(len(data["repetitions"])), str(len(data.get("candidates", []))),
                 str(timed(before)) if before else "unavailable", str(timed(data)),
+                str(len(current.get("recovered_frame_indices", []))),
+                html.escape(data.get("calibration_method", "sequence_extrema")),
             ]
             rows.append("<tr>" + "".join(f"<td>{cell}</td>" for cell in row) + "</tr>")
     parts = [
@@ -32,13 +34,22 @@ def build_index(root: Path):
         'table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccd;padding:9px}th{background:#eef}'
         '.note{background:#fff2cf;padding:16px;border-left:4px solid #bd8a1e}img{max-width:100%}</style>',
         '<h1>Sample analysis: causes and revised results</h1>',
+        ('<p><a href="count-evaluation.html">User-reported counts and count-only evaluation</a></p>'
+         if (root / "count-evaluation.html").exists() else ''),
+        ('<p><a href="manual-review.html">Manual video review and annotation templates</a></p>'
+         if (root / "manual-review.html").exists()
+         else '<p>Generate manual review with python -m tools.prepare_manual_review.</p>'),
         '<div class="note">Counts are detector outputs, not annotated ground truth. '
         'Uninterrupted detections and gap-crossing review candidates are separate. '
         'Candidates have no metric values or phase timing and never enter consistency statistics.</div>',
+        '<p>Opt-in experimental reports may use source-image re-detection and posture-based calibration. '
+        'Defaults are unchanged. Re-detected measurements remain marked for review; count agreement '
+        'alone does not validate joint accuracy or timing boundaries.</p>',
         '<h2>Before / after</h2><p>Timings counts indicate how many detected repetitions have '
         'all three phase durations available. Body sides are compared, not automatically selected.</p>',
         '<table><tr><th>Video</th><th>Body side</th><th>Previous detections</th><th>Uninterrupted detections</th>'
-        '<th>Unverified candidates</th><th>Previous timings</th><th>Current timings</th></tr>',
+        '<th>Unverified candidates</th><th>Previous timings</th><th>Current timings</th>'
+        '<th>Source re-detections</th><th>Calibration</th></tr>',
         *rows, '</table>',
         '<h2>Findings</h2><ol>'
         '<li><b>Phase direction chatter:</b> raw frame-to-frame hip displacement changed sign with small noise. '
@@ -47,7 +58,8 @@ def build_index(root: Path):
         '<li><b>Aborted descent retained:</b> a small descent followed by standing did not cancel the pending rep. '
         'The next squat inherited an old start and idle standing frames. Returning to standing now cancels incomplete descent.</li>'
         '<li><b>Initial partial cycles:</b> an observation span starting mid-motion previously counted as complete. '
-        'Revised detection requires observed standing before descent. This reclassifies video 5 detections as candidates.</li>'
+        'Revised detection requires observed standing before descent. The initial conservative review '
+        'reclassified video 5 detections as candidates; source-image recovery is evaluated separately.</li>'
         '<li><b>Occlusion at the bottom:</b> video 6 loses source poses around squat bottoms. '
         'Optional tracking across gaps of at most 0.2 seconds identifies candidates only. '
         'No missing coordinate, angle, phase time, or true-bottom claim is reconstructed.</li></ol>',
