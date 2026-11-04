@@ -73,3 +73,8 @@ uses the selected model and marks recovered-frame measurements as partial.
 The investigation document includes reproduction commands, user count
 references, and the limits of the Full/Heavy comparison. Count agreement alone
 does not validate joint angles or other anatomical measurements.
+
+Add `--robust-fallback` together with `--posture-calibration` to explicitly enable
+the experimental P5/P95 position fallback when standing posture calibration is
+unavailable. It is off by default. The report identifies the calibration used;
+this option does not bridge missing frames or establish measurement accuracy.

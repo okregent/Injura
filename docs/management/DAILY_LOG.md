@@ -97,3 +97,7 @@
   pass; both models keep 2/3 detections per side. Video 2 right-side boundaries
   shift at most 3 frames. Video 1 is frontal/oblique and does not exercise the
   fallback. Existing test clips are not independent ground truth; defaults unchanged.
+- Integrated explicit opt-in robust fallback with posture-mode dependency,
+  result provenance, unsupported-range fallback and unchanged defaults/gap rules.
+  All 48 cached experiment comparisons match; full suite 252 passed. Separate
+  Heavy video 4 opt-in report gives 14/14 versus baseline 11/14.

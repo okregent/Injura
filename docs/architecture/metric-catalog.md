@@ -269,6 +269,17 @@ Current derived features:
 
 ## Experimental Pose Recovery and Calibration
 
+`SquatAnalyzer.analyze(..., use_posture_calibration=True, use_robust_fallback=True)`
+explicitly enables a position P5/P95 fallback when posture calibration cannot
+be used. Requesting robust fallback without posture mode raises `ValueError`.
+The CLI equivalents are `--posture-calibration --robust-fallback`. Both remain
+off by default. At least five finite hip-y observations and a noncollapsed
+central range are required; otherwise existing extrema remain in use.
+Successful posture calibration always takes precedence. Result method
+`position_p05_p95_fallback_experimental` and issues identify the fallback.
+Coverage quality is still data support, not validation of calibration accuracy.
+Missing observations continue to split measured repetitions.
+
 - All functionality in this section is opt-in on `feature/biomechanics`.
 - `MediaPipePoseEstimator(model_complexity=1)` preserves the default Full model;
   integer values 0/1/2 select Lite/Full/Heavy. Additional weights may download from
