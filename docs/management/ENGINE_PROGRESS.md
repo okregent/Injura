@@ -13,14 +13,14 @@ Update this file whenever a task is started, completed, or a phase status change
 | E2    | Biomechanics Foundation   | ✅ Completed    |
 | E3    | Squat Movement Analysis   | 🚧 In Progress  |
 | E4    | Feedback Engine           | ✅ Agreed implementation complete; coaching validation deferred |
-| E5    | Visualization & UX        | 🚧 Developer reports; API/mobile pending |
+| E5    | Visualization & UX        | 🚧 Local API/browser preview; product timeline/mobile pending |
 
 ---
 
 ## Current Focus
 
 **Phase: E4 implementation closure; E3 empirical validation deferred**
-**Current task:** E5 integration has started with a [JSON response adapter](../architecture/e5-response.md). E4 agreed implementation remains complete; new filming/E3 evaluation and validated coaching remain deferred. HTTP/upload/mobile are not implemented yet.
+**Current task:** E5 [local API and browser preview](../architecture/e5-local-api.md) are implemented and tested. E4 agreed implementation remains complete; new filming/E3 evaluation and validated coaching remain deferred. Product timeline/mobile and production integration remain pending.
 
 See [recording guide](../product/RECORDING_GUIDE.md) and
 [E3 acceptance gates](../validation/E3_ACCEPTANCE.md). Core implementation is
@@ -148,16 +148,16 @@ Deferred validation/future scope (not accepted as complete):
 
 ---
 
-## E5 — Visualization & UX 🚧 Developer Tools Only
+## E5 — Visualization & UX 🚧 Local API and Preview
 
 Surface analysis results to the user.
 
 - [x] Local review overlays, diagnostic plots and summary dashboard
 - [x] Framework-independent JSON result adapter with original-frame provenance and E4 states
 - [ ] Product-facing landmark/timeline/metric visualization
-- [ ] FastAPI backend scaffolding
-- [ ] Video upload endpoint
-- [ ] Analysis endpoint
+- [x] Local FastAPI backend scaffolding and liveness/capabilities
+- [x] Bounded local video upload endpoint
+- [x] Synchronous analysis endpoint and browser upload/results preview
 - [ ] React Native + Expo mobile app integration
 
 

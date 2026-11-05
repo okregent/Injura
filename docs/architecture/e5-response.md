@@ -43,6 +43,6 @@ not change engine objects.
 Eight adapter tests plus related E4/baseline/overview tests: **42 passed**. The
 last full-suite run before this isolated adapter was 411 passed; it was not rerun
 for this change. No new dependencies, personal artifacts or network service.
-Next: FastAPI request/upload/error contracts and controlled inference integration,
-then product results UI. Deployment, authentication/storage and actual filmed
-accuracy evaluation have not been introduced by this step.
+Subsequently integrated into the [local FastAPI and browser preview](e5-local-api.md).
+Deployment, authentication/storage and actual filmed accuracy evaluation remain
+outside the current development scope.
