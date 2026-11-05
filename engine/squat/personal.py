@@ -34,6 +34,7 @@ def build_baseline(cards, *, context, source_sha256, reviewer=None):
     """
     validate_context(context)
     cards = list(cards)
+    all_repetitions = {card.repetition for card in cards}
     if not isinstance(source_sha256, str) or len(source_sha256) != 64 or any(c not in '0123456789abcdef' for c in source_sha256):
         raise ValueError('baseline source SHA-256 required')
     if reviewer is not None and (not isinstance(reviewer, str) or not reviewer.strip()):
@@ -45,9 +46,10 @@ def build_baseline(cards, *, context, source_sha256, reviewer=None):
         if len(repetitions) != len(set(repetitions)):
             raise ValueError('duplicate baseline repetition for metric')
         values = [card.observation for card in entries if card.status == 'observation' and _finite(card.observation)]
-        ready = reviewer is not None and len(values) >= 3 and len(values) == len(entries)
+        ready = (reviewer is not None and len(values) >= 3 and len(values) == len(entries)
+                 and set(repetitions) == all_repetitions)
         items.append(dict(metric=metric, field=field, unit=unit, status='descriptive' if ready else 'review_required',
-                          expected=len(entries), usable=len(values), repetitions=repetitions,
+                          expected=len(all_repetitions), usable=len(values), repetitions=repetitions,
                           median=median(values) if ready else None, minimum=min(values) if ready else None,
                           maximum=max(values) if ready else None))
     return dict(schema_version=1, context=dict(context), source_sha256=source_sha256,

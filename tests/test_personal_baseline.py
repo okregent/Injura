@@ -69,6 +69,14 @@ def test_duplicate_cycles_rejected():
         baseline(cards() + [cards()[0]])
 
 
+def test_missing_entire_card_stays_in_baseline_denominator():
+    items = cards() + [replace(cards()[0], repetition=4, metric='hip_flexion')]
+    result = baseline(items)
+    knee = next(item for item in result['items'] if item['metric'] == 'knee_flexion')
+    assert knee['expected'] == 4 and knee['usable'] == 3
+    assert knee['status'] == 'review_required'
+
+
 def test_session_actions_deduplicate_and_keep_evidence():
     items = cards() + [replace(cards()[0], status='retake', action='Record again.')]
     summary = summarize_session(items)
