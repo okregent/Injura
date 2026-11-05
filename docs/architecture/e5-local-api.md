@@ -106,3 +106,30 @@ accuracy claim. Downloaded dependency wheel also remains ignored under artifacts
 Sources: official [FastAPI file handling](https://fastapi.tiangolo.com/tutorial/request-files/),
 [worker memory/process behavior](https://fastapi.tiangolo.com/deployment/concepts/),
 [OpenCV package selection](https://pypi.org/project/opencv-contrib-python/4.10.0.84/).
+
+## Cycle and Candidate Navigation
+
+Implemented on `feature/biomechanics` (`e735d98`). After analysis, the local preview
+lists measured cycles and excluded candidates separately. Selecting a cycle shows
+only its measurement cards, availability/reasons/actions and original frame bounds.
+Buttons navigate to start, BOTTOM-phase end and end; the BOTTOM-phase end is not
+claimed as the deepest posture. Candidate selection shows its gap reason and
+start/observed-bottom/end navigation, never measurements borrowed from a cycle.
+Empty lists have explicit notices, and changing the selected file/side/facing
+invalidates old controls as well as the result.
+
+Navigation pauses the local video and requests `source_frame / reported_fps`.
+It is approximate and cannot establish event accuracy, especially for variable-
+rate or edited footage. Missing/nonfinite/nonpositive FPS or invalid source-frame
+metadata disables time controls while preserving evidence inspection. Not-yet-
+loaded video metadata, positions outside browser duration and seek errors produce
+visible notices instead of silently seeking/clamping. Native browser seeking is
+not frame-exact and has not been visually validated against actual source events.
+No automatic playback, candidate promotion or new anatomical claim.
+
+Latest full suite: **444 passed**, 17 existing warnings, 71.58 seconds. Nine new
+Node DOM/video-mocked scenarios cover source-frame mapping, selected-cycle
+filtering, candidate isolation, invalid/unknown FPS, metadata/duration/index guards,
+stale callbacks and empty lists. No API/engine contract or dependency changes.
+This is cycle-level navigation within the developer preview, not a complete
+landmark overlay/annotation UI, native mobile app or empirical timing validation.

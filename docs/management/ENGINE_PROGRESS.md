@@ -158,6 +158,7 @@ Surface analysis results to the user.
 - [x] Local FastAPI backend scaffolding and liveness/capabilities
 - [x] Bounded local video upload endpoint
 - [x] Synchronous analysis endpoint and browser upload/results preview
+- [x] Cycle/candidate source-frame navigation and selected-cycle evidence (approximate FPS-based seeking)
 - [ ] React Native + Expo mobile app integration
 
 
