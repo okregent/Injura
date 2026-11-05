@@ -22,9 +22,10 @@ empirical acceptance remains open.
 - [x] Add descriptive preparation baselines, matching-context comparisons and grouped session actions; retain validation gates.
 - [x] Add source-bound personal setup drafts, readiness screen and fresh-inference baseline generation.
 - [x] Add original-frame point measurement/download/import with preserved profile history and review reset.
+- [x] Add conservative [E4 session overview](../architecture/e4-session-overview.md) and explicit personal-comparison completeness states.
 - [ ] Obtain reviewed user-specific profile/preparation evidence before real personalized comparisons; filming remains deferred.
 
-Latest regression: 398 passed (2026-11-05). The local development smoke result
+Latest regression: 408 passed (2026-11-05). The local development smoke result
 remains not evaluated. New sources/reviewed references are still required.
 Profile and baseline tests are now included in the full regression suite.
 
