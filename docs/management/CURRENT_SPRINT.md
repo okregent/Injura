@@ -14,9 +14,10 @@ acceptance and validated coaching remain open.
 - [x] Local browser upload/results preview consuming the response contract.
 - [x] Cycle/candidate navigation with selected-cycle evidence and approximate source-frame seeking.
 - [x] Paused selected-side landmark overlay with visibility/gap/geometry guards.
-- [ ] Filmed/native-browser overlay validation, annotation and mobile integration; local preview is not final UX.
+- [x] Native-browser preview checks, saved-result reopen and Expo development client integration.
+- [ ] Filmed alignment acceptance, annotation, physical-device checks and production integration.
 
-Latest E5 regression: 455 passed, pip check passes. See [API runbook](../architecture/e5-local-api.md).
+Latest E5 regression: 469 passed, pip check passes. See [API runbook](../architecture/e5-local-api.md).
 The local API/preview is implemented; no public server/deployment is running.
 
 - [x] Define [MVP capture conditions](../product/RECORDING_GUIDE.md).
@@ -37,13 +38,13 @@ The local API/preview is implemented; no public server/deployment is running.
 - [x] Add conservative [E4 session overview](../architecture/e4-session-overview.md) and explicit personal-comparison completeness states.
 - [ ] Obtain reviewed user-specific profile/preparation evidence before real personalized comparisons; filming remains deferred.
 
-Latest regression: 455 passed (2026-11-05). The local development smoke result
+Latest regression: 469 passed (2026-11-05). The local development smoke result
 remains not evaluated. New sources/reviewed references are still required.
 Profile and baseline tests are now included in the full regression suite.
 
 Prepare evidence autonomously; the user need not annotate every frame. Existing
 exploratory clips are not independent validation. User-defined tempo goals are
-deferred. E4 agreed implementation is complete; validated coaching and E5 API/mobile remain pending.
+deferred. E4 agreed implementation is complete; validated coaching and E5 physical-device/production acceptance remain pending.
 
 ---
 
@@ -132,3 +133,5 @@ deferred. E4 agreed implementation is complete; validated coaching and E5 API/mo
 - Mobile UI (E5)
 - Database integration
 - Authentication
+
+E5 update (2026-11-05, `feature/biomechanics`): browser QA, source-bound saved-result reopening and Expo SDK 58 client implemented. Python: 469 passed; mobile transport: eight passed; typecheck/lint/export and Expo Doctor passed. Physical-device, empirical and coaching acceptance remain pending. See [client runbook](../architecture/e5-mobile-client.md).

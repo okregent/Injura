@@ -17,7 +17,7 @@
 | E2 | Biomechanics Foundation | ✅ Completed |
 | E3 | Squat Movement Analysis | 🚧 Implemented; empirical validation pending |
 | E4 | Feedback Engine | ✅ Agreed implementation complete; coaching validation deferred |
-| E5 | Visualization & UX | 🚧 Local reports/API/browser preview implemented; product timeline/mobile pending |
+| E5 | Visualization & UX | 🚧 Local reports/API/browser preview and Expo client implemented; device verification pending |
 
 Current gates: [E3 acceptance](../validation/E3_ACCEPTANCE.md).
 Supported input: [recording guide](../product/RECORDING_GUIDE.md). User-defined
@@ -100,3 +100,5 @@ Surface analysis results to the user.
 - Ergonomics analysis
 - Rehabilitation assistance
 - Personalised movement intelligence systems
+
+E5 update (2026-11-05, `feature/biomechanics`): browser QA, source-bound saved-result reopening and Expo SDK 58 client implemented. Python: 469 passed; mobile transport: eight passed; typecheck/lint/export and Expo Doctor passed. Physical-device, empirical and coaching acceptance remain pending. See [client runbook](../architecture/e5-mobile-client.md).
