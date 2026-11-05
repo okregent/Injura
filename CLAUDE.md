@@ -55,7 +55,7 @@ See docs/sessions/2026-11-04.md for full context.
 - E3 empirical validation; core metrics, timing, consistency, and analyzer implemented
 - Per-metric availability and observed coverage implemented; calibrated confidence pending
 - Initial videos 3-6 reviewed; cycle-state fixes and unverified gap candidates implemented
-- Latest full test suite: 411 passed; see docs/sessions/2026-11-05.md
+- Latest full test suite: 435 passed; see docs/sessions/2026-11-05.md
 - E4 agreed implementation scope complete; new filming/E3 empirical and coaching validation deferred
 - Opt-in recovery/posture calibration and explicit Full/Heavy comparison implemented; Full remains default
 
@@ -63,6 +63,7 @@ See docs/sessions/2026-11-04.md for full context.
 - Validate measurement proxies against annotated side-view recordings
 - Validate automatic camera/foot-orientation detection (currently explicit external review)
 - Calibrate confidence before exposing accuracy claims
-- E5 integration started with JSON response adapter; 42 related tests passed, last full suite 411
-- Next: HTTP upload/request/error contracts and controlled inference; no server/mobile implemented yet
+- E5 JSON response, local FastAPI upload/inference and browser preview implemented; see docs/architecture/e5-local-api.md
+- Next: product timeline/annotation and mobile integration; no public deployment or running background server
+- OpenCV uses only opencv-contrib-python 4.10.0.84; pip check passes; API deps in apps/api/requirements*.txt
 - Validate E4 corrective criteria after independent measurement validation; defaults remain empty

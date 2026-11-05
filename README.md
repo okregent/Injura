@@ -16,7 +16,8 @@ New filming and empirical E3 validation are deferred by the user. Measurement va
 [E3 acceptance gates](docs/validation/E3_ACCEPTANCE.md). Passing tests do not
 establish measurement accuracy or injury-prevention efficacy. E4 includes capture/
 quality-gated notices, projected profiles, descriptive personal baselines and session
-summaries. Validated coaching and E5 API/mobile integration remain pending.
+summaries. E5 now includes a local API/browser preview; validated coaching,
+production integration and mobile remain pending.
 User-defined target-tempo functionality is deferred.
 
 [Evaluation protocol v0.1](docs/validation/E3_PROTOCOL_v0.1.md) records initial
@@ -29,6 +30,18 @@ review, readiness, input freeze, evaluation and local status reports. All data
 outputs stay under ignored `artifacts/`; independent reference approval is required.
 
 ## Analyze a recording
+
+For a local upload/results preview, install the API requirements and run the server
+from the repository root on `feature/biomechanics`:
+
+```powershell
+.\venv\Scripts\python.exe -m pip install -r requirements.txt -r apps/api/requirements-dev.txt
+.\venv\Scripts\python.exe -m uvicorn apps.api.main:app --host 127.0.0.1 --port 8000 --workers 1
+```
+
+Open `http://127.0.0.1:8000/`. See [limits, install/migration and API contract](docs/architecture/e5-local-api.md).
+This is a local developer preview with pending capture/coaching validation, not a
+publicly deployed or authenticated service. No background server is started by Git.
 
 Use the project Python 3.9 environment with `requirements.txt` installed:
 

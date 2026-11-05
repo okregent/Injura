@@ -17,7 +17,7 @@
 | E2 | Biomechanics Foundation | ✅ Completed |
 | E3 | Squat Movement Analysis | 🚧 Implemented; empirical validation pending |
 | E4 | Feedback Engine | ✅ Agreed implementation complete; coaching validation deferred |
-| E5 | Visualization & UX | 🚧 Local developer reports; API/mobile not started |
+| E5 | Visualization & UX | 🚧 Local reports/API/browser preview implemented; product timeline/mobile pending |
 
 Current gates: [E3 acceptance](../validation/E3_ACCEPTANCE.md).
 Supported input: [recording guide](../product/RECORDING_GUIDE.md). User-defined
@@ -58,7 +58,8 @@ Translate movement analysis into adaptive, explainable feedback.
 Surface analysis results to the user.
 - Landmark overlay visualization
 - Timeline and metric visualization
-- FastAPI backend scaffolding
+- Bounded local FastAPI upload/inference and browser preview implemented
+- Product API hardening/deployment and timeline integration pending
 - React Native + Expo mobile app integration
 
 ### Product Scope
