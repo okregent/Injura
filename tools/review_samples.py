@@ -8,6 +8,7 @@ import argparse
 import csv
 import html
 import json
+import hashlib
 from dataclasses import asdict
 from pathlib import Path
 
@@ -20,9 +21,19 @@ from engine.pose.types import Landmark, PoseExtractionResult
 from engine.pose.recovery import recover_pose_gaps
 from engine.squat.analyzer import SquatAnalyzer
 from engine.squat.feedback import build_measurement_feedback, build_feedback_cards
+from engine.squat.personal import summarize_session, compare_baseline, load_baseline
 from engine.squat.rules import load_rules, evaluate_rules
 from engine.squat.recording import load_recording_reviews, recording_gate, REQUIREMENTS
 from engine.squat.metrics.normalized_knee_travel import KneeTravelRecordingConditions
+from engine.validation.dataset import analysis_fingerprint, environment_signature
+
+
+def personal_pipeline_signature(model_complexity=1, recover_missing_poses=False,
+                                posture_calibration=False, robust_fallback=False):
+    payload = dict(engine=analysis_fingerprint(), environment=environment_signature(),
+                   model_complexity=model_complexity, recovery=recover_missing_poses,
+                   posture_calibration=posture_calibration, robust_fallback=robust_fallback)
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode('utf-8')).hexdigest()
 
 
 def load_extraction(video: Path, output: Path, reuse: bool = False, model_complexity: int = 1):
@@ -49,9 +60,17 @@ def load_extraction(video: Path, output: Path, reuse: bool = False, model_comple
 def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extraction: bool = False,
                  recover_missing_poses: bool = False,
                  posture_calibration: bool = False, model_complexity: int = 1,
-                 robust_fallback: bool = False, rules=(), recording_reviews=()):
+                 robust_fallback: bool = False, rules=(), recording_reviews=(),
+                 personal_baseline=None, personal_context=None):
     if robust_fallback and not posture_calibration:
         raise ValueError("robust fallback requires posture calibration")
+    if (personal_baseline is None) != (personal_context is None):
+        raise ValueError("personal baseline and context must be supplied together")
+    if personal_context is not None and personal_context.get('facing') != facing.value:
+        raise ValueError("personal context facing mismatch")
+    if personal_context is not None and personal_context.get('pipeline_sha256') != personal_pipeline_signature(
+            model_complexity, recover_missing_poses, posture_calibration, robust_fallback):
+        raise ValueError("personal context pipeline differs from current runtime")
     rules = tuple(rules)
     recording_reviews = tuple(recording_reviews)
     if len({review.side for review in recording_reviews}) != len(recording_reviews):
@@ -98,8 +117,12 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                                                   side_view=recording_review.side_view,
                                                   foot_side_on=recording_review.foot_side_on,
                                               ) if recording_review and recording_review.reviewer else None)
+            cards = build_feedback_cards(analysis, recording_review=recording_review)
             side_data = {
-                "feedback_cards": [asdict(item) for item in build_feedback_cards(analysis, recording_review=recording_review)],
+                "session_actions": summarize_session(cards),
+                "personal_comparisons": compare_baseline(cards, personal_baseline, context=personal_context)
+                    if personal_baseline is not None and personal_context.get('side') == side.value else [],
+                "feedback_cards": [asdict(item) for item in cards],
                 "measurement_feedback": [asdict(item) for item in build_measurement_feedback(analysis)],
                 "rule_evaluations": [asdict(item) for item in evaluate_rules(analysis, rules, recording_review=recording_review)],
                 "recording_gates": {name: dict(zip(("status", "reason"), recording_gate(name, recording_review, side)))
@@ -245,6 +268,15 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                 parts.append('</ul></details>')
             parts.append('</li>')
         parts.append('</ul>')
+        parts.append('<h3>Session priorities</h3><ul>')
+        for action in data.get("session_actions", []):
+            text = f"{action['status']} · repetitions {action['repetitions']} · {action['action']}"
+            parts.append('<li>' + html.escape(text) + '<details><summary>Evidence</summary><pre>'
+                         + html.escape(json.dumps(action['evidence'], indent=2)) + '</pre></details></li>')
+        parts.append('</ul>')
+        if data.get("personal_comparisons"):
+            parts.append('<h3>Personal preparation comparison</h3><p>Differences are not posture errors or improvements.</p><pre>'
+                         + html.escape(json.dumps(data['personal_comparisons'], indent=2)) + '</pre>')
         parts.append('<h3>Measurement observations and next actions</h3><p>Correction guidance remains pending validation.</p><ul>')
         for card in data.get("feedback_cards", []):
             text = (f"Rep {card['repetition']} · {card['metric']}.{card['field'] or 'value'} · {card['status']}: "
@@ -299,6 +331,8 @@ def main():
     parser.add_argument("--output", type=Path)
     parser.add_argument("--rules", type=Path, help="Explicit JSON measurement rules; no built-in technique thresholds")
     parser.add_argument("--recording-review", type=Path, help="Source-bound human review JSON; unknown conditions withhold rule interpretation")
+    parser.add_argument("--personal-baseline", type=Path, help="Descriptive preparation baseline JSON, not an ideal posture")
+    parser.add_argument("--personal-context", type=Path, help="Explicit matching profile/setup/side/facing/pipeline context JSON")
     parser.add_argument("--reuse-extraction", action="store_true", help="Reuse a local pose cache if source size and mtime match")
     parser.add_argument("--recover-missing-poses", action="store_true", help="Opt in to source-image re-detection of bounded missing frames")
     parser.add_argument("--posture-calibration", action="store_true", help="Opt in to experimental standing-posture median and bottom P95 calibration")
@@ -308,6 +342,8 @@ def main():
     args = parser.parse_args()
     if args.robust_fallback and not args.posture_calibration:
         parser.error("--robust-fallback requires --posture-calibration")
+    if bool(args.personal_baseline) != bool(args.personal_context):
+        parser.error("--personal-baseline and --personal-context must be supplied together")
     try:
         rules = load_rules(args.rules) if args.rules else []
         recording_reviews = load_recording_reviews(args.recording_review, args.video) if args.recording_review else []
@@ -316,7 +352,9 @@ def main():
     review_video(args.video, FacingDirection(args.facing), args.output or Path("artifacts/sample-review") / args.video.stem,
                  reuse_extraction=args.reuse_extraction, recover_missing_poses=args.recover_missing_poses,
                  posture_calibration=args.posture_calibration, model_complexity=args.model_complexity,
-                 robust_fallback=args.robust_fallback, rules=rules, recording_reviews=recording_reviews)
+                 robust_fallback=args.robust_fallback, rules=rules, recording_reviews=recording_reviews,
+                 personal_baseline=load_baseline(args.personal_baseline) if args.personal_baseline else None,
+                 personal_context=json.loads(args.personal_context.read_text(encoding='utf-8-sig')) if args.personal_context else None)
 
 
 if __name__ == "__main__":
