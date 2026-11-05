@@ -10,11 +10,13 @@ The side-view measurement engine extracts squat repetitions and produces
 per-repetition depth, joint angles, torso lean, knee travel, heel-rise proxies,
 phase timing, data coverage, and between-repetition consistency.
 
-Current priority is E3 validation within the
+Agreed E4 implementation is complete; see [scope and acceptance](docs/validation/E4_IMPLEMENTATION_ACCEPTANCE.md).
+New filming and empirical E3 validation are deferred by the user. Measurement validation follows the
 [supported recording conditions](docs/product/RECORDING_GUIDE.md), using the
 [E3 acceptance gates](docs/validation/E3_ACCEPTANCE.md). Passing tests do not
-establish measurement accuracy or injury-prevention efficacy. E4/E5 foundations
-exist; validated coaching and API/mobile integration remain pending.
+establish measurement accuracy or injury-prevention efficacy. E4 includes capture/
+quality-gated notices, projected profiles, descriptive personal baselines and session
+summaries. Validated coaching and E5 API/mobile integration remain pending.
 User-defined target-tempo functionality is deferred.
 
 [Evaluation protocol v0.1](docs/validation/E3_PROTOCOL_v0.1.md) records initial

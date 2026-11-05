@@ -12,15 +12,15 @@ Update this file whenever a task is started, completed, or a phase status change
 | E1    | Semantic Pose Foundation  | ✅ Completed    |
 | E2    | Biomechanics Foundation   | ✅ Completed    |
 | E3    | Squat Movement Analysis   | 🚧 In Progress  |
-| E4    | Feedback Engine           | 🚧 Foundations implemented; coaching pending |
+| E4    | Feedback Engine           | ✅ Agreed implementation complete; coaching validation deferred |
 | E5    | Visualization & UX        | 🚧 Developer reports; API/mobile pending |
 
 ---
 
 ## Current Focus
 
-**Phase: E3 — Squat Movement Analysis**
-**Current task:** Validate E3 under the supported side-view capture scope. Protocol, registration/reference aids, frozen-input checks and scoring are implemented. Await eligible new clips and reviewed references before primary evaluation. User-defined tempo goals are deferred.
+**Phase: E4 implementation closure; E3 empirical validation deferred**
+**Current task:** Agreed E4 implementation is complete; see [acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md). New filming and E3 evaluation remain deferred by the user. E5 product integration is the next development boundary, not started by this closure. User-defined tempo goals remain deferred.
 
 See [recording guide](../product/RECORDING_GUIDE.md) and
 [E3 acceptance gates](../validation/E3_ACCEPTANCE.md). Core implementation is
@@ -122,7 +122,7 @@ Interpret biomechanics data as meaningful squat movement.
 
 ---
 
-## E4 — Feedback Engine 🚧 Foundation Only
+## E4 — Feedback Engine ✅ Agreed Implementation Complete
 
 Translate movement analysis into adaptive, explainable feedback.
 
@@ -132,14 +132,18 @@ Translate movement analysis into adaptive, explainable feedback.
 
 - [x] Explicit configurable measurement rules (`squat_rules.json`, empty by default; YAML deferred)
 - [x] Quality-gated numeric rule evaluation with evidence and withholding reasons
-- [ ] Adaptive posture thresholds based on user profile (validation pending; tempo goals deferred)
 - [x] Explainable measurement availability messages
+- [x] Cross-module personal feedback acceptance tests
+- [x] Availability/configured-rule infrastructure tests
+
+Deferred validation/future scope (not accepted as complete):
+
+- [ ] Adaptive posture thresholds based on user profile (validation pending; tempo goals deferred)
 - [ ] Validated posture interpretation and coaching messages
 - [ ] Possible trunk-collapse inference
 - [ ] Possible ankle-mobility-limitation inference
 - [ ] Excessive-variability inference
 - [ ] Compensation-pattern inference
-- [x] Availability/configured-rule infrastructure tests
 - [ ] Validated coaching-rule tests
 
 ---
