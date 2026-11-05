@@ -46,4 +46,6 @@ def test_default_engine_response_retains_unknown_capture_and_closes_model(tmp_pa
     assert result['overview']['state'] == 'capture_review'
     assert result['overview']['coaching_status'] == 'pending_validation'
     assert result['overview']['detected_cycles'] == 3
+    assert result['overlay']['side'] == 'left'
+    assert set(result['overlay']['frames'][0]['points']) == {'shoulder', 'hip', 'knee', 'ankle', 'heel', 'toe'}
     assert instances[0].closed

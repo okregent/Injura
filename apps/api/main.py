@@ -74,7 +74,8 @@ def create_app(*, analyzer=None, limits=Limits()):
     async def capabilities():
         return dict(schema_version=1, limits=asdict(limits), exercise='squat',
                     selection_required=['side', 'facing'], coaching='pending_validation',
-                    capture_review_upload=False, personal_baseline_upload=False)
+                    capture_review_upload=False, personal_baseline_upload=False,
+                    overlay='selected_side_paused_preview')
 
     @app.get('/', response_class=HTMLResponse, include_in_schema=False)
     async def preview():

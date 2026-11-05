@@ -7,22 +7,26 @@ from engine.squat.feedback import build_feedback_cards, build_measurement_feedba
 from engine.squat.overview import build_session_overview
 from engine.squat.personal import summarize_session
 from engine.squat.recording import REQUIREMENTS, recording_gate
+from engine.pose.overlay import build_side_overlay
 
 
 def build_squat_response(analysis, extraction, *, source_sha256, facing,
-                         recording_review=None, comparisons=(), baseline_requested=False):
+                         recording_review=None, comparisons=(), baseline_requested=False, include_overlay=False):
     """Return a detached JSON-ready result for one explicit body side.
 
     The caller binds source content/extraction/analysis and verifies any supplied
     personal comparisons. This adapter provides no source or coaching approval.
     Invalid/nonfinite raw values fail serialization rather than silently changing
-    measured values. No local paths, video bytes or pose landmarks are exposed.
+    measured values. No local paths/video bytes or full pose arrays are exposed.
+    Selected-side display coordinates are included only when explicitly requested.
     """
     if (not isinstance(source_sha256, str) or len(source_sha256) != 64
             or any(char not in '0123456789abcdef' for char in source_sha256)):
         raise ValueError('source SHA-256 required')
     if facing not in ('left', 'right'):
         raise ValueError('explicit facing required')
+    if type(include_overlay) is not bool:
+        raise ValueError('include_overlay must be boolean')
     source = extraction.source_frame_indices
     if len(source) != len(analysis.features.hip_y_values) or len(source) != len(analysis.phases):
         raise ValueError('analysis and extraction frame counts differ')
@@ -59,6 +63,8 @@ def build_squat_response(analysis, extraction, *, source_sha256, facing,
                         recovered_source_frames=extraction.recovered_frame_indices, issues=analysis.issues),
         interpretation=dict(accuracy='not_validated', coaching='pending_validation',
                             scope='2D measurement proxies and descriptive feedback; no posture score or medical judgment'))
+    if include_overlay:
+        result['overlay'] = build_side_overlay(extraction, analysis.features.side)
 
     def encode(value):
         if is_dataclass(value):

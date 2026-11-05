@@ -86,6 +86,47 @@ assert(el('candidates').children[0].textContent.includes('No excluded'));
 ''')
 
 
+OVERLAY_SETUP = '''
+const canvas=el('pose-overlay'),video=el('preview'),calls={arcs:[],lines:[]};
+canvas.style={};canvas.getContext=()=>({clearRect(){},beginPath(){},moveTo(){},lineTo(x,y){calls.lines.push([x,y])},stroke(){},arc(x,y){calls.arcs.push([x,y])},fill(){}});
+video.videoWidth=200;video.videoHeight=100;video.clientWidth=100;video.clientHeight=50;
+video.paused=true;video.seeking=false;video.currentTime=5;
+payload.selection={side:'left'};
+payload.overlay={side:'left',image_size:[200,100],frames:[{source_frame:120,status:'observed',points:{hip:{x:.25,y:.25},knee:{x:.5,y:.5},ankle:null}}]};
+showResult(payload);el('overlay-toggle').checked=true;drawOverlay();
+'''
+
+
+def test_paused_overlay_scales_to_video_and_connects_only_visible_neighbors(tmp_path):
+    browser_assertions(tmp_path, OVERLAY_SETUP + '''
+assert.strictEqual(canvas.hidden,false);assert.strictEqual(canvas.width,200);assert.strictEqual(canvas.height,100);
+assert.strictEqual(canvas.style.width,'100px');assert.strictEqual(canvas.style.height,'50px');
+assert.deepStrictEqual(calls.arcs,[[50,25],[100,50]]);assert.deepStrictEqual(calls.lines,[[100,50]]);
+assert(el('overlay-note').textContent.includes('not frame-exact'));
+video.clientWidth=300;video.clientHeight=150;drawOverlay();assert.strictEqual(canvas.style.width,'300px');
+''')
+
+
+def test_overlay_hides_for_gaps_recovery_playback_side_or_dimension_mismatch(tmp_path):
+    browser_assertions(tmp_path, OVERLAY_SETUP + '''
+video.currentTime=121/24;drawOverlay();assert.strictEqual(canvas.hidden,true);
+video.currentTime=5;video.paused=false;drawOverlay();assert.strictEqual(canvas.hidden,true);
+video.paused=true;payload.overlay.frames[0].status='recovered_not_shown';drawOverlay();assert.strictEqual(canvas.hidden,true);
+payload.overlay.frames[0].status='observed';payload.overlay.side='right';drawOverlay();assert.strictEqual(canvas.hidden,true);
+payload.overlay.side='left';video.videoWidth=100;drawOverlay();assert.strictEqual(canvas.hidden,true);
+video.videoWidth=200;payload.source.fps=null;drawOverlay();assert.strictEqual(canvas.hidden,true);
+''')
+
+
+def test_overlay_never_clamps_invalid_coordinates_or_reuses_invalidated_results(tmp_path):
+    browser_assertions(tmp_path, OVERLAY_SETUP + '''
+calls.arcs=[];calls.lines=[];payload.overlay.frames[0].points.knee.x=2;drawOverlay();
+assert.deepStrictEqual(calls.arcs,[[50,25]]);assert.strictEqual(calls.lines.length,0);
+invalidate();assert.strictEqual(canvas.hidden,true);assert.strictEqual(el('overlay-toggle').disabled,true);
+el('overlay-toggle').checked=true;drawOverlay();assert.strictEqual(canvas.hidden,true);
+''')
+
+
 def test_preview_renders_untrusted_text_and_invalidates_stale_selection(tmp_path):
     node = shutil.which('node')
     if not node:

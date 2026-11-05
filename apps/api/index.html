@@ -6,6 +6,7 @@
 <style>
 :root{font-family:system-ui,sans-serif;color:#e5eaf1;background:#111820}body{max-width:1000px;margin:auto;padding:28px}h1{font-size:2rem}section{padding:22px;background:#1b2531;border:1px solid #354658;border-radius:14px;margin:18px 0}label{display:block;margin:12px 0}input,select,button{font:inherit;padding:10px;border-radius:7px;border:1px solid #5c7184;background:#15202c;color:inherit}button{background:#a7e2ca;color:#10271f;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:default}small,.muted{color:#afbdcd}pre{white-space:pre-wrap;overflow-wrap:anywhere}li{margin:10px 0}video{display:block;max-width:100%;max-height:360px;margin:18px 0}#status{min-height:2em}summary{cursor:pointer}code{overflow-wrap:anywhere}
 </style>
+<style>#video-stage{position:relative;margin:18px 0}#video-stage video{margin:0}#pose-overlay{position:absolute;top:0;left:0;pointer-events:none}</style>
 <h1>Injura</h1>
 <p class="muted">Local analysis preview · side-view squat measurements</p>
 <section>
@@ -16,7 +17,9 @@
 <label>Video <input id="video" type="file" accept=".mp4,.mov,video/mp4,video/quicktime" required></label>
 <label>Body side to measure <select id="side" required><option value="">Select explicitly</option><option value="left">Left</option><option value="right">Right</option></select></label>
 <label>Direction the person faces <select id="facing" required><option value="">Select explicitly</option><option value="left">Left</option><option value="right">Right</option></select></label>
-<video id="preview" controls preload="metadata" hidden></video>
+<div id="video-stage"><video id="preview" controls preload="metadata" hidden></video><canvas id="pose-overlay" hidden aria-hidden="true"></canvas></div>
+<label><input id="overlay-toggle" type="checkbox" disabled> Show selected-side joints while paused</label>
+<p id="overlay-note" class="muted">Overlay requires an analyzed video. It does not validate posture or anatomical accuracy.</p>
 <button id="submit" type="submit" disabled>Analyze video</button>
 </form>
 <p id="status" role="status" aria-live="polite"></p>
@@ -36,8 +39,33 @@
 <script>
 const el=id=>document.getElementById(id);
 let capabilities=null,previewUrl=null,result=null;
-function invalidate(){result=null;el('result').hidden=true;el('selected').hidden=true;el('seek-status').textContent='';el('status').textContent='';}
+let overlayFrames=new Map();
+function invalidate(){result=null;overlayFrames=new Map();el('overlay-toggle').checked=false;el('overlay-toggle').disabled=true;drawOverlay();el('result').hidden=true;el('selected').hidden=true;el('seek-status').textContent='';el('status').textContent='';}
 function setBusy(busy){for(const id of ['video','side','facing','submit'])el(id).disabled=busy;}
+function drawOverlay(){
+ const canvas=el('pose-overlay'),video=el('preview');
+ if(!canvas.getContext)return;
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ ctx.clearRect(0,0,canvas.width,canvas.height);canvas.hidden=true;
+ const note=message=>{el('overlay-note').textContent=message;};
+ if(!result || !result.overlay || !el('overlay-toggle').checked){note('Overlay is off. Selected-side image coordinates are not anatomical accuracy or posture approval.');return;}
+ if(!video.paused || video.seeking){note('Pause the video after seeking to inspect joints. No overlay is interpolated during playback.');return;}
+ const source=result.source,overlay=result.overlay;
+ if(!source || !Number.isFinite(source.fps) || source.fps<=0 || !Number.isFinite(video.currentTime)){note('Overlay timing is unavailable without valid FPS.');return;}
+ if(!result.selection || overlay.side!==result.selection.side){note('Overlay body side does not match the selected analysis.');return;}
+ const size=overlay.image_size;
+ if(!Array.isArray(size) || size.length!==2 || !size.every(value=>Number.isInteger(value)&&value>0) || video.videoWidth!==size[0] || video.videoHeight!==size[1]){note('Video dimensions differ or metadata is not ready; overlay is hidden.');return;}
+ const index=Math.floor(video.currentTime*source.fps+1e-6),frame=overlayFrames.get(index);
+ if(frameTime(result,index)===null || !frame || frame.status!=='observed'){note('No original pose observation for approximate source frame '+index+'. Gaps and recovered observations are not drawn.');return;}
+ canvas.width=size[0];canvas.height=size[1];canvas.style.width=video.clientWidth+'px';canvas.style.height=video.clientHeight+'px';
+ const visible={};
+ for(const name of ['shoulder','hip','knee','ankle','heel','toe']){const point=frame.points[name];if(point && Number.isFinite(point.x) && Number.isFinite(point.y) && point.x>=0 && point.x<=1 && point.y>=0 && point.y<=1)visible[name]=point;}
+ ctx.strokeStyle='#7cddff';ctx.fillStyle='#7cddff';ctx.lineWidth=Math.max(2,canvas.width/400);
+ for(const [a,b] of [['shoulder','hip'],['hip','knee'],['knee','ankle'],['ankle','heel'],['heel','toe'],['ankle','toe']]){if(!visible[a] || !visible[b])continue;ctx.beginPath();ctx.moveTo(visible[a].x*canvas.width,visible[a].y*canvas.height);ctx.lineTo(visible[b].x*canvas.width,visible[b].y*canvas.height);ctx.stroke();}
+ for(const point of Object.values(visible)){ctx.beginPath();ctx.arc(point.x*canvas.width,point.y*canvas.height,Math.max(3,canvas.width/200),0,Math.PI*2);ctx.fill();}
+ canvas.hidden=!Object.keys(visible).length;
+ note(canvas.hidden?'No selected-side joints meet the display visibility/bounds checks.':'Approximate source frame '+index+' · selected-side joints only. Reported-FPS timing and browser seeking are not frame-exact; visibility is not accuracy.');
+}
 function frameTime(data,frame){
  const source=data.source;
  return source && Number.isFinite(source.fps) && source.fps>0 && Number.isInteger(frame) && frame>=0 && Number.isInteger(source.frame_count) && frame<source.frame_count ? frame/source.fps : null;
@@ -82,7 +110,12 @@ function showResult(data){
  for(const notice of data.feedback.notices){const item=document.createElement('li');item.textContent=notice.message;el('actions').append(item);}
  for(const card of data.feedback.cards){const item=document.createElement('li');item.textContent='Rep '+card.repetition+' · '+card.metric+(card.field?'.'+card.field:'')+' · '+card.status+' · '+(card.observation===null?'unavailable':card.observation+' '+card.unit)+' · '+card.reason;el('cards').append(item);}
  el('json').textContent=JSON.stringify(data,null,2);el('result').hidden=false;result=data;renderNavigator(data);
+ overlayFrames=new Map((data.overlay?data.overlay.frames:[]).map(frame=>[frame.source_frame,frame]));
+ el('overlay-toggle').checked=false;el('overlay-toggle').disabled=!data.overlay;drawOverlay();
 }
+el('overlay-toggle').onchange=drawOverlay;
+for(const event of ['onpause','onplay','onseeking','onseeked','ontimeupdate','onloadedmetadata','onresize','onerror'])el('preview')[event]=drawOverlay;
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(drawOverlay).observe(el('preview'));
 el('video').onchange=()=>{
  invalidate();
  if(previewUrl)URL.revokeObjectURL(previewUrl);
@@ -95,7 +128,7 @@ el('upload').onsubmit=async event=>{
  const file=el('video').files[0];
  if(!file || !['left','right'].includes(el('side').value) || !['left','right'].includes(el('facing').value)){el('status').textContent='Select a video, body side and facing direction.';return;}
  if(file.size>capabilities.limits.file_bytes){el('status').textContent='Video exceeds the supported file size.';return;}
- setBusy(true);el('result').hidden=true;result=null;el('status').textContent='Analyzing… Please keep this page open.';
+ setBusy(true);invalidate();el('status').textContent='Analyzing… Please keep this page open.';
  const form=new FormData();form.append('video',file);form.append('side',el('side').value);form.append('facing',el('facing').value);
  try{const response=await fetch('/v1/analyses',{method:'POST',body:form});const data=await response.json();
   if(!response.ok){el('status').textContent=data.error?data.error.message+' ('+data.error.code+')':'The request failed.';return;}

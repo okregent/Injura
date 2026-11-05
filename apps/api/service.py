@@ -61,4 +61,4 @@ def analyze_video(path, side, facing, *, limits=Limits()):
         estimator.close()
     analysis = SquatAnalyzer().analyze(extraction, side=BodySide(side), facing_direction=FacingDirection(facing))
     # Public request data cannot assert capture approval or validated coaching.
-    return build_squat_response(analysis, extraction, source_sha256=digest, facing=facing)
+    return build_squat_response(analysis, extraction, source_sha256=digest, facing=facing, include_overlay=True)
