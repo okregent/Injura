@@ -17,7 +17,8 @@ from engine.squat.personal import build_baseline, save_baseline
 from engine.squat.profile import load_profile, summarize_profile
 from engine.squat.recording import RecordingReview, load_recording_reviews, recording_gate
 from engine.squat.rules import TARGETS
-from engine.validation.dataset import read_json, write_new, sha256
+from engine.validation.dataset import read_json, write_new, sha256, local_path
+from tools.profile_measurement import measurement_aid, import_measurement
 from tools.evaluate_e3 import extract
 from tools.review_samples import personal_pipeline_signature
 
@@ -76,7 +77,7 @@ def check(root):
             problems.append(key + ' must be selected')
     projection = None
     try:
-        profile = load_profile(root / 'profile.json')
+        profile = load_profile(local_path(root, manifest.get('profile_file', 'profile.json')))
         projection = summarize_profile(profile, source_sha256=manifest['profile_source_sha256'])
         if projection['status'] != 'reviewed_projection':
             problems.append('profile capture review incomplete or rejected')
@@ -103,6 +104,12 @@ def status(root):
         report = check(root)
     except (OSError, ValueError, TypeError, KeyError) as error:
         report = dict(ready=False, problems=[str(error)])
+    selected_profile = 'profile.json'
+    try:
+        manifest = read_json(root / 'manifest.json')
+        selected_profile = local_path(root, manifest.get('profile_file', 'profile.json')).relative_to(root.resolve()).as_posix()
+    except (OSError, ValueError, TypeError, KeyError):
+        pass
     report['baseline_snapshots'] = []
     for path in sorted(root.glob('runs/*/baseline.json')):
         baseline = read_json(path)
@@ -114,8 +121,10 @@ def status(root):
     page = ('<!doctype html><html lang="en"><meta charset="utf-8"><title>Personal setup readiness</title>'
             '<style>body{font:16px system-ui;max-width:950px;margin:30px auto;line-height:1.6}pre{white-space:pre-wrap}</style>'
             '<h1>Personal setup readiness</h1><p>No automatic profile approval or coaching activation.</p>'
-            '<p><a href="manifest.json">Setup assertions</a> · <a href="profile.json">Profile draft</a> · '
+            '<p><a href="manifest.json">Setup assertions</a> · <a href="' + html.escape(selected_profile, quote=True) + '">Profile draft</a> · '
             '<a href="recording-review.json">Capture review</a></p>'
+            + ''.join('<p><a href="' + html.escape(path.relative_to(root).as_posix(), quote=True)
+                      + '">Original-frame measurement aid</a></p>' for path in sorted(root.glob('measurement-*/index.html')))
             + ''.join('<p><a href="' + html.escape(item['path'], quote=True) + '">Baseline snapshot</a>: '
                       + str(item['descriptive_items']) + ' descriptive items, ' + str(item['pending_items']) + ' pending.</p>'
                       for item in report['baseline_snapshots']) + '<pre>'
@@ -129,7 +138,9 @@ def build(root, extractor=extract):
     readiness = check(root)
     if not readiness['ready']:
         raise ValueError('setup is not ready: ' + '; '.join(readiness['problems']))
-    bound = [root / name for name in ('manifest.json', 'profile.json', 'recording-review.json')]
+    manifest = read_json(root / 'manifest.json')
+    profile_file = local_path(root, manifest.get('profile_file', 'profile.json'))
+    bound = [root / 'manifest.json', profile_file, root / 'recording-review.json']
     before = {str(path): sha256(path) for path in bound}
     manifest = read_json(root / 'manifest.json')
     signature = personal_pipeline_signature()
@@ -139,7 +150,7 @@ def build(root, extractor=extract):
     extraction = extractor(Path(manifest['preparation_video']))
     analysis = SquatAnalyzer().analyze(extraction, side=side, facing_direction=FacingDirection(manifest['facing']))
     cards = build_feedback_cards(analysis, recording_review=review)
-    context = dict(profile_sha256=before[str(root / 'profile.json')], setup_id=manifest['setup_id'],
+    context = dict(profile_sha256=before[str(profile_file)], setup_id=manifest['setup_id'],
                    side=side.value, facing=manifest['facing'], pipeline_sha256=signature)
     baseline = build_baseline(cards, context=context, source_sha256=manifest['preparation_source_sha256'],
                               reviewer=manifest['baseline_reviewer'])
@@ -168,6 +179,12 @@ def main():
     draft.add_argument('--output', type=Path, required=True)
     for name in ('check', 'status', 'build'):
         commands.add_parser(name).add_argument('root', type=Path)
+    aid = commands.add_parser('measure')
+    aid.add_argument('root', type=Path)
+    aid.add_argument('--frame', type=int, default=0)
+    importer = commands.add_parser('import-measurement')
+    importer.add_argument('root', type=Path)
+    importer.add_argument('draft', type=Path)
     args = parser.parse_args()
     try:
         if args.command == 'prepare':
@@ -176,6 +193,12 @@ def main():
             result = check(args.root)
             print(json.dumps(result, indent=2))
             return 0 if result['ready'] else 2
+        elif args.command == 'measure':
+            print(measurement_aid(args.root, args.frame).resolve())
+            status(args.root)
+        elif args.command == 'import-measurement':
+            print(import_measurement(args.root, args.draft).resolve())
+            status(args.root)
         else:
             print((build(args.root) if args.command == 'build' else status(args.root)).resolve())
     except (OSError, ValueError, KeyError, TypeError) as error:
