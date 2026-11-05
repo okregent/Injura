@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ElementRef } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState, type ElementRef } from 'react';
 import { ActivityIndicator, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as DocumentPicker from 'expo-document-picker';
@@ -17,6 +17,13 @@ function seekPlayer(player: VideoPlayer, seconds: number) {
   player.currentTime = seconds;
 }
 
+const LocalVideo = forwardRef<VideoPlayer, { uri: string }>(function LocalVideo({ uri }, ref) {
+  // A keyed, source-bound player avoids SDK 58's web replaceAsync autoplay path.
+  const player = useVideoPlayer(uri, instance => { instance.loop = false; instance.muted = true; });
+  useImperativeHandle(ref, () => player, [player]);
+  return <VideoView player={player} style={styles.video} contentFit="contain" nativeControls fullscreenOptions={{ enable: true }} />;
+});
+
 export default function AnalysisScreen() {
   const [address, setAddress] = useState(process.env.EXPO_PUBLIC_API_URL || 'http://127.0.0.1:8000');
   const [capabilities, setCapabilities] = useState<Capabilities | null>(null);
@@ -30,7 +37,7 @@ export default function AnalysisScreen() {
   const pickerAttempt = useRef(0);
   const scroll = useRef<ElementRef<typeof ScrollView> | null>(null);
   const videoOffset = useRef(0);
-  const player = useVideoPlayer(video?.uri ?? null, instance => { instance.loop = false; instance.muted = true; });
+  const player = useRef<VideoPlayer | null>(null);
   useEffect(() => () => { generation.current += 1; pickerAttempt.current += 1; active.current?.abort(); }, []);
   useEffect(() => () => {
     if (Platform.OS === 'web' && video?.uri.startsWith('blob:')) URL.revokeObjectURL(video.uri);
@@ -55,7 +62,7 @@ export default function AnalysisScreen() {
     try {
       const picked = await DocumentPicker.getDocumentAsync({ type: ['video/mp4', 'video/quicktime'], multiple: false, copyToCacheDirectory: true, base64: false });
       if (picked.canceled || attempt !== pickerAttempt.current) return;
-      player.pause(); invalidate(); setVideo(picked.assets[0]); setSide(null); setFacing(null);
+      player.current?.pause(); invalidate(); setVideo(picked.assets[0]); setSide(null); setFacing(null);
       setMessage('Video selected locally. Select body side and facing before uploading.');
     } catch (error) { if (attempt === pickerAttempt.current) setMessage(error instanceof Error ? error.message : 'Could not choose a video.'); }
   }
@@ -75,10 +82,11 @@ export default function AnalysisScreen() {
     if (!result) return;
     const seconds = sourceTime(frame, result.source.fps, result.source.frame_count);
     if (seconds === null) { setMessage('Time navigation requires valid FPS/source-frame information.'); return; }
-    if (player.status !== 'readyToPlay' || !Number.isFinite(player.duration) || seconds >= player.duration) {
+    const current = player.current;
+    if (!current || current.status !== 'readyToPlay' || !Number.isFinite(current.duration) || seconds >= current.duration) {
       setMessage('Video metadata is not ready or the requested position exceeds its duration.'); return;
     }
-    try { seekPlayer(player, seconds); setMessage(`Approximate source frame ${frame}; reported-FPS seeking is not frame-exact.`); }
+    try { seekPlayer(current, seconds); setMessage(`Approximate source frame ${frame}; reported-FPS seeking is not frame-exact.`); }
     catch { setMessage('This player could not seek to the requested position.'); }
   }
   const cycle = selected !== null ? result?.repetitions[selected] : null;
@@ -130,7 +138,7 @@ export default function AnalysisScreen() {
       </View>}
       {video && <View style={styles.panel} onLayout={event => { videoOffset.current = event.nativeEvent.layout.y; }}>
         <Text style={styles.heading}>Video review</Text>
-        <VideoView player={player} style={styles.video} contentFit="contain" nativeControls fullscreenOptions={{ enable: true }} />
+        <LocalVideo key={video.uri} ref={player} uri={video.uri} />
         <Text style={styles.muted}>Reported-FPS time navigation is approximate, not frame-exact. The mobile client does not render the web joint overlay.</Text>
         {cycle && <View>
           <Text style={styles.heading}>Cycle {cycle.number}</Text>
