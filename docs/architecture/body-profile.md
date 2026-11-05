@@ -106,3 +106,48 @@ Review HTML/JSON groups duplicate actions by status/action, prioritizing retake,
 capture review, measurement review and then observations. Every grouped item
 retains repetitions, metric fields and reasons. Existing no-cycle/candidate notices
 remain available when there are no measurement cards. Raw analysis is unchanged.
+
+## Source-Bound Setup Tool
+
+Implementation branch: `feature/biomechanics` (`tools.personal_setup`). The local
+developer workflow now creates the files above and builds baselines directly from
+fresh preparation inference rather than accepting an arbitrary analysis report.
+
+```bash
+python -m tools.personal_setup prepare PROFILE_VIDEO PREPARATION_VIDEO --output artifacts/personal-setup/person-session
+python -m tools.personal_setup status artifacts/personal-setup/person-session
+python -m tools.personal_setup check artifacts/personal-setup/person-session
+python -m tools.personal_setup build artifacts/personal-setup/person-session
+```
+
+`prepare` refuses an existing directory and creates `manifest.json`, `profile.json`,
+`recording-review.json` and a local readiness screen. Lengths, uncertainty and
+capture assertions remain empty/unknown. No identity, anatomy or camera review is
+automatically inferred. Before build, fill real source-frame measurements and
+review flags, select side/facing, identify the setup, name the reviewer and
+explicitly confirm the profile/preparation sources belong to the same person.
+This is still JSON-based developer input, not a consumer editing UI.
+
+`check` verifies both source hashes, reviewed profile conditions, side agreement,
+sequential decoding of the profile frame, and source-bound preparation review.
+At least one supported item must have approved capture conditions. Input readiness
+does not mean every measurement will be available, nor that E3 accuracy passed.
+The command exits 2 when incomplete; `status` renders missing inputs without
+approving them. Front/side perspective and landmark uncertainty still require
+human judgment; metadata and hashes cannot establish identity or measurement truth.
+
+`build` runs Full/default preparation analysis without recovery/experimental
+calibration and excludes candidates. It checks source/setup/runtime changes before
+writing a new `runs/TIMESTAMP/` snapshot containing baseline, context and evidence.
+Evidence retains input-file hashes, source hashes, card observations and cycle/
+candidate counts. Profile ratios identify context and remain descriptive.
+Old snapshots are never overwritten. Fewer than three usable cycles, partial
+coverage or unapproved items remain pending even after inference. Absent cards
+count as missing when other items establish that a repetition exists.
+
+The readiness screen links to snapshots and lists descriptive/pending item counts.
+Pass each snapshot's `baseline.json` and `context.json` together to the report CLI.
+Preserve source files, setup assertions and review records when reusing a baseline;
+changed camera/stance/load conditions require a new setup and preparation review.
+The screen/status JSON are refreshable views, not frozen validation evidence.
+All personal files and developer HTML remain ignored under `artifacts/`.
