@@ -23,7 +23,14 @@ The detached JSON object contains schema version 1, exercise, source hash/frame
 counts/FPS/image size, explicit selection, overview, capture gates, notices/cards/
 actions/personal comparisons, repetition metrics/quality, candidates, consistency,
 calibration/recovery/issues and pending interpretation status. Local paths, video
-bytes and the complete pose landmark sequence are excluded.
+bytes and the complete 33-landmark pose sequence are excluded. The adapter defaults
+to no coordinates; `include_overlay=True` adds a version-1 `overlay` containing only
+selected-side shoulder/hip/knee/ankle/heel/toe normalized x/y per observed source
+frame. The local API explicitly requests that display payload. It omits z and raw
+visibility values; visibility threshold 0.5 is a display filter, not confidence.
+Invalid, out-of-image and low-visibility points become null; recovered observations
+have all-null points with `recovered_not_shown` status. Missing source frames are
+not added or interpolated. See [paused preview behavior](e5-local-api.md).
 
 Frame boundaries refer to zero-based original source frames, including sparse
 pose detections. `bottom_phase_end` names the final BOTTOM-phase frame; it does not

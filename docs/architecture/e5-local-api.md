@@ -133,3 +133,38 @@ filtering, candidate isolation, invalid/unknown FPS, metadata/duration/index gua
 stale callbacks and empty lists. No API/engine contract or dependency changes.
 This is cycle-level navigation within the developer preview, not a complete
 landmark overlay/annotation UI, native mobile app or empirical timing validation.
+
+## Paused Selected-Side Joint Overlay
+
+Implemented on `feature/biomechanics`. The local API now explicitly includes the
+optional [selected-side coordinate payload](e5-response.md), not a full pose array.
+No request-side approval/model controls were added. The browser checkbox defaults
+off for each result and enables a canvas overlay only while the local video is
+paused and not seeking. Cyan points/segments express observations, not good/bad
+posture or injury risk. Six selected-side joints only; a segment requires both
+visible endpoints. No inferred joints or frame interpolation.
+
+The display uses floor(currentTime × reported FPS) with a small numeric tolerance
+to identify an existing source frame; absent/recovered frames hide the overlay.
+Unknown FPS, incompatible selected body side or different native video dimensions
+also hide it. Canvas drawing uses original image dimensions and scales to the
+displayed video's actual size, refreshing on resize/metadata/seek/pause events.
+Playback clears it instead of presenting lagged interpolated poses. New uploads,
+selection changes and resubmission clear old overlay data. Native video fullscreen/
+picture-in-picture may omit the document-layer canvas.
+
+These are approximate FPS-based associations, not verified frame timestamps or
+anatomical correctness. Native-browser visual alignment and filmed accuracy still
+need review. Coordinates may be retained in user-downloaded JSON just like other
+results; server uploads remain temporary. Analysis values/gates/coaching status
+are unchanged. Pipeline fingerprint changes conservatively invalidate earlier
+personal baseline contexts.
+
+Latest full suite: **455 passed**, 17 existing warnings, 69.22 seconds; pip check
+passes. Eight new coordinate/response tests plus three Node canvas/video-mocked
+cases cover selection/filtering, recovery/gaps, missing endpoints, resize,
+playback/timing/side/dimension guards and stale results. A real local request for
+development video 4 returned 14 cycles, 563 overlay frame entries and 278,550
+response bytes with pending coaching; saved only at ignored
+`artifacts/api-smoke/video4-overlay-response.json`. No native-browser visual QA,
+external video transfer, new dependency or background server.
