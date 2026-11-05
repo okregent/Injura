@@ -41,6 +41,68 @@ statistical confidence intervals or anatomical accuracy estimates.
 
 Accuracy remains `not_validated` and coaching remains `pending_validation` for
 every profile. Profiles do not modify analysis, feedback thresholds or rules.
-Preparation-movement baselines, automatic segment extraction, longitudinal
-comparison and profile-to-feedback integration are subsequent work. Do not treat
-a user's habitual squat as a validated ideal movement.
+Automatic segment extraction and validated proportional correction thresholds
+remain subsequent work. Do not treat a user's habitual squat as an ideal movement.
+
+## Descriptive Preparation Baselines
+
+Implemented on `feature/biomechanics`: `engine.squat.personal` builds per-item
+median/minimum/maximum from at least three observation cards. Each included item
+must have complete usable coverage across its supplied cycle cards and a named
+reviewer. Unknown capture conditions, partial/recovered observations, experimental
+calibration and unavailable values are already withheld by `build_feedback_cards`.
+Missing items stay explicit and pending. The reviewer confirms evidence/provenance,
+not that the movement is optimal or clinically correct.
+
+The caller must supply truthful identity/setup assertions and reviewed,
+source-bound preparation cards. `source_sha256` binds the preparation video;
+`context` contains exactly:
+
+- `profile_sha256`: SHA-256 of the reviewed profile JSON, not just its display ID.
+- `setup_id`: caller-reviewed camera position/scale, stance, load and exercise setup.
+- `side`, `facing`: explicit left/right inputs.
+- `pipeline_sha256`: runtime signature from
+  `tools.review_samples.personal_pipeline_signature` with matching model/options.
+
+Before creating a baseline, verify the profile's actual source hash/frame and
+reviewed projection status using the profile contract above. The baseline API
+does not independently establish a person's identity, camera placement or profile
+review. Do not reuse a setup ID when camera/stance/load conditions change.
+
+```python
+from engine.squat.personal import build_baseline, save_baseline
+
+# preparation_cards come from reviewed preparation analysis, not gap candidates.
+baseline = build_baseline(preparation_cards, context=context,
+                          source_sha256=preparation_source_sha256,
+                          reviewer=reviewer)
+save_baseline(baseline, "artifacts/personal/baseline.json")
+```
+
+`save_baseline` creates a new JSON file only; `load_baseline` validates the stored
+descriptive evidence. Passing no reviewer creates pending items, never an ideal
+reference. The context/profile inputs and preparation intervals still need actual
+user-specific evidence; no real baseline has been fabricated from existing clips.
+
+The review API accepts `personal_baseline` and `personal_context`; the CLI accepts
+both JSON files together:
+
+```bash
+python -m tools.review_samples VIDEO --facing left --recording-review REVIEW --personal-baseline BASELINE --personal-context CONTEXT
+```
+
+Reports compare only the declared body side and require matching facing/runtime.
+Changed profile/setup/side/facing/pipeline context withholds comparison. Runtime
+signatures include analysis code, installed model/environment artifacts and
+model/recovery/calibration options. A changed runtime must not silently reuse an
+old baseline. Current observations still need independent capture approval.
+Signed differences from the preparation median remain descriptive, never posture
+errors, improvements, scores or correction triggers. Body ratios identify the
+profile context but do not yet mathematically adjust movement thresholds.
+
+## Session Actions
+
+Review HTML/JSON groups duplicate actions by status/action, prioritizing retake,
+capture review, measurement review and then observations. Every grouped item
+retains repetitions, metric fields and reasons. Existing no-cycle/candidate notices
+remain available when there are no measurement cards. Raw analysis is unchanged.

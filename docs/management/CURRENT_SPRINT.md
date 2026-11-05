@@ -19,12 +19,12 @@ empirical acceptance remains open.
 - [x] Add per-repetition measurement feedback cards with capture review, retake,
   measurement review and observation states on `feature/biomechanics`.
 - [x] Define and store source-bound [projected body profiles](../architecture/body-profile.md), with capture checks and uncertainty; manual inputs only.
-- [ ] Add preparation-movement baselines and profile-aware explanations; retain validation gates.
+- [x] Add descriptive preparation baselines, matching-context comparisons and grouped session actions; retain validation gates.
+- [ ] Obtain reviewed user-specific profile/preparation evidence before real personalized comparisons; filming remains deferred.
 
-Latest regression: 350 passed (2026-11-05). The local development smoke result
+Latest regression: 380 passed (2026-11-05). The local development smoke result
 remains not evaluated. New sources/reviewed references are still required.
-Body-profile addition: 15 targeted tests passed; the full suite was not rerun for
-this isolated module, which is not yet connected to the analysis path.
+Profile and baseline tests are now included in the full regression suite.
 
 Prepare evidence autonomously; the user need not annotate every frame. Existing
 exploratory clips are not independent validation. User-defined tempo goals are
