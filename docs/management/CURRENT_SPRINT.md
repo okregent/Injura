@@ -12,9 +12,10 @@ acceptance and validated coaching remain open.
 - [x] E5 response adapter preserving E4 withholding and original-frame provenance.
 - [x] Local FastAPI upload/request/error handling and controlled inference integration.
 - [x] Local browser upload/results preview consuming the response contract.
-- [ ] Product-facing annotation/timeline and mobile integration; local preview is not final UX.
+- [x] Cycle/candidate navigation with selected-cycle evidence and approximate source-frame seeking.
+- [ ] Product-facing landmark overlay/annotation and mobile integration; local preview is not final UX.
 
-Latest E5 regression: 435 passed, pip check passes. See [API runbook](../architecture/e5-local-api.md).
+Latest E5 regression: 444 passed, pip check passes. See [API runbook](../architecture/e5-local-api.md).
 The local API/preview is implemented; no public server/deployment is running.
 
 - [x] Define [MVP capture conditions](../product/RECORDING_GUIDE.md).
@@ -35,7 +36,7 @@ The local API/preview is implemented; no public server/deployment is running.
 - [x] Add conservative [E4 session overview](../architecture/e4-session-overview.md) and explicit personal-comparison completeness states.
 - [ ] Obtain reviewed user-specific profile/preparation evidence before real personalized comparisons; filming remains deferred.
 
-Latest regression: 435 passed (2026-11-05). The local development smoke result
+Latest regression: 444 passed (2026-11-05). The local development smoke result
 remains not evaluated. New sources/reviewed references are still required.
 Profile and baseline tests are now included in the full regression suite.
 
