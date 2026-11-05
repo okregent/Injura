@@ -22,6 +22,7 @@ from engine.pose.recovery import recover_pose_gaps
 from engine.squat.analyzer import SquatAnalyzer
 from engine.squat.feedback import build_measurement_feedback, build_feedback_cards
 from engine.squat.personal import summarize_session, compare_baseline, load_baseline
+from engine.squat.overview import build_session_overview
 from engine.squat.rules import load_rules, evaluate_rules
 from engine.squat.recording import load_recording_reviews, recording_gate, REQUIREMENTS
 from engine.squat.metrics.normalized_knee_travel import KneeTravelRecordingConditions
@@ -118,10 +119,13 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
                                                   foot_side_on=recording_review.foot_side_on,
                                               ) if recording_review and recording_review.reviewer else None)
             cards = build_feedback_cards(analysis, recording_review=recording_review)
+            personal_requested = personal_baseline is not None and personal_context.get('side') == side.value
+            comparisons = compare_baseline(cards, personal_baseline, context=personal_context) if personal_requested else []
             side_data = {
+                "session_overview": build_session_overview(analysis, cards, comparisons=comparisons,
+                                                           baseline_requested=personal_requested),
                 "session_actions": summarize_session(cards),
-                "personal_comparisons": compare_baseline(cards, personal_baseline, context=personal_context)
-                    if personal_baseline is not None and personal_context.get('side') == side.value else [],
+                "personal_comparisons": comparisons,
                 "feedback_cards": [asdict(item) for item in cards],
                 "measurement_feedback": [asdict(item) for item in build_measurement_feedback(analysis)],
                 "rule_evaluations": [asdict(item) for item in evaluate_rules(analysis, rules, recording_review=recording_review)],
@@ -254,6 +258,12 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
         'have no metric values or phase times, and are excluded from consistency. Their boundaries and observed bottom require review.</p>',
     ]
     for side, data in metadata["sides"].items():
+        overview = data['session_overview']
+        parts.append('<section><h2>' + html.escape(side) + ': Session overview</h2><p><b>'
+                     + html.escape(overview['state']) + '</b> · ' + html.escape(overview['primary_action']) + '</p><p>'
+                     + f"Detected cycles: {overview['detected_cycles']}; excluded candidates: {overview['excluded_candidates']}. "
+                     + 'Personal comparison: ' + html.escape(overview['personal_comparison_state'])
+                     + '</p><p>Measurement accuracy: not validated. Coaching: pending validation.</p></section>')
         parts.append(f"<p><b>{side}: {len(data['repetitions'])} uninterrupted detected reps; {len(data['candidates'])} unverified candidates.</b> "
                      + f"Calibration: {html.escape(data['calibration_method'])}. "
                      + html.escape(" ".join(data["issues"])) + "</p>")
@@ -277,12 +287,12 @@ def review_video(video: Path, facing: FacingDirection, output: Path, reuse_extra
         if data.get("personal_comparisons"):
             parts.append('<h3>Personal preparation comparison</h3><p>Differences are not posture errors or improvements.</p><pre>'
                          + html.escape(json.dumps(data['personal_comparisons'], indent=2)) + '</pre>')
-        parts.append('<h3>Measurement observations and next actions</h3><p>Correction guidance remains pending validation.</p><ul>')
+        parts.append('<details><summary>Per-repetition measurement observations and next actions</summary><p>Correction guidance remains pending validation.</p><ul>')
         for card in data.get("feedback_cards", []):
             text = (f"Rep {card['repetition']} · {card['metric']}.{card['field'] or 'value'} · {card['status']}: "
                     f"{card['observation']} {card['unit']} · {card['reason']} · {card['action']}")
             parts.append('<li>' + html.escape(text) + '</li>')
-        parts.append('</ul>')
+        parts.append('</ul></details>')
         parts.append('<details><summary>Recording review: interpretation eligibility</summary><p>Raw measurements remain available for inspection; approval is not accuracy validation.</p><ul>')
         for metric, gate in data["recording_gates"].items():
             text = f"{metric}: {gate['status']} · {gate['reason'] or 'required recording conditions reviewed'}"
