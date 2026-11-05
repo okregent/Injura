@@ -24,6 +24,10 @@
 </section>
 <section id="result" hidden>
 <h2>Session summary</h2><p id="summary"></p><p id="counts"></p><p id="validation"></p>
+<h3>Detected cycle navigator</h3>
+<p id="timing-note" class="muted"></p><ol id="cycles"></ol>
+<h3>Excluded review candidates</h3><p>Candidates are tracking hypotheses, not measured repetitions.</p><ol id="candidates"></ol>
+<div id="selected" hidden><h3 id="selected-title"></h3><p id="selected-frames"></p><div id="seek-controls"></div><p id="seek-status" role="status"></p><ul id="selected-evidence"></ul></div>
 <h3>Next actions</h3><ul id="actions"></ul>
 <details><summary>Per-repetition observations and reasons</summary><ul id="cards"></ul></details>
 <details><summary>Full JSON result</summary><pre id="json"></pre></details>
@@ -32,8 +36,42 @@
 <script>
 const el=id=>document.getElementById(id);
 let capabilities=null,previewUrl=null,result=null;
-function invalidate(){result=null;el('result').hidden=true;el('status').textContent='';}
+function invalidate(){result=null;el('result').hidden=true;el('selected').hidden=true;el('seek-status').textContent='';el('status').textContent='';}
 function setBusy(busy){for(const id of ['video','side','facing','submit'])el(id).disabled=busy;}
+function frameTime(data,frame){
+ const source=data.source;
+ return source && Number.isFinite(source.fps) && source.fps>0 && Number.isInteger(frame) && frame>=0 && Number.isInteger(source.frame_count) && frame<source.frame_count ? frame/source.fps : null;
+}
+function seekFrame(data,frame){
+ if(result!==data)return false;
+ const seconds=frameTime(data,frame),video=el('preview');
+ if(seconds===null){el('seek-status').textContent='Time navigation is unavailable: valid FPS and source-frame information are required.';return false;}
+ if(video.readyState<1 || !Number.isFinite(video.duration) || video.duration<=0){el('seek-status').textContent='Video metadata is not ready. Try again after the local preview loads.';return false;}
+ if(seconds>=video.duration){el('seek-status').textContent='The reported frame position falls outside the browser video duration; inspect the source manually.';return false;}
+ try{video.pause();video.currentTime=seconds;el('seek-status').textContent='Approximate source frame '+frame+' · '+seconds.toFixed(3)+' s using reported FPS. Browser seeking is not frame-exact.';return true;}
+ catch(error){el('seek-status').textContent='This video cannot seek to the requested position in the browser.';return false;}
+}
+function selectCycle(data,item,candidate=false,index=0){
+ if(result!==data)return;
+ el('selected').hidden=false;el('seek-controls').replaceChildren();el('selected-evidence').replaceChildren();
+ el('selected-title').textContent=candidate?'Review candidate '+(index+1)+' · not a measured repetition':'Detected cycle '+item.number;
+ const frames=item.source_frames;
+ el('selected-frames').textContent='Original source frames '+frames.start+'–'+frames.end+'.'+(candidate?' '+item.reason:' Bottom phase end is not necessarily the deepest posture.');
+ const controls=candidate?[['Start',frames.start],['Observed bottom',item.observed_bottom],['End',frames.end]]:[['Start',frames.start],['Bottom phase end',frames.bottom_phase_end],['End',frames.end]];
+ for(const [label,frame] of controls){const button=document.createElement('button');button.type='button';button.textContent=label+' · frame '+frame;button.disabled=frameTime(data,frame)===null;button.onclick=()=>seekFrame(data,frame);el('seek-controls').append(button);}
+ const cards=candidate?[]:data.feedback.cards.filter(card=>card.repetition===item.number);
+ for(const card of cards){const row=document.createElement('li');row.textContent=card.metric+(card.field?'.'+card.field:'')+' · '+card.status+' · '+(card.observation===null?'unavailable':card.observation+' '+card.unit)+' · '+card.reason+' · '+card.action;el('selected-evidence').append(row);}
+ if(!cards.length){const row=document.createElement('li');row.textContent=candidate?'No measurements or phase times are assigned to review candidates.':'No measurement cards are available for this detected cycle.';el('selected-evidence').append(row);}
+ seekFrame(data,frames.start);
+}
+function renderNavigator(data){
+ el('cycles').replaceChildren();el('candidates').replaceChildren();el('selected').hidden=true;
+ el('timing-note').textContent=frameTime(data,0)===null?'FPS/source-frame information is unavailable. You can inspect evidence, but time navigation is disabled.':'Navigation uses original frame numbers divided by reported FPS. It is approximate, especially for variable-rate or edited video; no frame-exact boundary accuracy is implied.';
+ for(const [candidate,items,target] of [[false,data.repetitions||[],'cycles'],[true,data.candidates||[],'candidates']]){
+  items.forEach((item,index)=>{const row=document.createElement('li'),button=document.createElement('button');button.type='button';button.textContent=candidate?'Review candidate '+(index+1):'Detected cycle '+item.number;button.onclick=()=>selectCycle(data,item,candidate,index);row.append(button);el(target).append(row);});
+  if(!items.length){const row=document.createElement('li');row.textContent=candidate?'No excluded candidates.':'No complete detected cycles. Review the source and gap evidence.';el(target).append(row);}
+ }
+}
 function showResult(data){
  const overview=data.overview;
  el('summary').textContent=overview.state+' · '+overview.primary_action;
@@ -43,7 +81,7 @@ function showResult(data){
  for(const action of data.feedback.actions){const item=document.createElement('li');item.textContent=action.action+' · Repetitions '+action.repetitions.join(', ');el('actions').append(item);}
  for(const notice of data.feedback.notices){const item=document.createElement('li');item.textContent=notice.message;el('actions').append(item);}
  for(const card of data.feedback.cards){const item=document.createElement('li');item.textContent='Rep '+card.repetition+' · '+card.metric+(card.field?'.'+card.field:'')+' · '+card.status+' · '+(card.observation===null?'unavailable':card.observation+' '+card.unit)+' · '+card.reason;el('cards').append(item);}
- el('json').textContent=JSON.stringify(data,null,2);el('result').hidden=false;result=data;
+ el('json').textContent=JSON.stringify(data,null,2);el('result').hidden=false;result=data;renderNavigator(data);
 }
 el('video').onchange=()=>{
  invalidate();
