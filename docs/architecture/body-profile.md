@@ -151,3 +151,39 @@ Preserve source files, setup assertions and review records when reusing a baseli
 changed camera/stance/load conditions require a new setup and preparation review.
 The screen/status JSON are refreshable views, not frozen validation evidence.
 All personal files and developer HTML remain ignored under `artifacts/`.
+
+## Point Measurement Aid
+
+Implemented on `feature/biomechanics` (`tools.profile_measurement`):
+
+```bash
+python -m tools.personal_setup measure artifacts/personal-setup/person-session --frame 0
+python -m tools.personal_setup import-measurement artifacts/personal-setup/person-session DOWNLOADED_PACKAGE.json
+```
+
+`measure` sequentially decodes the selected zero-based profile source frame,
+verifies its source hash and exports an original-resolution PNG plus a standalone
+local canvas page in a new `measurement-TIMESTAMP/` directory. The readiness screen
+links to these pages. Select an upright frame; frame zero is a default index,
+not an automatic standing-posture decision. No model points are prefilled.
+
+Select body side/view, mark shoulder/hip/knee/ankle and enter explicit segment
+uncertainty in original-image pixels. The canvas maps display coordinates back to
+original pixels, retaining image aspect ratio. Missing points/selections or
+uncertainty block download. The export contains point evidence and an unreviewed
+profile; it is a measurement package, not the final profile schema.
+
+`import-measurement` verifies the actual video hash, decoded frame dimensions,
+finite in-image points and pixel lengths recomputed from those points. It clears
+all reviewer/capture assertions even if the downloaded package supplies them.
+It creates new profile/evidence files, backs up the current manifest and selects
+the new profile through `profile_file`. The initial `profile.json` and previous
+measured profiles remain unchanged. Changing the selected profile requires fresh
+review and produces a different personal context hash. Import is backed up but is
+not a multi-file atomic transaction; interrupted imports may leave unselected
+new files. The manifest is checked for concurrent changes before writes.
+
+Human capture review, uncertainty estimation and anatomical landmark placement
+remain necessary; correct arithmetic does not establish correct anatomy. This aid
+reduces numeric transcription but does not automatically estimate body proportions
+or validate coaching. It never uploads video or silently updates runtime rules.
