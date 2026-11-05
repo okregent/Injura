@@ -21,9 +21,10 @@ empirical acceptance remains open.
 - [x] Define and store source-bound [projected body profiles](../architecture/body-profile.md), with capture checks and uncertainty; manual inputs only.
 - [x] Add descriptive preparation baselines, matching-context comparisons and grouped session actions; retain validation gates.
 - [x] Add source-bound personal setup drafts, readiness screen and fresh-inference baseline generation.
+- [x] Add original-frame point measurement/download/import with preserved profile history and review reset.
 - [ ] Obtain reviewed user-specific profile/preparation evidence before real personalized comparisons; filming remains deferred.
 
-Latest regression: 390 passed (2026-11-05). The local development smoke result
+Latest regression: 398 passed (2026-11-05). The local development smoke result
 remains not evaluated. New sources/reviewed references are still required.
 Profile and baseline tests are now included in the full regression suite.
 
