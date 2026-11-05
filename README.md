@@ -17,7 +17,7 @@ New filming and empirical E3 validation are deferred by the user. Measurement va
 establish measurement accuracy or injury-prevention efficacy. E4 includes capture/
 quality-gated notices, projected profiles, descriptive personal baselines and session
 summaries. E5 now includes a local API/browser preview; validated coaching,
-production integration and mobile remain pending.
+production integration and physical-device verification remain pending; an Expo development client is implemented.
 User-defined target-tempo functionality is deferred.
 
 [Evaluation protocol v0.1](docs/validation/E3_PROTOCOL_v0.1.md) records initial
@@ -126,3 +126,5 @@ for source-bound templates and item-specific conditions.
 local dashboard at `artifacts/sample-review/index.html`: per-video/side detected
 cycles, separate candidates, metric availability counts, calibration/recovery,
 and explicit model alternatives. It never sums sides or chooses a model.
+
+E5 update (2026-11-05, `feature/biomechanics`): browser QA, source-bound saved-result reopening and Expo SDK 58 client implemented. Python: 469 passed; mobile transport: eight passed; typecheck/lint/export and Expo Doctor passed. Physical-device, empirical and coaching acceptance remain pending. See [client runbook](docs/architecture/e5-mobile-client.md).

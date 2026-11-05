@@ -234,7 +234,16 @@ Defer user-defined tempo goals; retain timing measurement. Prioritize recording
 review, predeclared error/coverage limits and reference-based evaluation before
 validated posture feedback. Existing exploratory clips/count matches are not
 joint-angle ground truth or injury-prevention evidence. E4 rule foundations and
-E5 local reports are started; validated coaching and API/mobile remain pending.
+At that decision, E5 local reports had started; validated coaching and API/mobile
+integration were pending. The API and development client have since been
+implemented; physical-device and coaching acceptance remain pending.
+
+## 2026-11-05: Expo Development Client
+
+Use Expo SDK 58/Router over the existing E5 contract with explicit upload,
+source-bound playback and preserved validation gates. Local Expo-web access uses
+opt-in loopback CORS only. See [ADR 002](../adr/002-expo-development-client.md)
+and the [client runbook](../architecture/e5-mobile-client.md).
 
 **Reason:** The user reaffirmed reliable posture guidance supporting injury
 prevention as the purpose, rather than tempo targets or unrestricted camera

@@ -13,14 +13,14 @@ Update this file whenever a task is started, completed, or a phase status change
 | E2    | Biomechanics Foundation   | ✅ Completed    |
 | E3    | Squat Movement Analysis   | 🚧 In Progress  |
 | E4    | Feedback Engine           | ✅ Agreed implementation complete; coaching validation deferred |
-| E5    | Visualization & UX        | 🚧 Local API/browser preview; product timeline/mobile pending |
+| E5    | Visualization & UX        | 🚧 Local API/browser preview and Expo client; device verification pending |
 
 ---
 
 ## Current Focus
 
 **Phase: E4 implementation closure; E3 empirical validation deferred**
-**Current task:** E5 [local API and browser preview](../architecture/e5-local-api.md) are implemented and tested. E4 agreed implementation remains complete; new filming/E3 evaluation and validated coaching remain deferred. Product timeline/mobile and production integration remain pending.
+**Current task:** E5 [local API and browser preview](../architecture/e5-local-api.md) are implemented and tested. E4 agreed implementation remains complete; new filming/E3 evaluation and validated coaching remain deferred. Expo client integration is implemented; physical-device, product timeline and production verification remain pending.
 
 See [recording guide](../product/RECORDING_GUIDE.md) and
 [E3 acceptance gates](../validation/E3_ACCEPTANCE.md). Core implementation is
@@ -159,9 +159,11 @@ Surface analysis results to the user.
 - [x] Bounded local video upload endpoint
 - [x] Synchronous analysis endpoint and browser upload/results preview
 - [x] Cycle/candidate source-frame navigation and selected-cycle evidence (approximate FPS-based seeking)
-- [x] Local paused selected-side joint overlay; filmed/native-browser alignment validation pending
-- [ ] React Native + Expo mobile app integration
+- [x] Local paused selected-side joint overlay and native-browser workflow checks; independent filmed alignment acceptance pending
+- [x] React Native + Expo development client integration; physical-device verification pending
 
 
 ---
 
+
+E5 update (2026-11-05, `feature/biomechanics`): browser QA, source-bound saved-result reopening and Expo SDK 58 client implemented. Python: 469 passed; mobile transport: eight passed; typecheck/lint/export and Expo Doctor passed. Physical-device, empirical and coaching acceptance remain pending. See [client runbook](../architecture/e5-mobile-client.md).

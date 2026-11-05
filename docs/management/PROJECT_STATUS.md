@@ -53,7 +53,7 @@ Full remains default. See the cross-video results in
 - Phase 1 MVP: agreed E4 implementation is complete; see [acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md).
   E3 empirical validation/new filming are deferred by the user. E5 has local
   developer reports, a JSON result adapter and a bounded local FastAPI/browser
-  upload/results preview. Public deployment/product timeline/mobile remain pending.
+  upload/results preview. Expo development client is implemented; physical-device verification, public deployment and product timeline remain pending.
   Validated coaching remains pending. Full regression: 435 passed; pip check passes.
 - E3 source registration, blinded frame aids, readiness/freeze checks and
   reference scoring infrastructure are implemented. Independent evaluation
@@ -97,3 +97,5 @@ Full remains default. See the cross-video results in
   user-reported reps with timing. For video 6, Heavy plus same-model recovery
   detects all three user-reported reps with timing; bottom knee/hip angles remain
   unavailable. Full stays the default. See the follow-up validation document.
+
+E5 update (2026-11-05, `feature/biomechanics`): browser QA, source-bound saved-result reopening and Expo SDK 58 client implemented. Python: 469 passed; mobile transport: eight passed; typecheck/lint/export and Expo Doctor passed. Physical-device, empirical and coaching acceptance remain pending. See [client runbook](../architecture/e5-mobile-client.md).

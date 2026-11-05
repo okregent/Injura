@@ -2,7 +2,32 @@
 
 Implementation branch: `feature/biomechanics`, code `8d143d1`; documentation on
 main does not merge engine/API code. This is a local development service and
-browser preview, not a deployed/authenticated product or mobile application.
+browser preview, not a deployed/authenticated product. A separate development
+[Expo client](e5-mobile-client.md) is now implemented on the same feature branch.
+
+## Browser Review Update (2026-11-05)
+
+Commit `8869679` externalizes the preview script at `/static/preview.js` with
+no-store caching, groups readable selected-cycle evidence beside the video and
+supports narrow layouts. Frame labels snap only within 0.001 source frames of
+an integer to account for browser microsecond rounding; other positions floor
+normally. This does not provide variable-frame-rate timestamp accuracy.
+
+Saved JSON can be reopened locally after selecting its original video and
+matching the source SHA-256. It does not invoke inference. The 4 MiB JSON limit,
+structure/depth/node budgets, finite-number checks and validation-state guards
+reject malformed or incompatible files. The original-video hash does not
+authenticate result contents: reopened results retain an unverified notice and
+cannot establish coaching or accuracy approval.
+
+Actual browser QA covered uploads, saved-result matching/mismatch, selected
+cycles, phase seeking, paused overlays and responsive layout. This verifies UI
+operation on development clips, not independent anatomical alignment accuracy.
+
+`INJURA_DEV_ORIGINS` optionally enables explicitly listed loopback HTTP origins
+with ports for Expo web. Default CORS is disabled; no wildcard, credentials or
+external-host allowance is provided. This is not authentication. Continue binding
+the unauthenticated API to localhost. See the client runbook for commands.
 
 ## Install and Run
 
