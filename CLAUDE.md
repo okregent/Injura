@@ -63,5 +63,6 @@ See docs/sessions/2026-11-04.md for full context.
 - Validate measurement proxies against annotated side-view recordings
 - Validate automatic camera/foot-orientation detection (currently explicit external review)
 - Calibrate confidence before exposing accuracy claims
-- E5 product integration is the next development boundary; not started by E4 closure
+- E5 integration started with JSON response adapter; 42 related tests passed, last full suite 411
+- Next: HTTP upload/request/error contracts and controlled inference; no server/mobile implemented yet
 - Validate E4 corrective criteria after independent measurement validation; defaults remain empty
