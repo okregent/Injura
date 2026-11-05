@@ -7,6 +7,14 @@
 :root{font-family:system-ui,sans-serif;color:#e5eaf1;background:#111820}body{max-width:1000px;margin:auto;padding:28px}h1{font-size:2rem}section{padding:22px;background:#1b2531;border:1px solid #354658;border-radius:14px;margin:18px 0}label{display:block;margin:12px 0}input,select,button{font:inherit;padding:10px;border-radius:7px;border:1px solid #5c7184;background:#15202c;color:inherit}button{background:#a7e2ca;color:#10271f;font-weight:700;cursor:pointer}button:disabled{opacity:.45;cursor:default}small,.muted{color:#afbdcd}pre{white-space:pre-wrap;overflow-wrap:anywhere}li{margin:10px 0}video{display:block;max-width:100%;max-height:360px;margin:18px 0}#status{min-height:2em}summary{cursor:pointer}code{overflow-wrap:anywhere}
 </style>
 <style>#video-stage{position:relative;margin:18px 0}#video-stage video{margin:0}#pose-overlay{position:absolute;top:0;left:0;pointer-events:none}</style>
+<style>
+[hidden]{display:none!important}#review-layout{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}#review-layout section{margin:0;min-width:0}#cycles,#candidates{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0}#cycles li,#candidates li{margin:0}#cycles button,#candidates button{font-size:.85rem;padding:7px}#seek-controls button{margin:4px 4px 4px 0;font-size:.85rem}#selected-evidence{padding-left:18px}#review-layout video{max-height:44vh}#media-panel{align-self:start}#selected{border-top:1px solid #354658;margin-top:18px}
+@media(min-width:900px){body{max-width:1280px}#review-layout:has(#result:not([hidden])){grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}#media-panel{position:sticky;top:12px}}
+@media(max-width:600px){body{padding:14px}section{padding:16px}}
+#media-panel h2{margin-top:0}#media-panel p{font-size:.88rem;line-height:1.45;margin:10px 0}#selected h3{margin:12px 0}#selected button{font-size:.85rem;padding:8px}#selected-evidence>li{margin-bottom:20px}
+input[type=file]{max-width:100%;box-sizing:border-box}
+@media(min-width:900px){#review-layout video{max-height:32vh}}
+</style>
 <h1>Injura</h1>
 <p class="muted">Local analysis preview · side-view squat measurements</p>
 <section>
@@ -17,132 +25,38 @@
 <label>Video <input id="video" type="file" accept=".mp4,.mov,video/mp4,video/quicktime" required></label>
 <label>Body side to measure <select id="side" required><option value="">Select explicitly</option><option value="left">Left</option><option value="right">Right</option></select></label>
 <label>Direction the person faces <select id="facing" required><option value="">Select explicitly</option><option value="left">Left</option><option value="right">Right</option></select></label>
-<div id="video-stage"><video id="preview" controls preload="metadata" hidden></video><canvas id="pose-overlay" hidden aria-hidden="true"></canvas></div>
-<label><input id="overlay-toggle" type="checkbox" disabled> Show selected-side joints while paused</label>
-<p id="overlay-note" class="muted">Overlay requires an analyzed video. It does not validate posture or anatomical accuracy.</p>
 <button id="submit" type="submit" disabled>Analyze video</button>
 </form>
+<details><summary>Reopen a saved result</summary>
+<p>Select the original video above and a downloaded result JSON. Both files stay in this browser during reopening. A matching video hash does not authenticate the result contents.</p>
+<label>Saved result JSON <input id="result-file" type="file" accept=".json,application/json"></label>
+<button id="load-result" type="button" disabled>Reopen matching saved result</button>
+</details>
 <p id="status" role="status" aria-live="polite"></p>
 <small>The upload is processed locally by this server and its temporary file is deleted after processing. One analysis runs at a time. Reloading this page does not guarantee cancellation of server work.</small>
 </section>
+<div id="review-layout">
+<section id="media-panel" hidden>
+<h2>Video review</h2>
+<div id="video-stage"><video id="preview" controls preload="metadata" hidden></video><canvas id="pose-overlay" hidden aria-hidden="true"></canvas></div>
+<label><input id="overlay-toggle" type="checkbox" disabled> Show selected-side joints while paused</label>
+<p id="overlay-note" class="muted">Overlay requires an analyzed video. It does not validate posture or anatomical accuracy.</p>
+<div id="selected" hidden><h3 id="selected-title"></h3><p id="selected-frames"></p>
+<button id="previous-cycle" type="button">Previous</button> <button id="next-cycle" type="button">Next</button>
+<div id="seek-controls"></div><p id="seek-status" role="status"></p></div>
+</section>
 <section id="result" hidden>
 <h2>Session summary</h2><p id="summary"></p><p id="counts"></p><p id="validation"></p>
+<p id="result-origin" class="muted"></p>
+<div id="selected-evidence-panel" hidden><h3 id="evidence-title"></h3><ul id="selected-evidence"></ul></div>
 <h3>Detected cycle navigator</h3>
 <p id="timing-note" class="muted"></p><ol id="cycles"></ol>
 <h3>Excluded review candidates</h3><p>Candidates are tracking hypotheses, not measured repetitions.</p><ol id="candidates"></ol>
-<div id="selected" hidden><h3 id="selected-title"></h3><p id="selected-frames"></p><div id="seek-controls"></div><p id="seek-status" role="status"></p><ul id="selected-evidence"></ul></div>
 <h3>Next actions</h3><ul id="actions"></ul>
 <details><summary>Per-repetition observations and reasons</summary><ul id="cards"></ul></details>
 <details><summary>Full JSON result</summary><pre id="json"></pre></details>
 <button id="download" type="button">Download result JSON</button>
 </section>
-<script>
-const el=id=>document.getElementById(id);
-let capabilities=null,previewUrl=null,result=null;
-let overlayFrames=new Map();
-function invalidate(){result=null;overlayFrames=new Map();el('overlay-toggle').checked=false;el('overlay-toggle').disabled=true;drawOverlay();el('result').hidden=true;el('selected').hidden=true;el('seek-status').textContent='';el('status').textContent='';}
-function setBusy(busy){for(const id of ['video','side','facing','submit'])el(id).disabled=busy;}
-function drawOverlay(){
- const canvas=el('pose-overlay'),video=el('preview');
- if(!canvas.getContext)return;
- const ctx=canvas.getContext('2d');if(!ctx)return;
- ctx.clearRect(0,0,canvas.width,canvas.height);canvas.hidden=true;
- const note=message=>{el('overlay-note').textContent=message;};
- if(!result || !result.overlay || !el('overlay-toggle').checked){note('Overlay is off. Selected-side image coordinates are not anatomical accuracy or posture approval.');return;}
- if(!video.paused || video.seeking){note('Pause the video after seeking to inspect joints. No overlay is interpolated during playback.');return;}
- const source=result.source,overlay=result.overlay;
- if(!source || !Number.isFinite(source.fps) || source.fps<=0 || !Number.isFinite(video.currentTime)){note('Overlay timing is unavailable without valid FPS.');return;}
- if(!result.selection || overlay.side!==result.selection.side){note('Overlay body side does not match the selected analysis.');return;}
- const size=overlay.image_size;
- if(!Array.isArray(size) || size.length!==2 || !size.every(value=>Number.isInteger(value)&&value>0) || video.videoWidth!==size[0] || video.videoHeight!==size[1]){note('Video dimensions differ or metadata is not ready; overlay is hidden.');return;}
- const index=Math.floor(video.currentTime*source.fps+1e-6),frame=overlayFrames.get(index);
- if(frameTime(result,index)===null || !frame || frame.status!=='observed'){note('No original pose observation for approximate source frame '+index+'. Gaps and recovered observations are not drawn.');return;}
- canvas.width=size[0];canvas.height=size[1];canvas.style.width=video.clientWidth+'px';canvas.style.height=video.clientHeight+'px';
- const visible={};
- for(const name of ['shoulder','hip','knee','ankle','heel','toe']){const point=frame.points[name];if(point && Number.isFinite(point.x) && Number.isFinite(point.y) && point.x>=0 && point.x<=1 && point.y>=0 && point.y<=1)visible[name]=point;}
- ctx.strokeStyle='#7cddff';ctx.fillStyle='#7cddff';ctx.lineWidth=Math.max(2,canvas.width/400);
- for(const [a,b] of [['shoulder','hip'],['hip','knee'],['knee','ankle'],['ankle','heel'],['heel','toe'],['ankle','toe']]){if(!visible[a] || !visible[b])continue;ctx.beginPath();ctx.moveTo(visible[a].x*canvas.width,visible[a].y*canvas.height);ctx.lineTo(visible[b].x*canvas.width,visible[b].y*canvas.height);ctx.stroke();}
- for(const point of Object.values(visible)){ctx.beginPath();ctx.arc(point.x*canvas.width,point.y*canvas.height,Math.max(3,canvas.width/200),0,Math.PI*2);ctx.fill();}
- canvas.hidden=!Object.keys(visible).length;
- note(canvas.hidden?'No selected-side joints meet the display visibility/bounds checks.':'Approximate source frame '+index+' · selected-side joints only. Reported-FPS timing and browser seeking are not frame-exact; visibility is not accuracy.');
-}
-function frameTime(data,frame){
- const source=data.source;
- return source && Number.isFinite(source.fps) && source.fps>0 && Number.isInteger(frame) && frame>=0 && Number.isInteger(source.frame_count) && frame<source.frame_count ? frame/source.fps : null;
-}
-function seekFrame(data,frame){
- if(result!==data)return false;
- const seconds=frameTime(data,frame),video=el('preview');
- if(seconds===null){el('seek-status').textContent='Time navigation is unavailable: valid FPS and source-frame information are required.';return false;}
- if(video.readyState<1 || !Number.isFinite(video.duration) || video.duration<=0){el('seek-status').textContent='Video metadata is not ready. Try again after the local preview loads.';return false;}
- if(seconds>=video.duration){el('seek-status').textContent='The reported frame position falls outside the browser video duration; inspect the source manually.';return false;}
- try{video.pause();video.currentTime=seconds;el('seek-status').textContent='Approximate source frame '+frame+' · '+seconds.toFixed(3)+' s using reported FPS. Browser seeking is not frame-exact.';return true;}
- catch(error){el('seek-status').textContent='This video cannot seek to the requested position in the browser.';return false;}
-}
-function selectCycle(data,item,candidate=false,index=0){
- if(result!==data)return;
- el('selected').hidden=false;el('seek-controls').replaceChildren();el('selected-evidence').replaceChildren();
- el('selected-title').textContent=candidate?'Review candidate '+(index+1)+' · not a measured repetition':'Detected cycle '+item.number;
- const frames=item.source_frames;
- el('selected-frames').textContent='Original source frames '+frames.start+'–'+frames.end+'.'+(candidate?' '+item.reason:' Bottom phase end is not necessarily the deepest posture.');
- const controls=candidate?[['Start',frames.start],['Observed bottom',item.observed_bottom],['End',frames.end]]:[['Start',frames.start],['Bottom phase end',frames.bottom_phase_end],['End',frames.end]];
- for(const [label,frame] of controls){const button=document.createElement('button');button.type='button';button.textContent=label+' · frame '+frame;button.disabled=frameTime(data,frame)===null;button.onclick=()=>seekFrame(data,frame);el('seek-controls').append(button);}
- const cards=candidate?[]:data.feedback.cards.filter(card=>card.repetition===item.number);
- for(const card of cards){const row=document.createElement('li');row.textContent=card.metric+(card.field?'.'+card.field:'')+' · '+card.status+' · '+(card.observation===null?'unavailable':card.observation+' '+card.unit)+' · '+card.reason+' · '+card.action;el('selected-evidence').append(row);}
- if(!cards.length){const row=document.createElement('li');row.textContent=candidate?'No measurements or phase times are assigned to review candidates.':'No measurement cards are available for this detected cycle.';el('selected-evidence').append(row);}
- seekFrame(data,frames.start);
-}
-function renderNavigator(data){
- el('cycles').replaceChildren();el('candidates').replaceChildren();el('selected').hidden=true;
- el('timing-note').textContent=frameTime(data,0)===null?'FPS/source-frame information is unavailable. You can inspect evidence, but time navigation is disabled.':'Navigation uses original frame numbers divided by reported FPS. It is approximate, especially for variable-rate or edited video; no frame-exact boundary accuracy is implied.';
- for(const [candidate,items,target] of [[false,data.repetitions||[],'cycles'],[true,data.candidates||[],'candidates']]){
-  items.forEach((item,index)=>{const row=document.createElement('li'),button=document.createElement('button');button.type='button';button.textContent=candidate?'Review candidate '+(index+1):'Detected cycle '+item.number;button.onclick=()=>selectCycle(data,item,candidate,index);row.append(button);el(target).append(row);});
-  if(!items.length){const row=document.createElement('li');row.textContent=candidate?'No excluded candidates.':'No complete detected cycles. Review the source and gap evidence.';el(target).append(row);}
- }
-}
-function showResult(data){
- const overview=data.overview;
- el('summary').textContent=overview.state+' · '+overview.primary_action;
- el('counts').textContent='Detected cycles: '+overview.detected_cycles+' · Excluded candidates: '+overview.excluded_candidates+' · Personal comparison: '+overview.personal_comparison_state;
- el('validation').textContent='Measurement accuracy: '+overview.accuracy_status+' · Coaching: '+overview.coaching_status;
- el('actions').replaceChildren();el('cards').replaceChildren();
- for(const action of data.feedback.actions){const item=document.createElement('li');item.textContent=action.action+' · Repetitions '+action.repetitions.join(', ');el('actions').append(item);}
- for(const notice of data.feedback.notices){const item=document.createElement('li');item.textContent=notice.message;el('actions').append(item);}
- for(const card of data.feedback.cards){const item=document.createElement('li');item.textContent='Rep '+card.repetition+' · '+card.metric+(card.field?'.'+card.field:'')+' · '+card.status+' · '+(card.observation===null?'unavailable':card.observation+' '+card.unit)+' · '+card.reason;el('cards').append(item);}
- el('json').textContent=JSON.stringify(data,null,2);el('result').hidden=false;result=data;renderNavigator(data);
- overlayFrames=new Map((data.overlay?data.overlay.frames:[]).map(frame=>[frame.source_frame,frame]));
- el('overlay-toggle').checked=false;el('overlay-toggle').disabled=!data.overlay;drawOverlay();
-}
-el('overlay-toggle').onchange=drawOverlay;
-for(const event of ['onpause','onplay','onseeking','onseeked','ontimeupdate','onloadedmetadata','onresize','onerror'])el('preview')[event]=drawOverlay;
-if(typeof ResizeObserver!=='undefined')new ResizeObserver(drawOverlay).observe(el('preview'));
-el('video').onchange=()=>{
- invalidate();
- if(previewUrl)URL.revokeObjectURL(previewUrl);
- const file=el('video').files[0];el('preview').hidden=!file;
- if(file){previewUrl=URL.createObjectURL(file);el('preview').src=previewUrl;}
-};
-el('side').onchange=invalidate;el('facing').onchange=invalidate;
-el('upload').onsubmit=async event=>{
- event.preventDefault();if(!capabilities)return;
- const file=el('video').files[0];
- if(!file || !['left','right'].includes(el('side').value) || !['left','right'].includes(el('facing').value)){el('status').textContent='Select a video, body side and facing direction.';return;}
- if(file.size>capabilities.limits.file_bytes){el('status').textContent='Video exceeds the supported file size.';return;}
- setBusy(true);invalidate();el('status').textContent='Analyzing… Please keep this page open.';
- const form=new FormData();form.append('video',file);form.append('side',el('side').value);form.append('facing',el('facing').value);
- try{const response=await fetch('/v1/analyses',{method:'POST',body:form});const data=await response.json();
-  if(!response.ok){el('status').textContent=data.error?data.error.message+' ('+data.error.code+')':'The request failed.';return;}
-  if(data.schema_version!==1 || data.exercise!=='squat')throw Error('unsupported response');
-  showResult(data);el('status').textContent='Analysis complete. Review measurement limits and capture conditions.';
- }catch(error){el('status').textContent='Could not complete the request. Check the local server and try again.';}
- finally{setBusy(false);}
-};
-el('download').onclick=()=>{
- if(!result)return;const url=URL.createObjectURL(new Blob([JSON.stringify(result,null,2)],{type:'application/json'}));
- const link=document.createElement('a');link.href=url;link.download='injura-analysis.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-};
-fetch('/v1/capabilities').then(response=>{if(!response.ok)throw Error();return response.json();}).then(data=>{
- capabilities=data;el('limits').textContent='Maximum '+Math.floor(data.limits.file_bytes/1024/1024)+' MiB · '+data.limits.frames+' decoded frames · '+data.limits.width+' × '+data.limits.height+' pixels.';el('submit').disabled=false;
-}).catch(()=>{el('limits').textContent='Could not load server capabilities. Start the local server and reload.';});
-</script>
+</div>
+<script src="/static/preview.js"></script>
 </html>

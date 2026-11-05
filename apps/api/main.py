@@ -4,15 +4,18 @@ from pathlib import Path
 from dataclasses import asdict
 from tempfile import TemporaryDirectory
 from threading import Lock
+import os
+from urllib.parse import urlsplit
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from python_multipart.exceptions import MultipartParseError
 from starlette.concurrency import run_in_threadpool
 from starlette.datastructures import UploadFile
 from starlette.exceptions import HTTPException
 from starlette.formparsers import MultiPartException
+from starlette.middleware.cors import CORSMiddleware
 
 from apps.api.service import AnalysisError, Limits, analyze_video
 
@@ -51,9 +54,19 @@ class BodyLimit:
         await self.app(scope, bounded_receive, send)
 
 
-def create_app(*, analyzer=None, limits=Limits()):
+def create_app(*, analyzer=None, limits=Limits(), dev_origins=()):
+    for origin in dev_origins:
+        parsed = urlsplit(origin)
+        if (parsed.scheme != 'http' or parsed.hostname not in ('localhost', '127.0.0.1', '::1')
+                or parsed.username or parsed.password or parsed.path or parsed.query or parsed.fragment
+                or parsed.port is None):
+            raise ValueError('development CORS origins must be explicit loopback HTTP origins with a port')
     app = FastAPI(title='Injura local analysis API', version='0.1.0')
     app.add_middleware(BodyLimit, maximum=limits.file_bytes + limits.multipart_overhead)
+    if dev_origins:
+        app.add_middleware(CORSMiddleware, allow_origins=list(dev_origins),
+                           allow_methods=['GET', 'POST'], allow_headers=['Accept', 'Content-Type'],
+                           allow_credentials=False)
     admission = Lock()
     service = analyzer or (lambda path, side, facing: analyze_video(path, side, facing, limits=limits))
 
@@ -80,6 +93,11 @@ def create_app(*, analyzer=None, limits=Limits()):
     @app.get('/', response_class=HTMLResponse, include_in_schema=False)
     async def preview():
         return HTMLResponse(Path(__file__).with_name('index.html').read_text(encoding='utf-8'))
+
+    @app.get('/static/preview.js', include_in_schema=False)
+    async def preview_script():
+        return Response(Path(__file__).with_name('preview.js').read_text(encoding='utf-8'),
+                        media_type='application/javascript', headers={'Cache-Control': 'no-store'})
 
     @app.post('/v1/analyses', openapi_extra={'requestBody': {'required': True, 'content': {
         'multipart/form-data': {'schema': {'type': 'object', 'required': ['video', 'side', 'facing'],
@@ -131,4 +149,4 @@ def create_app(*, analyzer=None, limits=Limits()):
     return app
 
 
-app = create_app()
+app = create_app(dev_origins=tuple(origin.strip() for origin in os.environ.get('INJURA_DEV_ORIGINS', '').split(',') if origin.strip()))

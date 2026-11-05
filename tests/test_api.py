@@ -103,6 +103,9 @@ def test_local_preview_and_capabilities_and_malformed_multipart():
     with TestClient(create_app()) as client:
         page = client.get('/')
         assert page.status_code == 200 and 'Local analysis preview' in page.text
+        script = client.get('/static/preview.js')
+        assert script.status_code == 200 and 'application/javascript' in script.headers['content-type']
+        assert script.headers['cache-control'] == 'no-store'
         capabilities = client.get('/v1/capabilities').json()
         assert capabilities['limits']['frames'] == 1800
         assert capabilities['capture_review_upload'] is False
@@ -114,3 +117,15 @@ def test_local_preview_and_capabilities_and_malformed_multipart():
 def test_invalid_limits_rejected():
     with pytest.raises(ValueError):
         Limits(file_bytes=True)
+
+
+def test_cors_is_opt_in_loopback_only_and_not_an_authentication_mechanism():
+    with TestClient(create_app()) as client:
+        assert 'access-control-allow-origin' not in client.get('/health', headers={'Origin':'http://localhost:8081'}).headers
+    with TestClient(create_app(dev_origins=('http://localhost:8081',))) as client:
+        response = client.get('/health', headers={'Origin':'http://localhost:8081'})
+        assert response.headers['access-control-allow-origin'] == 'http://localhost:8081'
+        assert 'access-control-allow-credentials' not in response.headers
+        assert 'access-control-allow-origin' not in client.get('/health', headers={'Origin':'https://example.com'}).headers
+    with pytest.raises(ValueError):
+        create_app(dev_origins=('https://example.com',))

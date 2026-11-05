@@ -9,8 +9,7 @@ def browser_assertions(tmp_path, assertions):
     node = shutil.which('node')
     if not node:
         pytest.skip('Node is needed to verify preview browser logic')
-    page = (Path(__file__).parents[1] / 'apps/api/index.html').read_text(encoding='utf-8')
-    script = page.split('<script>')[1].split('</script>')[0]
+    script = (Path(__file__).parents[1] / 'apps/api/preview.js').read_text(encoding='utf-8')
     harness = '''
 const assert=require('assert'),elements={};
 function element(){return {value:'',hidden:true,disabled:false,textContent:'',children:[],readyState:1,duration:30,currentTime:0,
@@ -20,9 +19,10 @@ global.fetch=()=>new Promise(()=>{});
 const payload={source:{fps:24,frame_count:720},overview:{state:'capture_review',primary_action:'Review capture',detected_cycles:2,
  excluded_candidates:1,personal_comparison_state:'not_requested',accuracy_status:'not_validated',coaching_status:'pending_validation'},
  feedback:{actions:[],notices:[],cards:[{repetition:1,metric:'knee_flexion',field:null,status:'capture_review',observation:null,unit:'degrees',reason:'Review required',action:'Inspect source'},
- {repetition:2,metric:'torso_lean',field:null,status:'capture_review',observation:null,unit:'degrees',reason:'Other cycle',action:'Inspect source'}]},
+ {repetition:2,metric:'torso_lean',field:'max_lean_angle',status:'capture_review',observation:null,unit:'degrees',reason:'Other cycle',action:'Inspect source'}]},
  repetitions:[{number:1,source_frames:{start:120,bottom_phase_end:144,end:168}},{number:2,source_frames:{start:240,bottom_phase_end:264,end:288}}],
  candidates:[{source_frames:{start:300,end:360},observed_bottom:336,reason:'Gap crossing'}]};
+function validSaved(){return {...JSON.parse(JSON.stringify(payload)),schema_version:1,exercise:'squat',selection:{side:'left',facing:'left'},source:{...payload.source,pose_frame_count:720,sha256:'a'.repeat(64)},interpretation:{accuracy:'not_validated',coaching:'pending_validation'}};}
 '''
     path = tmp_path / 'navigator.cjs'
     path.write_text(harness + script + assertions, encoding='utf-8')
@@ -36,12 +36,24 @@ showResult(payload);assert.strictEqual(el('cycles').children.length,2);
 el('cycles').children[0].children[0].onclick();
 assert.strictEqual(el('preview').currentTime,5);assert.strictEqual(el('preview').paused,true);
 assert.strictEqual(el('selected-evidence').children.length,1);
-assert(el('selected-evidence').children[0].textContent.includes('knee_flexion'));
+assert(el('selected-evidence').children[0].children[0].children[0].textContent.includes('Knee flexion'));
 el('seek-controls').children[1].onclick();assert.strictEqual(el('preview').currentTime,6);
 assert(el('seek-controls').children[1].textContent.includes('Bottom phase end'));
 assert(el('seek-status').textContent.includes('not frame-exact'));
 el('cycles').children[1].children[0].onclick();assert.strictEqual(el('preview').currentTime,10);
-assert(el('selected-evidence').children[0].textContent.includes('torso_lean'));
+assert(el('selected-evidence').children[0].children[0].children[0].textContent.includes('Maximum torso lean'));
+''')
+
+
+def test_previous_next_navigation_has_bounds_and_does_not_reuse_stale_results(tmp_path):
+    browser_assertions(tmp_path, '''
+showResult(payload);el('cycles').children[0].children[0].onclick();
+assert.strictEqual(el('previous-cycle').disabled,true);assert.strictEqual(el('next-cycle').disabled,false);
+el('next-cycle').onclick();assert.strictEqual(el('preview').currentTime,10);
+assert(el('evidence-title').textContent.includes('cycle 2'));assert.strictEqual(el('next-cycle').disabled,true);
+el('previous-cycle').onclick();assert.strictEqual(el('preview').currentTime,5);
+const stale=el('next-cycle').onclick;invalidate();stale();
+assert.strictEqual(el('selected').hidden,true);assert.strictEqual(el('selected-evidence-panel').hidden,true);
 ''')
 
 
@@ -127,12 +139,76 @@ el('overlay-toggle').checked=true;drawOverlay();assert.strictEqual(canvas.hidden
 ''')
 
 
+def test_overlay_handles_browser_microsecond_seek_rounding_without_bridging_frames(tmp_path):
+    browser_assertions(tmp_path, OVERLAY_SETUP + '''
+video.currentTime=4.999999;drawOverlay();assert.strictEqual(canvas.hidden,false);
+assert(el('overlay-note').textContent.includes('frame 120'));
+video.currentTime=4.999;drawOverlay();assert.strictEqual(canvas.hidden,true);
+assert(el('overlay-note').textContent.includes('frame 119'));
+''')
+
+
+def test_measurement_labels_explain_withholding_without_mutating_raw_values(tmp_path):
+    browser_assertions(tmp_path, '''
+const card={metric:'knee_flexion',field:null,status:'capture_review',observation:null,unit:'degrees',reason:'recording_review_missing',action:'Review source'};
+assert(formatCard(card).includes('Knee flexion'));assert(formatCard(card).includes('This recording has not been reviewed.'));
+assert(formatCard(card).includes('Not shown'));assert(!formatCard(card).includes('recording_review_missing'));
+card.reason='recording_review_unknown:hips_visible';assert(formatCard(card).includes('Confirm capture condition: hips visible.'));
+card.observation=92.34567;assert(formatCard(card).includes('92.35 °'));assert.strictEqual(card.observation,92.34567);
+''')
+
+
+def test_saved_result_reopens_only_after_source_hash_match_without_upload(tmp_path):
+    browser_assertions(tmp_path, '''
+(async()=>{
+global.crypto=require('node:crypto').webcrypto;
+const data=validSaved(),bytes=new TextEncoder().encode('fixture');
+data.source.sha256=require('node:crypto').createHash('sha256').update(bytes).digest('hex');
+const text=JSON.stringify(data),file={size:bytes.length,arrayBuffer:async()=>bytes.buffer},saved={size:text.length,text:async()=>text};
+const reopened=await reopenSavedResult(file,saved);assert.strictEqual(reopened.source.sha256,data.source.sha256);
+showResult(reopened,true);assert(el('result-origin').textContent.includes('unverified file contents'));
+const wrong={size:1,arrayBuffer:async()=>new Uint8Array([0]).buffer};
+await assert.rejects(()=>reopenSavedResult(wrong,saved),/does not match/);
+await assert.rejects(()=>reopenSavedResult(file,{size:5*1024*1024}),/4 MiB/);
+})().catch(error=>{console.error(error);process.exitCode=1;});
+''')
+
+
+@pytest.mark.parametrize('mutation', [
+    "data.overview.coaching_status='approved'",
+    "data.source.fps=-1",
+    "data.overview.detected_cycles=99",
+    "data.feedback.cards[0].observation=90",
+    "data.feedback.cards.push(data.feedback.cards[0])",
+    "data.repetitions[0].source_frames.end=99999",
+    "data.feedback.cards[0].reason={bad:true}",
+])
+def test_untrusted_saved_result_cannot_bypass_pending_or_shape_guards(tmp_path, mutation):
+    browser_assertions(tmp_path, "const data=validSaved();" + mutation + ";assert.throws(()=>parseSavedResult(JSON.stringify(data)));")
+
+
+def test_saved_result_rejects_numeric_overflow_and_handles_utf8_bom(tmp_path):
+    browser_assertions(tmp_path, '''
+const data=validSaved();assert.strictEqual(parseSavedResult('\\uFEFF'+JSON.stringify(data)).schema_version,1);
+const text=JSON.stringify(data).replace('"fps":24','"fps":1e999');
+assert.throws(()=>parseSavedResult(text),/invalid numbers/);
+''')
+
+
+def test_new_video_requires_fresh_explicit_side_and_facing(tmp_path):
+    browser_assertions(tmp_path, '''
+global.URL={createObjectURL(){return 'blob:fixture'},revokeObjectURL(){}};
+el('side').value='left';el('facing').value='right';el('video').files=[{size:1}];
+el('video').onchange();assert.strictEqual(el('side').value,'');assert.strictEqual(el('facing').value,'');
+assert.strictEqual(el('result').hidden,true);assert.strictEqual(el('media-panel').hidden,false);
+''')
+
+
 def test_preview_renders_untrusted_text_and_invalidates_stale_selection(tmp_path):
     node = shutil.which('node')
     if not node:
         pytest.skip('Node is needed to verify preview browser logic')
-    page = (Path(__file__).parents[1] / 'apps/api/index.html').read_text(encoding='utf-8')
-    script = page.split('<script>')[1].split('</script>')[0]
+    script = (Path(__file__).parents[1] / 'apps/api/preview.js').read_text(encoding='utf-8')
     harness = '''
 const assert=require('assert'),elements={};
 global.document={getElementById(id){return elements[id] ||= {value:'',hidden:true,disabled:false,textContent:'',children:[],
@@ -143,7 +219,7 @@ global.fetch=()=>new Promise(()=>{});
 const payload={overview:{state:'capture_review',primary_action:'<script>alert(1)</script>',detected_cycles:3,
  excluded_candidates:1,personal_comparison_state:'not_requested',accuracy_status:'not_validated',coaching_status:'pending_validation'},
  feedback:{actions:[{action:'<img src=x>',repetitions:[1]}],notices:[],cards:[]}};
-showResult(payload);assert.strictEqual(el('summary').textContent,'capture_review · <script>alert(1)</script>');
+showResult(payload);assert.strictEqual(el('summary').textContent,'Recording review required · <script>alert(1)</script>');
 assert.strictEqual(el('actions').children[0].textContent,'<img src=x> · Repetitions 1');
 assert.strictEqual(result,payload);el('side').onchange();assert.strictEqual(result,null);assert.strictEqual(el('result').hidden,true);
 setBusy(true);assert.strictEqual(el('video').disabled,true);assert.strictEqual(el('side').disabled,true);
