@@ -55,12 +55,13 @@ See docs/sessions/2026-11-04.md for full context.
 - E3 empirical validation; core metrics, timing, consistency, and analyzer implemented
 - Per-metric availability and observed coverage implemented; calibrated confidence pending
 - Initial videos 3-6 reviewed; cycle-state fixes and unverified gap candidates implemented
-- Latest full test suite: 408 passed; see docs/sessions/2026-11-05.md
-- New filming/E3 empirical evaluation deferred by user; E4 observation/action flow active
+- Latest full test suite: 411 passed; see docs/sessions/2026-11-05.md
+- E4 agreed implementation scope complete; new filming/E3 empirical and coaching validation deferred
 - Opt-in recovery/posture calibration and explicit Full/Heavy comparison implemented; Full remains default
 
 ### Next Steps
 - Validate measurement proxies against annotated side-view recordings
 - Validate automatic camera/foot-orientation detection (currently explicit external review)
 - Calibrate confidence before exposing accuracy claims
-- E4 feedback engine after measurement validation
+- E5 product integration is the next development boundary; not started by E4 closure
+- Validate E4 corrective criteria after independent measurement validation; defaults remain empty

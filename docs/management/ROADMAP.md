@@ -8,15 +8,15 @@
 ### Engine Development Plan
 
 > Tracks the internal engine build-out required to power the MVP.
-> E3 validation remains the priority. E4/E5 foundations may overlap, but they
-> do not imply validated posture feedback or a released product.
+> E4 agreed implementation is complete; new filming/E3 validation are deferred.
+> Implementation completion does not imply validated coaching or a released product.
 
 | Phase | Name | Status |
 |-------|------|--------|
 | E1 | Semantic Pose Foundation | ✅ Completed |
 | E2 | Biomechanics Foundation | ✅ Completed |
 | E3 | Squat Movement Analysis | 🚧 Implemented; empirical validation pending |
-| E4 | Feedback Engine | 🚧 Availability/configured-rule foundations; coaching pending |
+| E4 | Feedback Engine | ✅ Agreed implementation complete; coaching validation deferred |
 | E5 | Visualization & UX | 🚧 Local developer reports; API/mobile not started |
 
 Current gates: [E3 acceptance](../validation/E3_ACCEPTANCE.md).
@@ -50,8 +50,9 @@ Interpret biomechanics data as meaningful squat movement.
 #### E4 — Feedback Engine
 Translate movement analysis into adaptive, explainable feedback.
 - Explicit JSON rule engine (`squat_rules.json`, empty defaults; YAML deferred)
-- Adaptive thresholds based on user profile
-- Explainable feedback messages
+- Reviewed projected body profiles and descriptive personal preparation baselines
+- Explainable measurement notices, grouped actions and conservative session overview
+- Adaptive corrective thresholds and validated coaching deferred; see [acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md)
 
 #### E5 — Visualization & UX
 Surface analysis results to the user.

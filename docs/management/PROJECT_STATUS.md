@@ -50,8 +50,9 @@ Full remains default. See the cross-video results in
 - `tests/test_squat_phase_smoothing_integration.py` created and passing
 
 ## In Progress
-- Phase 1 MVP: E3 validation is current. E4 has availability/configured-rule
-  foundations; E5 has local developer reports. API/mobile are not started.
+- Phase 1 MVP: agreed E4 implementation is complete; see [acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md).
+  E3 empirical validation/new filming are deferred by the user. E5 has local
+  developer reports; product API/mobile are not started. Validated coaching remains pending.
 - E3 source registration, blinded frame aids, readiness/freeze checks and
   reference scoring infrastructure are implemented. Independent evaluation
   videos/references remain pending; smoke runs never establish acceptance.

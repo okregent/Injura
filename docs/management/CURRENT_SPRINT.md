@@ -1,9 +1,10 @@
 # Current Sprint
 
 ## Sprint Goal
-Develop E4 observation and next-action presentation while new filming and E3
-empirical evaluation are deferred by the user. E3 implementation is complete;
-empirical acceptance remains open.
+Close the agreed E4 observation/personal-comparison implementation scope.
+**Completed**; see [acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md).
+New filming and E3 empirical evaluation remain deferred by the user; empirical
+acceptance and validated coaching remain open.
 
 ## Current Priorities
 
@@ -25,13 +26,13 @@ empirical acceptance remains open.
 - [x] Add conservative [E4 session overview](../architecture/e4-session-overview.md) and explicit personal-comparison completeness states.
 - [ ] Obtain reviewed user-specific profile/preparation evidence before real personalized comparisons; filming remains deferred.
 
-Latest regression: 408 passed (2026-11-05). The local development smoke result
+Latest regression: 411 passed (2026-11-05). The local development smoke result
 remains not evaluated. New sources/reviewed references are still required.
 Profile and baseline tests are now included in the full regression suite.
 
 Prepare evidence autonomously; the user need not annotate every frame. Existing
 exploratory clips are not independent validation. User-defined tempo goals are
-deferred. E4/E5 foundations exist; validated coaching and API/mobile remain pending.
+deferred. E4 agreed implementation is complete; validated coaching and E5 API/mobile remain pending.
 
 ---
 
