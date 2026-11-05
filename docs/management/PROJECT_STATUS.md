@@ -52,7 +52,8 @@ Full remains default. See the cross-video results in
 ## In Progress
 - Phase 1 MVP: agreed E4 implementation is complete; see [acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md).
   E3 empirical validation/new filming are deferred by the user. E5 has local
-  developer reports; product API/mobile are not started. Validated coaching remains pending.
+  developer reports and a framework-independent JSON result adapter; HTTP/upload/
+  mobile are not implemented. Validated coaching remains pending.
 - E3 source registration, blinded frame aids, readiness/freeze checks and
   reference scoring infrastructure are implemented. Independent evaluation
   videos/references remain pending; smoke runs never establish acceptance.

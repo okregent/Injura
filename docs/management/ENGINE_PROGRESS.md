@@ -20,7 +20,7 @@ Update this file whenever a task is started, completed, or a phase status change
 ## Current Focus
 
 **Phase: E4 implementation closure; E3 empirical validation deferred**
-**Current task:** Agreed E4 implementation is complete; see [acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md). New filming and E3 evaluation remain deferred by the user. E5 product integration is the next development boundary, not started by this closure. User-defined tempo goals remain deferred.
+**Current task:** E5 integration has started with a [JSON response adapter](../architecture/e5-response.md). E4 agreed implementation remains complete; new filming/E3 evaluation and validated coaching remain deferred. HTTP/upload/mobile are not implemented yet.
 
 See [recording guide](../product/RECORDING_GUIDE.md) and
 [E3 acceptance gates](../validation/E3_ACCEPTANCE.md). Core implementation is
@@ -153,6 +153,7 @@ Deferred validation/future scope (not accepted as complete):
 Surface analysis results to the user.
 
 - [x] Local review overlays, diagnostic plots and summary dashboard
+- [x] Framework-independent JSON result adapter with original-frame provenance and E4 states
 - [ ] Product-facing landmark/timeline/metric visualization
 - [ ] FastAPI backend scaffolding
 - [ ] Video upload endpoint

@@ -1,12 +1,20 @@
 # Current Sprint
 
 ## Sprint Goal
-Close the agreed E4 observation/personal-comparison implementation scope.
-**Completed**; see [acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md).
+E4 agreed implementation scope is **completed**; see
+[acceptance](../validation/E4_IMPLEMENTATION_ACCEPTANCE.md). Start E5 integration
+with a framework-independent [JSON response adapter](../architecture/e5-response.md).
 New filming and E3 empirical evaluation remain deferred by the user; empirical
 acceptance and validated coaching remain open.
 
 ## Current Priorities
+
+- [x] E5 response adapter preserving E4 withholding and original-frame provenance.
+- [ ] FastAPI upload/request/error handling and controlled inference integration.
+- [ ] Product results UI consuming the response contract.
+
+E5 targeted regression: 42 passed (8 new adapter tests); last full suite remains
+411 passed. No HTTP server or upload endpoint has been implemented yet.
 
 - [x] Define [MVP capture conditions](../product/RECORDING_GUIDE.md).
 - [x] Define [item gates and E3 acceptance](../validation/E3_ACCEPTANCE.md).
