@@ -127,6 +127,8 @@ Interpret biomechanics data as meaningful squat movement.
 Translate movement analysis into adaptive, explainable feedback.
 
 - [x] Measurement availability notices with per-repetition evidence (foundation only)
+- [x] Projected body profile and descriptive personal preparation baseline workflow (review/validation gated)
+- [x] Session overview, prioritized actions and explicit partial/unavailable personal comparisons
 
 - [x] Explicit configurable measurement rules (`squat_rules.json`, empty by default; YAML deferred)
 - [x] Quality-gated numeric rule evaluation with evidence and withholding reasons

@@ -55,7 +55,7 @@ See docs/sessions/2026-11-04.md for full context.
 - E3 empirical validation; core metrics, timing, consistency, and analyzer implemented
 - Per-metric availability and observed coverage implemented; calibrated confidence pending
 - Initial videos 3-6 reviewed; cycle-state fixes and unverified gap candidates implemented
-- Latest full test suite: 398 passed; see docs/sessions/2026-11-05.md
+- Latest full test suite: 408 passed; see docs/sessions/2026-11-05.md
 - New filming/E3 empirical evaluation deferred by user; E4 observation/action flow active
 - Opt-in recovery/posture calibration and explicit Full/Heavy comparison implemented; Full remains default
 
