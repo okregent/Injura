@@ -159,6 +159,7 @@ Surface analysis results to the user.
 - [x] Bounded local video upload endpoint
 - [x] Synchronous analysis endpoint and browser upload/results preview
 - [x] Cycle/candidate source-frame navigation and selected-cycle evidence (approximate FPS-based seeking)
+- [x] Local paused selected-side joint overlay; filmed/native-browser alignment validation pending
 - [ ] React Native + Expo mobile app integration
 
 

@@ -40,6 +40,9 @@ from the repository root on `feature/biomechanics`:
 ```
 
 Open `http://127.0.0.1:8000/`. See [limits, install/migration and API contract](docs/architecture/e5-local-api.md).
+After analysis, select a detected cycle and pause the video to optionally show
+selected-side joints. Seeking/overlay timing is approximate; gaps and unverified
+points are hidden, and visible points do not validate posture or accuracy.
 This is a local developer preview with pending capture/coaching validation, not a
 publicly deployed or authenticated service. No background server is started by Git.
 
