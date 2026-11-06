@@ -1,5 +1,9 @@
 # E5 Expo Client
 
+iPhone selected for the first physical-device check. Follow the
+[iPhone smoke-test guide](../validation/IPHONE_SMOKE_TEST.md). On 2026-11-06,
+iOS Hermes export, TypeScript and ESLint passed; device execution remains pending.
+
 Implementation: `feature/biomechanics`, commits `7b307fc` and `5f9c51e`.
 Documentation on main does not merge application code. This is a development
 client, not a released native application. E5 remains in progress.
